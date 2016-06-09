@@ -1,0 +1,63 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="xxxxxxxxxxx"><title>说一说Java的HashMap | wikimore's blog</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/4.1.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/0.6.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/0.6.0/grids-responsive-min.css"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.2/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/2.2.3/jquery.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="/atom.xml"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">说一说Java的HashMap</h1><a id="logo" href="/.">wikimore's blog</a><p class="description">coding forever</p></div><div id="nav-menu"><a href="/." class="current"><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div id="layout" class="pure-g"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">说一说Java的HashMap</h1><div class="post-meta">Mar 24, 2014<span> | </span><span class="category"><a href="/categories/技术/">技术</a></span><script src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> Hits</span></span></div><div class="post-content"><p>这篇文章将介绍Java7的HashMap实现.</p>
+<p>Hash这个数据结构的实现有2种方式来解决hash冲突:<code>开放地址Hash法</code>和<code>链表法</code>.</p>
+<p>本文不介绍<code>开放地址Hash法</code>,因为Java的HashMap是用<code>链表法</code>实现的.</p>
+<p>下图是HashMap的属性结构</p>
+<p><img src="/assets/img/hashmap_attr.png" alt="image"></p>
+<a id="more"></a>
+<ul>
+<li>实现说明<ul>
+<li>table,一个<code>Entry</code>的<code>Array</code>,<code>Array</code>的每一位我们认为是一个<code>slot</code>,每个<code>slot</code>中可能存在零个到多个<code>Entry</code>,多个<code>Entry</code>组成一个单向链表,后加入的元素永远在链表的首位,最先加入的元素在链表尾部.</li>
+<li><code>Entry</code>存储我们的KEY和VALUE,有4个属性:key|value|next|hash,next是指向下一个<code>Entry</code>的指针,hash是key的hash值.</li>
+<li>loadFactor,HashMap中Entry和slot的比值大于loadFactor时,<code>Array</code>resize,同时rehash.</li>
+<li>modCount,HashMap被修改的次数,当遍历时会比较modCount来达到一旦发现修改就快速抛出异常的目的.</li>
+<li>threshold,<code>Entry</code>Array的大小.</li>
+<li>size,HashMap中当前元素的个数.</li>
+<li>Java7的版本会根据threshold的不同,改变hash函数的hashSeed,默认是<code>2^31-1</code></li>
+</ul>
+</li>
+</ul>
+<p><code>HashMap可以理解成一个数组,而数组的每一项可能是一个单向链表.</code></p>
+<p>下图是一个loadFactor为1,slot数为6,有6个元素(Entry)的HashMap,有3个key对应的Entry哈希到了slot0上,并且组成了一个单向的链表,slot1/3/5分别哈希到了一个Entry,而slot2/4没有哈希到任何Entry.</p>
+<p><img src="/assets/img/hashmap.png" alt="image"></p>
+<ul>
+<li><p>PUT</p>
+<ul>
+<li>1.检查table是否为empty,如果为empty,则要初始化,默认初始大小是16.</li>
+<li>2.判断key是否为null,如果为null,将初始化一个hash值等于0的Entry到table的slot0中(也就是说key为null的Entry永远在slot0中).</li>
+<li>3.key不为null,计算key的hash值.</li>
+<li>4.根据hash值和table的长度计算slot的index(hash值模上table的长度).</li>
+<li>5.用当前key和其hash值与该slot的每一个Entry的key和hash比较,如果存在key和hash值都相同的,表示put一个已经存在的key,那么用当前的value替换掉Entry的oldValue,并且返回oldValue.</li>
+<li>6.如果不存在key和hash值都相同的情况,表示put了一个不存在的key,modCount加1,那么先根据loadFactor|threshold和当前HashMap的size,计算是否要对table进行resize,resize的策略是直接扩展到当前的2倍.</li>
+<li>7.之后初始化一个newEntry,newEntry的next指针指向过去slotN指向的Entry,slotN指向newEntry.</li>
+</ul>
+</li>
+<li><p>GET</p>
+<ul>
+<li>1.检查table是否为empty,如果为empty,返回null.</li>
+<li>2.判断key是否为null,如果为null,到slot0中查找是否有存在key=null的Entry,存在返回Entry的value,否则返回null.</li>
+<li>3.key不为null,计算key的hash值.</li>
+<li>4.根据hash值和table的长度计算slot的index(hash值模上table的长度).</li>
+<li>5.用当前key和其hash值与该slot的每一个Entry的key和hash比较,如果存在key和hash值都相同的,返回该Entry的value,否则返回null.</li>
+<li>6.如果不存在key和hash值都相同的情况,表示该key不存在,返回null.</li>
+</ul>
+</li>
+<li><p>REMOVE</p>
+<ul>
+<li>1.检查table是否为empty,如果为empty,返回null.</li>
+<li>2.计算key的hash值,然后找到对应的slot.</li>
+<li>3.遍历该slot中的每一个Entry,判断hash和key是否与要删除的相同,如果有相同的就删除,并返回该Entry,否则返回null</li>
+<li>4.判断返回的Entry是否是null,不是就返回Entry的value.</li>
+</ul>
+</li>
+</ul>
+<p>其他的API方法也大同小异,在这里不做详细的说明.</p>
+<ul>
+<li>使用注意<ul>
+<li>不可并发put,会造成死循环,如果要并发put,可以使用<code>ConcurrentHashMap</code>.</li>
+<li>遍历时不可修改,会抛出<code>ConcurrentModificationException</code>.</li>
+<li>如果遍历value,使用<code>entrySet</code>,不要使用<code>keySet</code>,减少遍历次数.</li>
+<li><code>putAll</code>要注意,有时会造成2次resize.</li>
+</ul>
+</li>
+</ul>
+</div><script type="text/javascript" src="/js/share.js?v=0.0.0" async></script><a data-url="http://wikimore.github.io/2014-03-24-intro-java-hashmap/" data-id="cip8brgmt000b5vvgdozsagq9" class="article-share-link">分享到</a><div class="tags"><a href="/tags/java/">java</a></div><div class="post-nav"><a href="/2014-11-15-how-to-use-s2-geometry-lib-build-a-position-system/" class="pre">如何用s2-geometry-lib构建一个简单的定位系统</a><a href="/2014-03-20-how-to-build-a-feed-system/" class="next">关于构建feed系统的思考</a></div></div></div></div><div class="pure-u-1-4"><div id="sidebar"><div class="widget"><form action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank" class="search-form"><input type="text" name="q" maxlength="20" placeholder="Search"/><input type="hidden" name="sitesearch" value="http://wikimore.github.io"/></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/心情/">心情</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术/">技术</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/plugin/" style="font-size: 15px;">plugin</a> <a href="/tags/java/" style="font-size: 15px;">java</a> <a href="/tags/ruby/" style="font-size: 15px;">ruby</a> <a href="/tags/架构/" style="font-size: 15px;">架构</a> <a href="/tags/s2/" style="font-size: 15px;">s2</a> <a href="/tags/geometry/" style="font-size: 15px;">geometry</a> <a href="/tags/设计/" style="font-size: 15px;">设计</a> <a href="/tags/maven/" style="font-size: 15px;">maven</a> <a href="/tags/生活/" style="font-size: 15px;">生活</a> <a href="/tags/flume/" style="font-size: 15px;">flume</a> <a href="/tags/concurrency/" style="font-size: 15px;">concurrency</a> <a href="/tags/排序算法/" style="font-size: 15px;">排序算法</a> <a href="/tags/feed/" style="font-size: 15px;">feed</a> <a href="/tags/rpc-thrift/" style="font-size: 15px;">rpc,thrift</a> <a href="/tags/template-mustache/" style="font-size: 15px;">template,mustache</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最新文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2016-06-06-mustache-syntax/">Mustache语法说明</a></li><li class="post-list-item"><a class="post-list-link" href="/2016-04-04-thrift-protocol/">Thrift协议介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/2016-03-25-thrift-introduction/">Thrift简介</a></li><li class="post-list-item"><a class="post-list-link" href="/2016-03-12-java-concurrency-semaphore/">Java并发之Semaphore</a></li><li class="post-list-item"><a class="post-list-link" href="/2016-03-11-java-concurrency-cyclicbarrier/">Java并发之CyclicBarrier</a></li><li class="post-list-item"><a class="post-list-link" href="/2016-03-10-java-concurrency-countdownlatch/">Java并发之CountDownLatch</a></li><li class="post-list-item"><a class="post-list-link" href="/2016-03-03-heap-sort/">排序算法之HeapSort</a></li><li class="post-list-item"><a class="post-list-link" href="/2015-07-12-flume-ng-memory-channel/">flume-ng-memory-channel</a></li><li class="post-list-item"><a class="post-list-link" href="/2015-02-07-flume-ng-introduction/">Flume-ng工作原理简介</a></li><li class="post-list-item"><a class="post-list-link" href="/2014-12-27-write-a-maven-plugin/">编写自己的maven插件</a></li></ul></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">© <a href="/." rel="nofollow">wikimore's blog.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a id="rocket" href="#top" class="show"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="/css/jquery.fancybox.css?v=0.0.0"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>

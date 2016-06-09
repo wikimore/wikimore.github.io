@@ -1,0 +1,960 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>wikimore&#39;s blog</title>
+  <subtitle>coding forever</subtitle>
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="http://wikimore.github.io/"/>
+  <updated>2016-06-09T14:15:31.000Z</updated>
+  <id>http://wikimore.github.io/</id>
+  
+  <author>
+    <name>wikimore</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Mustache语法说明</title>
+    <link href="http://wikimore.github.io/2016-06-06-mustache-syntax/"/>
+    <id>http://wikimore.github.io/2016-06-06-mustache-syntax/</id>
+    <published>2016-06-06T07:10:40.000Z</published>
+    <updated>2016-06-09T14:15:31.000Z</updated>
+    
+    <content type="html">&lt;p&gt;Mustache是一个无逻辑(logic-less)的模板系统，可以生成HTML、源代码、配置文件等等，目前我们在代码生成上就使用它。&lt;/p&gt;
+&lt;h4 id=&quot;语法&quot;&gt;&lt;a href=&quot;#语法&quot; class=&quot;headerlink&quot; title=&quot;语法&quot;&gt;&lt;/a&gt;语法&lt;/h4&gt;&lt;p&gt;Mustache的语法中主要是一个一个的标签(tag)，不同的标签有不同的含义，基本以多个&lt;code&gt;{}&lt;/code&gt;形式展现。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;{{}}&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;{{{}}}&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;{{&amp;}}&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;{{#}}{{/}}&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;{{^}}{{/}}&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;{{!}}&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;{{&gt;}}&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;{{= =}}&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h5 id=&quot;Variable&quot;&gt;&lt;a href=&quot;#Variable&quot; class=&quot;headerlink&quot; title=&quot;Variable&quot;&gt;&lt;/a&gt;Variable&lt;/h5&gt;&lt;p&gt;&lt;code&gt;{{}}&lt;/code&gt;表示一个值，如&lt;code&gt;hello, {{name}}!&lt;/code&gt;，如果给定一个Hash&lt;code&gt;{&amp;quot;name&amp;quot;:&amp;quot;world&amp;quot;}&lt;/code&gt;，生成的目标为&lt;code&gt;hello, world!&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;{{{}}}&lt;/code&gt;和&lt;code&gt;{{&amp;}}&lt;/code&gt;同样可以表示一个值，不过内部的数据是为转码(unescape)的，如&lt;code&gt;hello, {{name}}!&lt;/code&gt;，如果给定一个Hash&lt;code&gt;{&amp;quot;name&amp;quot;:&amp;quot;&amp;lt;b&amp;gt;world&amp;lt;/b&amp;gt;&amp;quot;}&lt;/code&gt;，生成的目标为&lt;code&gt;hello, &amp;lt;b&amp;gt;world&amp;lt;/b&amp;gt;!&lt;/code&gt;，而用&lt;code&gt;{{}}&lt;/code&gt;则生成&lt;code&gt;hello, &amp;amp;lt;b&amp;amp;gt;world&amp;amp;lt;/b&amp;amp;gt!&lt;/code&gt;&lt;/p&gt;
+&lt;h5 id=&quot;Section&quot;&gt;&lt;a href=&quot;#Section&quot; class=&quot;headerlink&quot; title=&quot;Section&quot;&gt;&lt;/a&gt;Section&lt;/h5&gt;&lt;h6 id=&quot;true-or-false场景&quot;&gt;&lt;a href=&quot;#true-or-false场景&quot; class=&quot;headerlink&quot; title=&quot;true or false场景&quot;&gt;&lt;/a&gt;true or false场景&lt;/h6&gt;&lt;p&gt;如果模板如下：&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;begin&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#123;% raw %&amp;#125;&amp;#123;&amp;#123;#display&amp;#125;&amp;#125;&amp;#123;% endraw %&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;this line is display&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#123;% raw %&amp;#125;&amp;#123;&amp;#123;/display&amp;#125;&amp;#125;&amp;#123;% endraw %&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;end&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;给定json&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&amp;#123;&amp;quot;display&amp;quot;:true&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;显示如下：&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;begin&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;this line is display&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;end&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;如果给定json&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&amp;#123;&amp;quot;display&amp;quot;:false&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;显示如下：&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;begin&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;end&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h6 id=&quot;列表场景&quot;&gt;&lt;a href=&quot;#列表场景&quot; class=&quot;headerlink&quot; title=&quot;列表场景&quot;&gt;&lt;/a&gt;列表场景&lt;/h6&gt;&lt;p&gt;模板如下：&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&amp;#123;% raw %&amp;#125;&amp;#123;&amp;#123;#persons&amp;#125;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;hello &amp;#123;&amp;#123;name&amp;#125;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#123;&amp;#123;/persons&amp;#125;&amp;#125;&amp;#123;% endraw %&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;给定json&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &amp;quot;persons&amp;quot;: [&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#123; &amp;quot;name&amp;quot;: &amp;quot;peter&amp;quot; &amp;#125;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#123; &amp;quot;name&amp;quot;: &amp;quot;leo&amp;quot; &amp;#125;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#123; &amp;quot;name&amp;quot;: &amp;quot;tom&amp;quot; &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  ]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;显示如下：&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;hello peter&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;hello leo&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;hello tom&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;如果当列表为空时显示其他内容呢？我们可以编写如下模板：&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&amp;#123;% raw %&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#123;&amp;#123;#persons&amp;#125;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &amp;lt;b&amp;gt;&amp;#123;&amp;#123;name&amp;#125;&amp;#125;&amp;lt;/b&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#123;&amp;#123;/persons&amp;#125;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#123;&amp;#123;^persons&amp;#125;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  No person.&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#123;&amp;#123;/persons&amp;#125;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#123;% endraw %&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;给定json&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &amp;quot;persons&amp;quot;: []&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;显示如下：&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;No person.&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h5 id=&quot;Comment&quot;&gt;&lt;a href=&quot;#Comment&quot; class=&quot;headerlink&quot; title=&quot;Comment&quot;&gt;&lt;/a&gt;Comment&lt;/h5&gt;{{! comment}}，用!表示注释&lt;br&gt;&lt;br&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&amp;#123;% raw %&amp;#125;&amp;lt;h1&amp;gt;Hello&amp;#123;&amp;#123;! comment &amp;#125;&amp;#125;.&amp;lt;/h1&amp;gt;&amp;#123;% endraw %&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;渲染如下：&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&amp;lt;h1&amp;gt;Hello.&amp;lt;/h1&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h5 id=&quot;Partial&quot;&gt;&lt;a href=&quot;#Partial&quot; class=&quot;headerlink&quot; title=&quot;Partial&quot;&gt;&lt;/a&gt;Partial&lt;/h5&gt;&lt;p&gt;如果模板比较复杂，Mustache支持多个模板文件嵌套，使用语法 {{&gt; sub}}&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&amp;#123;% raw %&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;interface.mustache:&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;public interface &amp;#123;&amp;#123;name&amp;#125;&amp;#125; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#123;&amp;#123;#methods&amp;#125;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &amp;#123;&amp;#123;&amp;gt; method&amp;#125;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#123;&amp;#123;/methods&amp;#125;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#123;% endraw %&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;method.mustache:&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;public void &amp;#123;&amp;#123;name&amp;#125;&amp;#125;();&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;给定JSON&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;quot;name&amp;quot;: Iface&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;quot;methods&amp;quot;:[&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;quot;name&amp;quot;: &amp;quot;m1&amp;quot;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;quot;name&amp;quot;: &amp;quot;m2&amp;quot;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;quot;name&amp;quot;: &amp;quot;m3&amp;quot;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    ]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;生成如下：&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;public interface Iface &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    public void m1();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    public void m2();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    public void m3();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h5 id=&quot;Delimiter&quot;&gt;&lt;a href=&quot;#Delimiter&quot; class=&quot;headerlink&quot; title=&quot;Delimiter&quot;&gt;&lt;/a&gt;Delimiter&lt;/h5&gt;&lt;p&gt;Mustache使用&lt;code&gt;{{}}&lt;/code&gt;作为定界符，如果我们需要显示{}呢？貌似不可以。&lt;/p&gt;
+&lt;p&gt;其实Mustache支持设置定界符，使用等号，如&lt;code&gt;{{=&lt;% %=&quot;&quot;&gt;=}}&lt;/%&gt;&lt;/code&gt;，这时候定界符就被替换成&lt;code&gt;&amp;lt;% %&amp;gt;&lt;/code&gt;了，如果想重新设置回去，使用&lt;code&gt;&lt;%={{ }}=&quot;%&quot;&gt;&lt;/%={{&gt;&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;目前几乎所有的主流语言都有对应的库，详见&lt;a href=&quot;http://mustache.github.io/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Mustache&lt;/a&gt;。&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Mustache是一个无逻辑(logic-less)的模板系统，可以生成HTML、源代码、配置文件等等，目前我们在代码生成上就使用它。&lt;/p&gt;
+&lt;h4 id=&quot;语法&quot;&gt;&lt;a href=&quot;#语法&quot; class=&quot;headerlink&quot; title=&quot;语法&quot;&gt;&lt;/a&gt;语法&lt;/h
+    
+    </summary>
+    
+      <category term="技术" scheme="http://wikimore.github.io/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="template,mustache" scheme="http://wikimore.github.io/tags/template-mustache/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Thrift协议介绍</title>
+    <link href="http://wikimore.github.io/2016-04-04-thrift-protocol/"/>
+    <id>http://wikimore.github.io/2016-04-04-thrift-protocol/</id>
+    <published>2016-04-04T07:10:40.000Z</published>
+    <updated>2016-06-09T13:52:15.000Z</updated>
+    
+    <content type="html">&lt;p&gt;本文主要说明Thrift如何序列化和反序列化数据。主要分析为什么在客户端调用method，服务端会执行对应的method，同时客户端能够获取到返回值，中间都发生了什么。&lt;/p&gt;
+&lt;p&gt;Thrift序列化的核心类是&lt;code&gt;TProtocol&lt;/code&gt;，这是一个抽象类，主要实现有：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;TBinaryProtocol&lt;/code&gt;：二进制协议&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;TCompactProtocl&lt;/code&gt;：带压缩的二进制(其实只对i16、i32、i64这3种类型以及field的编号进行压缩，详细可以搜索zigzag编码)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;本文以&lt;code&gt;TBinaryProtocol&lt;/code&gt;为例说明，协议如下所示&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;----------------------------------------------------------------------------------------&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;|                              header                            |        body         |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;|  magic  | method name length |  method name  | sequence number |       result        |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;|    4    |         4          | N length size |        4        |          X          |   &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;----------------------------------------------------------------------------------------&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;总体我们可以分为&lt;code&gt;header&lt;/code&gt;和&lt;code&gt;body&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;header&lt;/code&gt;首先是4个字节的magic，Thrift协议的magic是一个32位的数字，高16位是&lt;code&gt;8001&lt;/code&gt;(个人理解代表版本号，目前是第一个版本)，低16位根据TMessageType得到，目前TMessageType分为4种：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;CALL = 1 调用消息，如&lt;code&gt;0x80010001&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;REPLY = 2 应答消息，如&lt;code&gt;0x80010002&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;EXCEPTION = 3 异常消息，如&lt;code&gt;0x80010003&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;ONEWAY = 4 单向消息，属于调用消息，但是不需要应答，如&lt;code&gt;0x80010004&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;之后4个字节表示方法名称的长度N，之后是N方法名称的字节，最后是4个字节的序列号。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;body&lt;/code&gt;首先是一个&lt;code&gt;struct&lt;/code&gt;类型，内部会根据类型的不同各不相同，同时支持不同类型的嵌套，目前支持的类型包括：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;byte&lt;/li&gt;
+&lt;li&gt;bool&lt;/li&gt;
+&lt;li&gt;short&lt;/li&gt;
+&lt;li&gt;int&lt;/li&gt;
+&lt;li&gt;long&lt;/li&gt;
+&lt;li&gt;double&lt;/li&gt;
+&lt;li&gt;string&lt;/li&gt;
+&lt;li&gt;bytearray&lt;/li&gt;
+&lt;li&gt;map&lt;/li&gt;
+&lt;li&gt;list&lt;/li&gt;
+&lt;li&gt;set&lt;/li&gt;
+&lt;li&gt;field&lt;/li&gt;
+&lt;li&gt;struct&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;注意：&lt;code&gt;exception&lt;/code&gt;可以理解为struct的一种，按照struct来序列化和反序列化。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;code&gt;byte&lt;/code&gt;占1个字节，&lt;code&gt;bool&lt;/code&gt;也是占用1个字节，true=1，false=0。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;short&lt;/code&gt;占2个字节，&lt;code&gt;int&lt;/code&gt;占4个字节，&lt;code&gt;long&lt;/code&gt;和&lt;code&gt;double&lt;/code&gt;都是占用8个字节。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;string&lt;/code&gt;和&lt;code&gt;bytearray&lt;/code&gt;类似，占4+N字节，描述如下：&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;--------------------&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;| size |  content  |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;|   4  |     N     |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;--------------------&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;string使用UTF-8编码成byte数组。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;map&lt;/code&gt;占&lt;code&gt;1+1+4+N*X+N*Y&lt;/code&gt;个字节，描述如下：&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;----------------------------------------------------------------------------------------&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;|  key-type  | value-type |  size  | key1 | value1 | key2 | value2 |...| keyN | valueN |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;|      1     |      1     |    4   |   X  |   Y    |   X  |   Y    |...|   X  |   Y    |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;----------------------------------------------------------------------------------------&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;其中key-type和value-type可以是任何以上的类型。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;list&lt;/code&gt;和&lt;code&gt;set&lt;/code&gt;类似，占&lt;code&gt;1+4+N*X&lt;/code&gt;个字节，描述如下：&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;----------------------------------------------------------------&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;|  element-type  |  size  | element1 | element2 |...| elementN |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;|        1       |    4   |    X     |    X     |...|    X     |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;----------------------------------------------------------------&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;其中element-type可以是任何以上的类型。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;field&lt;/code&gt;占&lt;code&gt;1+2+X&lt;/code&gt;个字节，描述如下：&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;---------------------------------------&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;| field-type | field-id | field-value |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;|      1     |     2    |      X      |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;---------------------------------------&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;code&gt;field&lt;/code&gt;不是独立出现，而是出现在&lt;code&gt;struct&lt;/code&gt;内部，其中field-type可以是任何以上的类型，field-id就是定义IDL时该&lt;code&gt;field&lt;/code&gt;在&lt;code&gt;struct&lt;/code&gt;的编号，field-value是对应类型的序列化结果。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;struct&lt;/code&gt;占&lt;code&gt;X&lt;/code&gt;个字节，这个不太好估计，需要具体定义具体计算，可以按照入下描述：&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;--------------------------------&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;| field1 | field2 |...| fieldN |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;|    M   |    M   |...|    M   |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;--------------------------------&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;在使用上有些需要注意的点：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;对于方法定义了返回值为&lt;code&gt;struct&lt;/code&gt;、&lt;code&gt;map&lt;/code&gt;、&lt;code&gt;set&lt;/code&gt;、&lt;code&gt;list&lt;/code&gt;，如果服务端返回null，thrift是不能够很好的支持的(会报错)，大家可以根据具体情况返回empty的对象或者抛出定义的异常&lt;/li&gt;
+&lt;li&gt;如果参数或者返回值是&lt;code&gt;map&lt;/code&gt;、&lt;code&gt;set&lt;/code&gt;、&lt;code&gt;list&lt;/code&gt;实例，该实例不能被其他线程修改，否则会报协议错误或者超时(大家可以想下是为什么)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;以上基本解释了Thrift的协议格式以及不同类型的序列化格式，还有我使用过程中遇到的一些坑，希望对大家理解Thrift有所帮助。&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;本文主要说明Thrift如何序列化和反序列化数据。主要分析为什么在客户端调用method，服务端会执行对应的method，同时客户端能够获取到返回值，中间都发生了什么。&lt;/p&gt;
+&lt;p&gt;Thrift序列化的核心类是&lt;code&gt;TProtocol&lt;/code&gt;，这是一个抽象类，
+    
+    </summary>
+    
+      <category term="技术" scheme="http://wikimore.github.io/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="rpc,thrift" scheme="http://wikimore.github.io/tags/rpc-thrift/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Thrift简介</title>
+    <link href="http://wikimore.github.io/2016-03-25-thrift-introduction/"/>
+    <id>http://wikimore.github.io/2016-03-25-thrift-introduction/</id>
+    <published>2016-03-25T07:10:40.000Z</published>
+    <updated>2016-06-09T13:52:03.000Z</updated>
+    
+    <content type="html">&lt;p&gt;Thrift是ASF支持下的一个跨语言的RPC框架，类似的有avro、protobuf等，最大的优点应该就是支持的语言特别多。&lt;/p&gt;
+&lt;p&gt;使用Thrift最关键的一点应该是要弄懂他的IDL(Interface Description Language)，&lt;a href=&quot;http://thrift.apache.org/docs/idl&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;官方的文档&lt;/a&gt;还是有比较详细的说明的，主流的数据结构都有支持，也支持结构体、共同体、枚举类型，但是不提供继承关系(序列化的原因)，唯一可以继承的就是service，这样可以写一些通用的东西到一个service中，然后其他的业务service可以继承该service，还有就是可以自定义exception。&lt;br&gt;&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;&lt;br&gt;Thrift项目主要分为2个部分&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Compiler:负责IDL解析以及不同语言代码的生成，由C++编写，基于yacc和bison做语法分析，抽象出Generator生成不同语言的原生代码&lt;/li&gt;
+&lt;li&gt;Library:各个不同语言的运行时类库&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;下面主要介绍Java版本的Library。&lt;/p&gt;
+&lt;p&gt;Thrift的Library大致上可以分成几个部分：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Transport:网络连接抽象，包括InputStream和OutputStram&lt;/li&gt;
+&lt;li&gt;Protocol:序列化协议，读写数据到Transport中，包括原生类型和结构化类型的对象&lt;/li&gt;
+&lt;li&gt;Processor:服务端接收请求的处理器，负责选择调用方法对应的Function&lt;/li&gt;
+&lt;li&gt;Function:由Processor管理，对应一个IDL中定义的方法，内部调用对应方法的实现，框架定义整体的处理流程(模板模式)，业务逻辑需要开发人员实现&lt;/li&gt;
+&lt;li&gt;Client:客户端，依赖Protocol，框架只定义抽象，实现部分是根据IDL自动生成的(参数序列化和结果反序列化)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;下图展示了各个抽象之间的依赖关系和所处的层次。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/img/thrift01.png&quot; alt=&quot;image&quot;&gt;&lt;/p&gt;
+&lt;p&gt;通过上图可以了解整个Thrift工作的大体流程，至于如何安装使用，官方有很详细的&lt;a href=&quot;http://thrift.apache.org&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;说明&lt;/a&gt;，个人觉得Thrift是一个非常不错的RPC框架。&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Thrift是ASF支持下的一个跨语言的RPC框架，类似的有avro、protobuf等，最大的优点应该就是支持的语言特别多。&lt;/p&gt;
+&lt;p&gt;使用Thrift最关键的一点应该是要弄懂他的IDL(Interface Description Language)，&lt;a href=&quot;http://thrift.apache.org/docs/idl&quot;&gt;官方的文档&lt;/a&gt;还是有比较详细的说明的，主流的数据结构都有支持，也支持结构体、共同体、枚举类型，但是不提供继承关系(序列化的原因)，唯一可以继承的就是service，这样可以写一些通用的东西到一个service中，然后其他的业务service可以继承该service，还有就是可以自定义exception。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="技术" scheme="http://wikimore.github.io/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="rpc,thrift" scheme="http://wikimore.github.io/tags/rpc-thrift/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Java并发之Semaphore</title>
+    <link href="http://wikimore.github.io/2016-03-12-java-concurrency-semaphore/"/>
+    <id>http://wikimore.github.io/2016-03-12-java-concurrency-semaphore/</id>
+    <published>2016-03-11T16:00:00.000Z</published>
+    <updated>2016-03-13T14:58:03.000Z</updated>
+    
+    <content type="html">&lt;p&gt;Semaphore是juc包下一个并发辅助类，官方定义为&lt;code&gt;可以计数的信号量&lt;/code&gt;，允许N个获得&lt;code&gt;许可&lt;/code&gt;的线程同时访问某个资源或执行某段代码，&lt;code&gt;许可&lt;/code&gt;可以被归还，归还后的&lt;code&gt;许可&lt;/code&gt;可以被其他线程获取，如果&lt;code&gt;许可&lt;/code&gt;不足，线程就等待，当其他线程归还&lt;code&gt;许可&lt;/code&gt;，等待的线程被唤醒，尝试获取&lt;code&gt;许可&lt;/code&gt;。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;注意：许可可以被同一个线程获取多次，也能够被同一个线程归还多次。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;当资源有限时，并发获取使用Semaphore控制是一个非常好的方式，比如数据库连接池，网络连接池等。&lt;br&gt;&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Semaphore主要方法有：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;acquire&lt;/code&gt;：阻塞获取&lt;code&gt;许可&lt;/code&gt;，直到获得许可为止，响应&lt;code&gt;interrupt&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;acquireUninterruptibly&lt;/code&gt;：阻塞获取&lt;code&gt;许可&lt;/code&gt;，直到获得许可为止，不响应&lt;code&gt;interrupt&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;tryAcquire&lt;/code&gt;：尝试获取&lt;code&gt;许可&lt;/code&gt;，返回&lt;code&gt;boolean&lt;/code&gt;类型，true表示获得，false未获得&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;release&lt;/code&gt;：释放(归还)&lt;code&gt;许可&lt;/code&gt;，同时唤醒所有尝试获取&lt;code&gt;许可&lt;/code&gt;的线程&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;当然还有一些其他的方法，不过语义上大同小异。&lt;/p&gt;
+&lt;p&gt;Semaphore内部通过继承AQS，预先申请&lt;code&gt;许可&lt;/code&gt;，同时实现类&lt;code&gt;Fair&lt;/code&gt;和&lt;code&gt;Nonfair&lt;/code&gt;的等待唤醒机制&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;同CountDownLatch类似，都是通过AQS来实现内部的流程，juc下面还有不少工具也是通过AQS来实现，之后会详细介绍。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;25&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;26&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;27&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;28&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;29&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;30&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;31&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;32&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;33&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;34&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;35&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;36&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;37&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;38&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;39&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;40&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;41&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;42&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;43&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;44&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;45&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;46&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;47&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;48&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;49&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;50&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;51&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;52&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;53&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;54&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;55&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;56&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;57&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;58&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;59&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;60&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;61&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;62&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;63&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;64&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;65&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;public class Pool &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  private final Stack&amp;lt;Connection&amp;gt; stack;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  private final Semaphore semaphore;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  public static void main(String[] args) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    Pool pool = new Pool(2);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    Thread[] threads = new Thread[8];&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    for (int i = 0; i &amp;lt; 8; i++) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      Thread t = new Thread(new Runnable() &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        @Override&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        public void run() &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;          Connection connection = pool.borrowConnection();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;          System.out.println(Thread.currentThread().getName() + &amp;quot; borrowed &amp;quot; + connection);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;          pool.returnConnection(connection);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;          System.out.println(Thread.currentThread().getName() + &amp;quot; return &amp;quot; + connection);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &amp;#125;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      threads[i] = t;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    for (int i = 0; i &amp;lt; 8; i++) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      threads[i].start();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  public Pool(int size) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    // 初始化许可&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    stack = new Stack&amp;lt;Connection&amp;gt;();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    for (int i = 0; i &amp;lt; size; i++) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      stack.push(new Connection(i));&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    semaphore = new Semaphore(size);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  public Connection borrowConnection() &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    // 尝试获取许可，如果没有就阻塞&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    semaphore.acquireUninterruptibly();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    // 获取连接&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    return stack.pop();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  public void returnConnection(Connection connection) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    // 返回连接&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    stack.push(connection);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    // 归还许可，其他线程可以获得该许可&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    semaphore.release();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  static class Connection &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    private final int id;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    public Connection(int id) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      this.id = id;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    @Override&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    public String toString() &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      StringBuilder builder = new StringBuilder();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      builder.append(&amp;quot;Connection [id=&amp;quot;).append(id).append(&amp;quot;]&amp;quot;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      return builder.toString();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;下面是输出，可以看到获取连接的线程是没有顺序的&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;Thread-0 borrowed Connection [id=0]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-6 borrowed Connection [id=0]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-6 return Connection [id=0]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-0 return Connection [id=0]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-7 borrowed Connection [id=0]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-7 return Connection [id=0]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-1 borrowed Connection [id=0]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-1 return Connection [id=0]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-2 borrowed Connection [id=0]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-2 return Connection [id=0]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-3 borrowed Connection [id=0]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-3 return Connection [id=0]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-4 borrowed Connection [id=0]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-4 return Connection [id=0]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-5 borrowed Connection [id=0]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-5 return Connection [id=0]&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;如果我们把&lt;code&gt;Pool&lt;/code&gt;的构造方法中的&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;semaphore = new Semaphore(size);&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;改成&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;semaphore = new Semaphore(size, true);&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;输出如下&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;Thread-0 borrowed Connection [id=0]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-0 return Connection [id=0]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-1 borrowed Connection [id=0]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-1 return Connection [id=0]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-2 borrowed Connection [id=0]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-2 return Connection [id=0]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-3 borrowed Connection [id=0]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-3 return Connection [id=0]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-4 borrowed Connection [id=0]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-4 return Connection [id=0]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-5 borrowed Connection [id=0]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-5 return Connection [id=0]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-6 borrowed Connection [id=0]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-6 return Connection [id=0]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-7 borrowed Connection [id=0]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-7 return Connection [id=0]&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;获取连接的顺序固定了，这就是公平和非公平的区别，公平策略会先到先得，内部是一个队列，而非公平的策略并非先到先得，内部是一个自旋的过程，通俗说就是有人插队^_^。&lt;/p&gt;
+&lt;p&gt;Semaphore可以提供&lt;code&gt;许可&lt;/code&gt;，让有限的资源被多个线程共享使用。&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Semaphore是juc包下一个并发辅助类，官方定义为&lt;code&gt;可以计数的信号量&lt;/code&gt;，允许N个获得&lt;code&gt;许可&lt;/code&gt;的线程同时访问某个资源或执行某段代码，&lt;code&gt;许可&lt;/code&gt;可以被归还，归还后的&lt;code&gt;许可&lt;/code&gt;可以被其他线程获取，如果&lt;code&gt;许可&lt;/code&gt;不足，线程就等待，当其他线程归还&lt;code&gt;许可&lt;/code&gt;，等待的线程被唤醒，尝试获取&lt;code&gt;许可&lt;/code&gt;。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;注意：许可可以被同一个线程获取多次，也能够被同一个线程归还多次。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;当资源有限时，并发获取使用Semaphore控制是一个非常好的方式，比如数据库连接池，网络连接池等。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="技术" scheme="http://wikimore.github.io/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="java" scheme="http://wikimore.github.io/tags/java/"/>
+    
+      <category term="concurrency" scheme="http://wikimore.github.io/tags/concurrency/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Java并发之CyclicBarrier</title>
+    <link href="http://wikimore.github.io/2016-03-11-java-concurrency-cyclicbarrier/"/>
+    <id>http://wikimore.github.io/2016-03-11-java-concurrency-cyclicbarrier/</id>
+    <published>2016-03-10T16:00:00.000Z</published>
+    <updated>2016-03-13T14:54:57.000Z</updated>
+    
+    <content type="html">&lt;p&gt;CyclicBarrier是juc包下一个并发辅助类，类似于CountDownLatch，但又不同，CyclicBarrier保证一组线程在同一个地方互相等待，直到最后一个线程到来后，然后一起再继续向下执行。&lt;/p&gt;
+&lt;p&gt;CyclicBarrier提供了一个叫做&lt;code&gt;Generation(代/批)&lt;/code&gt;的概念，每个&lt;code&gt;Generation&lt;/code&gt;的线程由该&lt;code&gt;Generation&lt;/code&gt;最后一个到达的唤醒其他先到的线程，一个CyclicBarrier允许有N个&lt;code&gt;Generation&lt;/code&gt;。&lt;br&gt;&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;CyclicBarrier初始化支持两个参数:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;parties，int类型，标记多少个线程等待后，全部唤醒继续执行&lt;/li&gt;
+&lt;li&gt;barrierAction，Runnable类型，如果不为null，最后一个到达barrier的线程会执行此Runnable&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;最主要方法&lt;code&gt;await&lt;/code&gt;，内部主要依赖&lt;code&gt;Lock&lt;/code&gt;、&lt;code&gt;Condition&lt;/code&gt;以及一个&lt;code&gt;count&lt;/code&gt;计数来工作，&lt;code&gt;count&lt;/code&gt;初始值为构造参数parties的值&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Lock&lt;/code&gt;保证线程同步，同一时刻只有一个线程能够执行await的核心逻辑&lt;/li&gt;
+&lt;li&gt;核心逻辑先做&lt;code&gt;--count&lt;/code&gt;操作，然后判断&lt;code&gt;count计数&lt;/code&gt;的值是否为0&lt;ul&gt;
+&lt;li&gt;如果不是，在&lt;code&gt;Condition&lt;/code&gt;下等待&lt;/li&gt;
+&lt;li&gt;如果是，执行barrierAction，然后唤醒所有等待在&lt;code&gt;Condition&lt;/code&gt;的线程，最后新初始化一个&lt;code&gt;Generation&lt;/code&gt;，并将parties的值赋值给&lt;code&gt;count&lt;/code&gt;(重置计数)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;注意：如果parties=2，不要同时启动4个线程，因为并不能完全保证不同&lt;code&gt;Generation&lt;/code&gt;的线程是顺序唤醒的，因为内部公用同一把&lt;code&gt;Lock&lt;/code&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;代码示例：模拟轮渡载满才过河&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;25&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;26&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;27&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;28&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;29&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;30&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;31&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;32&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;33&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;34&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;35&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;public class Ferry &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  public static void main(String[] args) throws Throwable &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    int count = 4;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    CyclicBarrier cyclicBarrier = new CyclicBarrier(count, new Runnable() &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      @Override&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      public void run() &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        System.out.println(&amp;quot;船开了&amp;quot;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    Thread[] threads = new Thread[count];&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    for (int i = 0; i &amp;lt; count; i++) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      Thread t = new Thread(new Runnable() &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        @Override&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        public void run() &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;          try &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            System.out.println(Thread.currentThread().getName() + &amp;quot;等待过河&amp;quot;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            cyclicBarrier.await();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            System.out.println(Thread.currentThread().getName() + &amp;quot;过河成功&amp;quot;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;          &amp;#125; catch (InterruptedException e) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;          &amp;#125; catch (BrokenBarrierException e) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;          &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &amp;#125;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      threads[i] = t;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    for (int i = 0; i &amp;lt; count; i++) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      threads[i].start();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    Thread.sleep(10000);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;输出如下：&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;Thread-3等待过河&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-2等待过河&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-0等待过河&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-1等待过河&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;船开了&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-1过河成功&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-0过河成功&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-2过河成功&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Thread-3过河成功&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;可以发现最后到达的线程会先执行(这个毋庸置疑)，其他线程随机顺序，这主要是因为内部的&lt;code&gt;Lock&lt;/code&gt;使用的是非公平的，所以并非先到先执行。&lt;/p&gt;
+&lt;p&gt;CyclicBarrier可以保证多个线程在某一处互相等待，然后继续执行，在某些特定的场景下使用会非常方便、有效。&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;CyclicBarrier是juc包下一个并发辅助类，类似于CountDownLatch，但又不同，CyclicBarrier保证一组线程在同一个地方互相等待，直到最后一个线程到来后，然后一起再继续向下执行。&lt;/p&gt;
+&lt;p&gt;CyclicBarrier提供了一个叫做&lt;code&gt;Generation(代/批)&lt;/code&gt;的概念，每个&lt;code&gt;Generation&lt;/code&gt;的线程由该&lt;code&gt;Generation&lt;/code&gt;最后一个到达的唤醒其他先到的线程，一个CyclicBarrier允许有N个&lt;code&gt;Generation&lt;/code&gt;。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="技术" scheme="http://wikimore.github.io/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="java" scheme="http://wikimore.github.io/tags/java/"/>
+    
+      <category term="concurrency" scheme="http://wikimore.github.io/tags/concurrency/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Java并发之CountDownLatch</title>
+    <link href="http://wikimore.github.io/2016-03-10-java-concurrency-countdownlatch/"/>
+    <id>http://wikimore.github.io/2016-03-10-java-concurrency-countdownlatch/</id>
+    <published>2016-03-09T16:00:00.000Z</published>
+    <updated>2016-03-09T16:51:09.000Z</updated>
+    
+    <content type="html">&lt;p&gt;CountDownLatch是juc包下一个非常简单的并发辅助类，提供线程间等待的支持，如一组线程A等待另外一组线程B完成某些操作后(一组可以是一个或者多个线程)，才能继续执行时，可以使用CountDownLatch来完成控制。&lt;/p&gt;
+&lt;p&gt;CountDownLatch主要提供两个方法：&lt;code&gt;await&lt;/code&gt;和&lt;code&gt;countdown&lt;/code&gt;，内部类&lt;code&gt;Sync&lt;/code&gt;继承了AQS，实现类似共享模式的同步机制。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;await&lt;/code&gt;从字面上理解就是等待，当然实现也确实是等待，实现通过调用内部的sync对象来等待。&lt;/p&gt;
+&lt;p&gt;假如线程组B中有一个出现问题，没有调用&lt;code&gt;countdown&lt;/code&gt;方法，那个线程组A中的线程就没法继续执行，所以&lt;code&gt;await&lt;/code&gt;还有一个重载方法&lt;code&gt;await(long,timeunit)&lt;/code&gt;，也就是当等待给定时长后，即使B中的线程有些没有执行完毕，但是A线程组中的线程再不等待，继续执行后面的逻辑。&lt;br&gt;&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;CountDownLatch初始化需要提供一个count，&lt;code&gt;countdown&lt;/code&gt;每次被调用，count都会减1，当count等于0时，所有&lt;code&gt;await&lt;/code&gt;的线程会依次被唤醒。&lt;/p&gt;
+&lt;p&gt;下面的例子有三个角色，Leader、Developer、Tester，Leader管理一组Developer和Tester，Leader设计好系统，Developer开始编写代码，Tester同时开始编写测试用例，Tester等待Developer开发好后，执行测试用例。&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;25&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;26&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;27&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;28&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;29&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;30&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;31&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;32&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;33&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;34&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;35&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;36&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;37&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;38&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;39&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;40&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;41&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;42&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;43&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;44&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;45&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;46&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;47&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;48&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;49&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;50&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;51&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;52&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;53&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;54&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;55&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;56&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;57&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;58&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;59&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;60&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;61&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;62&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;63&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;64&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;65&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;66&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;67&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;68&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;69&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;70&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;71&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;72&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;73&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;74&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;75&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;76&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;77&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;78&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;79&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;80&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;81&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;82&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;83&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;84&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;public class Leader &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  public static void main(String[] args) throws Throwable &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    CountDownLatch startSignal = new CountDownLatch(1);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    CountDownLatch developerDoneSignal = new CountDownLatch(8);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    CountDownLatch testerDoneSignal = new CountDownLatch(8);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    // 找到测试人员&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    // 找到开发者&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    for (int i = 0; i &amp;lt; 8; ++i) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      new Thread(new Tester(startSignal, developerDoneSignal, testerDoneSignal)).start();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      new Thread(new Developer(startSignal, developerDoneSignal)).start();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    // 设计系统&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    System.out.println(&amp;quot;design&amp;quot;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    // 设计好后，开发和测试开始工作&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    startSignal.countDown();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    startSignal.countDown();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    // 等待测试完成&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    testerDoneSignal.await();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    // 完成&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    System.out.println(&amp;quot;done&amp;quot;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  static class Developer implements Runnable &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    private final CountDownLatch startSignal;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    private final CountDownLatch doneSignal;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    Developer(CountDownLatch startSignal, CountDownLatch doneSignal) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      this.startSignal = startSignal;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      this.doneSignal = doneSignal;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    public void run() &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      try &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        // 等待Leader设计&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        startSignal.await();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        // 开发&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        System.out.println(&amp;quot;Develop&amp;quot;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        Thread.sleep(5);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &amp;#125; catch (InterruptedException ex) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        // ignore&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &amp;#125; finally &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        // 完成后通知测试人员&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        doneSignal.countDown();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  static class Tester implements Runnable &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    private final CountDownLatch testCaseStartSignal;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    private final CountDownLatch testStartSignal;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    private final CountDownLatch doneSignal;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    Tester(CountDownLatch testCaseStartSignal, CountDownLatch testStartSignal, CountDownLatch doneSignal) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      this.testCaseStartSignal = testCaseStartSignal;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      this.testStartSignal = testStartSignal;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      this.doneSignal = doneSignal;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    public void run() &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      try &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        // 等待Leader设计&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        testCaseStartSignal.await();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        // 编写测试用例&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        System.out.println(&amp;quot;Write Test case&amp;quot;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        Thread.sleep(5);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        // 等待开发完成&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        testStartSignal.await();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        // 测试&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        System.out.println(&amp;quot;Test&amp;quot;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        Thread.sleep(5);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &amp;#125; catch (InterruptedException ex) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        // ignore&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &amp;#125; finally &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        // 测试完成通知Leader&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        doneSignal.countDown();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;25&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;26&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;design&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Write Test case&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Develop&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Write Test case&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Develop&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Write Test case&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Develop&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Write Test case&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Write Test case&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Develop&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Develop&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Develop&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Write Test case&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Write Test case&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Develop&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Write Test case&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Develop&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Test&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Test&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Test&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Test&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Test&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Test&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Test&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Test&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;done&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;从输入可以看出，Leader设计完成后，Developer和Tester才能开始工作，编码和编写测试用例是并行执行的，但是必须开发完毕后，测试才能进行测试。&lt;/p&gt;
+&lt;p&gt;总结，通过CountDownLatch可以组织不同的线程的执行顺序，确保前置任务完成，后续任务才能开始。&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;CountDownLatch是juc包下一个非常简单的并发辅助类，提供线程间等待的支持，如一组线程A等待另外一组线程B完成某些操作后(一组可以是一个或者多个线程)，才能继续执行时，可以使用CountDownLatch来完成控制。&lt;/p&gt;
+&lt;p&gt;CountDownLatch主要提供两个方法：&lt;code&gt;await&lt;/code&gt;和&lt;code&gt;countdown&lt;/code&gt;，内部类&lt;code&gt;Sync&lt;/code&gt;继承了AQS，实现类似共享模式的同步机制。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;await&lt;/code&gt;从字面上理解就是等待，当然实现也确实是等待，实现通过调用内部的sync对象来等待。&lt;/p&gt;
+&lt;p&gt;假如线程组B中有一个出现问题，没有调用&lt;code&gt;countdown&lt;/code&gt;方法，那个线程组A中的线程就没法继续执行，所以&lt;code&gt;await&lt;/code&gt;还有一个重载方法&lt;code&gt;await(long,timeunit)&lt;/code&gt;，也就是当等待给定时长后，即使B中的线程有些没有执行完毕，但是A线程组中的线程再不等待，继续执行后面的逻辑。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="技术" scheme="http://wikimore.github.io/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="java" scheme="http://wikimore.github.io/tags/java/"/>
+    
+      <category term="concurrency" scheme="http://wikimore.github.io/tags/concurrency/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>排序算法之HeapSort</title>
+    <link href="http://wikimore.github.io/2016-03-03-heap-sort/"/>
+    <id>http://wikimore.github.io/2016-03-03-heap-sort/</id>
+    <published>2016-03-02T16:00:00.000Z</published>
+    <updated>2016-03-09T15:12:51.000Z</updated>
+    
+    <content type="html">&lt;p&gt;堆排序是一种基于比较的排序算法，可以简单的认为是一种改进的选择排序，虽然在实际中比快速排序要慢，但是其优势是最坏情况基本也是O(n log n)的时间复杂度，空间复杂度是O(1)，也就是不需要额外的内存空间。堆排序是稳定的排序算法。&lt;/p&gt;
+&lt;p&gt;理解堆排序首先要了解什么是堆，堆分为大根堆和小根堆，如果根节点是最小的数，为小根堆，根节点是最大的数，为大根堆，堆一般使用一维的数组来表示，可以看做是一个完全的二叉树：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;树的根节点是array[0]&lt;/li&gt;
+&lt;li&gt;每个节点的左子节点为array[2i + 1]&lt;/li&gt;
+&lt;li&gt;每个节点的右子节点为array[2i + 2]&lt;/li&gt;
+&lt;li&gt;每个节点的父节点为array[floor((i - 1) / 2)]&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;堆排序算法可以被分成两个部分：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;建立大(小)根堆&lt;/li&gt;
+&lt;li&gt;堆排序&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;以上两部操作都涉及到&lt;code&gt;堆调整&lt;/code&gt;，调整的目的是建立完全最大(小)根堆。&lt;/p&gt;
+&lt;p&gt;建堆就是建立一个大根堆或者小根堆，以大根堆为例，假设有下列数组&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;[1,4,7,6,11,5,8,2,10,9,3]&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;初始堆如下图：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/img/heapsort001.png&quot; alt=&quot;image&quot;&gt;&lt;/p&gt;
+&lt;p&gt;首先我们要建立&lt;code&gt;完全最大堆&lt;/code&gt;，起始选取最后一个叶子节点的父节点，假设该节点为&lt;code&gt;array[i]&lt;/code&gt;，本例&lt;code&gt;i = 4&lt;/code&gt;，比较该节点与其子节点，如果子节点比其大，选取最大的子节点与其进行交换，该例子中&lt;code&gt;11 &amp;gt; 9 &amp;gt; 3&lt;/code&gt;，所以不需要交换，然后比较&lt;code&gt;array[i--]&lt;/code&gt;，同样的逻辑，这时&lt;code&gt;6 &amp;gt; 2 &amp;lt; 10&lt;/code&gt;，所以交换6和10，变换后如下图(蓝色表示交换过位置)&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/img/heapsort002.png&quot; alt=&quot;image&quot;&gt;&lt;/p&gt;
+&lt;p&gt;之后继续比较&lt;code&gt;array[i--]&lt;/code&gt;，那么7和8要交换位置，变化结果如下&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/img/heapsort003.png&quot; alt=&quot;image&quot;&gt;&lt;/p&gt;
+&lt;p&gt;之后继续比较&lt;code&gt;array[i--]&lt;/code&gt;，4和11要交换位置，变化结果如下&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/img/heapsort004.png&quot; alt=&quot;image&quot;&gt;&lt;/p&gt;
+&lt;p&gt;因为4和11交换后，4作为父节点，不一定满足完全大根堆，所以要比较4和其子节点，如果子节点大的话，需要交换，那么这一步的变换如下&lt;br&gt;&lt;img src=&quot;/assets/img/heapsort005.png&quot; alt=&quot;image&quot;&gt;&lt;/p&gt;
+&lt;p&gt;之后继续比较&lt;code&gt;array[i--]&lt;/code&gt;，1和11要交换位置，变化结果如下&lt;br&gt;&lt;img src=&quot;/assets/img/heapsort006.png&quot; alt=&quot;image&quot;&gt;&lt;/p&gt;
+&lt;p&gt;因为1和11交换后，1作为父节点，不一定满足完全大根堆，所以要比较1和其子节点，如果子节点大的话，需要交换，那么这一步的变换如下&lt;br&gt;&lt;img src=&quot;/assets/img/heapsort007.png&quot; alt=&quot;image&quot;&gt;&lt;br&gt;之后同理，1沉到最下面&lt;br&gt;&lt;img src=&quot;/assets/img/heapsort008.png&quot; alt=&quot;image&quot;&gt;&lt;/p&gt;
+&lt;p&gt;到此为止，建堆的过程就结束了。&lt;/p&gt;
+&lt;p&gt;接下来要做&lt;code&gt;堆排序&lt;/code&gt;，过程简单描述就是堆顶元素和数组最后一个元素交换位置，交换后，对二叉树进行剪枝，排除最后一个元素，然后从堆顶开始调整堆，重复上面的过程。&lt;/p&gt;
+&lt;p&gt;变换图如下(绿色表示剪枝)&lt;br&gt;&lt;img src=&quot;/assets/img/heapsort009.png&quot; alt=&quot;image&quot;&gt;&lt;br&gt;&lt;img src=&quot;/assets/img/heapsort010.png&quot; alt=&quot;image&quot;&gt;&lt;br&gt;&lt;img src=&quot;/assets/img/heapsort011.png&quot; alt=&quot;image&quot;&gt;&lt;br&gt;&lt;img src=&quot;/assets/img/heapsort012.png&quot; alt=&quot;image&quot;&gt;&lt;br&gt;&lt;img src=&quot;/assets/img/heapsort013.png&quot; alt=&quot;image&quot;&gt;&lt;br&gt;&lt;img src=&quot;/assets/img/heapsort014.png&quot; alt=&quot;image&quot;&gt;&lt;br&gt;&lt;img src=&quot;/assets/img/heapsort015.png&quot; alt=&quot;image&quot;&gt;&lt;br&gt;&lt;img src=&quot;/assets/img/heapsort016.png&quot; alt=&quot;image&quot;&gt;&lt;/p&gt;
+&lt;p&gt;到目前位置最后两位的数据排序是正确的，后面继续该流程就完成了整个堆排序的过程，这里就不继续贴图了。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;参考&lt;br&gt;&lt;a href=&quot;https://zh.wikipedia.org/wiki/%E5%A0%86%E6%8E%92%E5%BA%8F&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;堆排序-Wikipedia&lt;/a&gt;&lt;br&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Heapsort&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;heapsort-Wikipedia&lt;/a&gt;&lt;br&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Sorting_algorithm#Stability&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Sorting_algorithm#Stability&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;堆排序是一种基于比较的排序算法，可以简单的认为是一种改进的选择排序，虽然在实际中比快速排序要慢，但是其优势是最坏情况基本也是O(n log n)的时间复杂度，空间复杂度是O(1)，也就是不需要额外的内存空间。堆排序是稳定的排序算法。&lt;/p&gt;
+&lt;p&gt;理解堆排序首先要了解什么是堆，堆分为大根堆和小根堆，如果根节点是最小的数，为小根堆，根节点是最大的数，为大根堆，堆一般使用一维的数组来表示，可以看做是一个完全的二叉树：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;树的根节点是array[0]&lt;/li&gt;
+&lt;li&gt;每个节点的左子节点为array[2i + 1]&lt;/li&gt;
+&lt;li&gt;每个节点的右子节点为array[2i + 2]&lt;/li&gt;
+&lt;li&gt;每个节点的父节点为array[floor((i - 1) / 2)]
+    
+    </summary>
+    
+      <category term="技术" scheme="http://wikimore.github.io/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="排序算法" scheme="http://wikimore.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
+    
+  </entry>
+  
+  <entry>
+    <title></title>
+    <link href="http://wikimore.github.io/2015-07-12-flume-ng-memory-channel/"/>
+    <id>http://wikimore.github.io/2015-07-12-flume-ng-memory-channel/</id>
+    <published>2015-07-11T16:00:00.000Z</published>
+    <updated>2016-06-09T14:17:05.000Z</updated>
+    
+    <content type="html">&lt;hr&gt;
+&lt;p&gt;layout: post&lt;br&gt;title: Flume-ng中的MemoryChannel&lt;br&gt;date: 2015-07-12 00:00:00&lt;br&gt;tags: flume&lt;/p&gt;
+&lt;h2 id=&quot;categories-技术&quot;&gt;&lt;a href=&quot;#categories-技术&quot; class=&quot;headerlink&quot; title=&quot;categories: 技术&quot;&gt;&lt;/a&gt;categories: 技术&lt;/h2&gt;&lt;h3 id=&quot;00-概述&quot;&gt;&lt;a href=&quot;#00-概述&quot; class=&quot;headerlink&quot; title=&quot;00 概述&quot;&gt;&lt;/a&gt;00 概述&lt;/h3&gt;&lt;p&gt;MemoryChannel是使用纯内存缓冲Event的Channel实现，所以速度上比较快速，容量不会太大，可靠性不够，所以适用一些可以丢数据，但对性能要求较高的业务。&lt;/p&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;h3 id=&quot;01-实现原理&quot;&gt;&lt;a href=&quot;#01-实现原理&quot; class=&quot;headerlink&quot; title=&quot;01 实现原理&quot;&gt;&lt;/a&gt;01 实现原理&lt;/h3&gt;&lt;p&gt;主要类：&lt;code&gt;MemoryChannel&lt;/code&gt;和&lt;code&gt;MemoryTransaction&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;MemoryChannel使用LinkedBlockingDeque类型的queue来存储Event，但是单一个queue没法实现Transaction；&lt;/p&gt;
+&lt;p&gt;MemoryTransaction实现Transaction语义，MemoryChannel与MemoryTransaction是一对一到多的关系，MemoryTransaction使用ThreadLocal，每个Thread有自己MemoryTransaction。&lt;/p&gt;
+&lt;p&gt;MemoryTransaction分别有一个putList和takeList，都是LinkedBlockingDeque，putList用来暂存新增的未提交的Event，如果commit，putList的Event会被顺序的放入queue中，rollback的话就清空putList，takeList用来暂存刚被取走但未提交的Event，如果commit，就清空takeList，rollback的话就会把takeList的Event再移回到queue里。&lt;/p&gt;
+&lt;h3 id=&quot;02-问题&quot;&gt;&lt;a href=&quot;#02-问题&quot; class=&quot;headerlink&quot; title=&quot;02 问题&quot;&gt;&lt;/a&gt;02 问题&lt;/h3&gt;&lt;p&gt;MemoryChannel这样的实现很简单，逻辑上也没啥问题，但是在看源码的过程中，发现几个可以优化的地方&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;MemoryTransaction做take/commit/rollback操作时，都会synchronized同一个对象&lt;/li&gt;
+&lt;li&gt;移动Event使用循环的poll和offer，没有使用drainTo&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;LinkedBlockingDeque是Thread-Safe，MemoryTransaction也不存在并发问题(ThreadLocal)，对同一个Thread来说，不可能同时take/commit/rollback，而synchronized即使没有锁貌似也会有一些额外的操作，性能会差一点点&lt;/p&gt;
+&lt;p&gt;官方描述drainTo有一句话&lt;code&gt;This operation may be more efficient than repeatedly polling this queue&lt;/code&gt;&lt;/p&gt;
+&lt;h3 id=&quot;03-总结&quot;&gt;&lt;a href=&quot;#03-总结&quot; class=&quot;headerlink&quot; title=&quot;03 总结&quot;&gt;&lt;/a&gt;03 总结&lt;/h3&gt;&lt;p&gt;MemoryChannel很简单，但是官方的实现并不完美，应该有优化的空间，感觉支持Transaction也有点鸡肋。&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;hr&gt;
+&lt;p&gt;layout: post&lt;br&gt;title: Flume-ng中的MemoryChannel&lt;br&gt;date: 2015-07-12 00:00:00&lt;br&gt;tags: flume&lt;/p&gt;
+&lt;h2 id=&quot;categories-技术&quot;&gt;&lt;a href=&quot;#categories-技术&quot; class=&quot;headerlink&quot; title=&quot;categories: 技术&quot;&gt;&lt;/a&gt;categories: 技术&lt;/h2&gt;&lt;h3 id=&quot;00-概述&quot;&gt;&lt;a href=&quot;#00-概述&quot; class=&quot;headerlink&quot; title=&quot;00 概述&quot;&gt;&lt;/a&gt;00 概述&lt;/h3&gt;&lt;p&gt;MemoryChannel是使用纯内存缓冲Event的Channel实现，所以速度上比较快速，容量不会太大，可靠性不够，所以适用一些可以丢数据，但对性能要求较高的业务。&lt;/p&gt;
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Flume-ng工作原理简介</title>
+    <link href="http://wikimore.github.io/2015-02-07-flume-ng-introduction/"/>
+    <id>http://wikimore.github.io/2015-02-07-flume-ng-introduction/</id>
+    <published>2015-02-06T16:00:00.000Z</published>
+    <updated>2016-06-09T14:18:27.000Z</updated>
+    
+    <content type="html">&lt;h3 id=&quot;00-概述&quot;&gt;&lt;a href=&quot;#00-概述&quot; class=&quot;headerlink&quot; title=&quot;00 概述&quot;&gt;&lt;/a&gt;00 概述&lt;/h3&gt;&lt;p&gt;最近参与了公司数据收集平台的开发，对Flume做了一点简单的了解。&lt;/p&gt;
+&lt;p&gt;Flume从宏观上主要分为3个模块：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Source：数据来源，如日志，消息中间件等&lt;/li&gt;
+&lt;li&gt;Channel：管道，传输、缓冲数据，如文件系统、内存等，我们可以将Channel理解为管道或者队列&lt;/li&gt;
+&lt;li&gt;Sink：数据目的地，如HDFS等&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;数据从Source —-&amp;gt; Channel —-&amp;gt; Sink可能再到其他的Source —-&amp;gt; Channel —-&amp;gt; Sink，最终到达目的地。&lt;/p&gt;
+&lt;p&gt;Flume通过Agent将上面三个模块合理的组织起来，Agent可以想象成一个搬运工，数据从A收集到B，中间可能经历1-N个搬运工。&lt;/p&gt;
+&lt;p&gt;我们可以用下面这个图来描述Flume的工作流程&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/img/flume00.png&quot; width=&quot;100%&quot; height=&quot;400&quot; alt=&quot;flume00&quot; align=&quot;center&quot;&gt;&lt;/p&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;h3 id=&quot;01-数据抽象Event&quot;&gt;&lt;a href=&quot;#01-数据抽象Event&quot; class=&quot;headerlink&quot; title=&quot;01 数据抽象Event&quot;&gt;&lt;/a&gt;01 数据抽象Event&lt;/h3&gt;&lt;p&gt;数据在Flume的Scope中有一个统一的抽象—Event，包括两部分&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Header，一个Map&lt;/li&gt;
+&lt;li&gt;Body，byte数组&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Header的数据可以落地，也可以不落地，增强了灵活性和扩展性，Body就是真正的数据了。&lt;/p&gt;
+&lt;h3 id=&quot;02-搬运工Agent&quot;&gt;&lt;a href=&quot;#02-搬运工Agent&quot; class=&quot;headerlink&quot; title=&quot;02 搬运工Agent&quot;&gt;&lt;/a&gt;02 搬运工Agent&lt;/h3&gt;&lt;p&gt;Agent是如何工作的呢？&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/img/flume01.png&quot; width=&quot;800&quot; height=&quot;300&quot; alt=&quot;flume01&quot; align=&quot;center&quot;&gt;&lt;/p&gt;
+&lt;h4 id=&quot;021-Source&quot;&gt;&lt;a href=&quot;#021-Source&quot; class=&quot;headerlink&quot; title=&quot;021 Source&quot;&gt;&lt;/a&gt;021 Source&lt;/h4&gt;&lt;p&gt;Source通过SourceRunner来启动。SourceRunner有两个实现类：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;PollableSourceRunner&lt;/li&gt;
+&lt;li&gt;EventDrivenSourceRunner&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;PollableSourceRunner为PollableSource设计，内部使用一个线程，轮询获取Event，而EventDrivenSourceRunner没有这个轮询线程，直接依赖外部的事件触发来获取Event。&lt;/p&gt;
+&lt;p&gt;典型PollableSource有KafkaSource和JmsSource，这都是典型的轮询拉模式，其他的Source，如HttpSource依赖Http请求来触发元数据获取事件。&lt;/p&gt;
+&lt;p&gt;SourceRunner内部依赖一个Source实例，所以上面两种SourceRunner都会调用实际的Source实例来获取Event，区别就是触发方式。&lt;/p&gt;
+&lt;p&gt;Source获取Event之后，就要把Event传递给Channel，这一步会委托ChannelProcessor，ChannelProcessor提供单个/批量的Event操作方法，但是并不是简单的放进去，ChannelProcessor内部还委托Interceptor和ChannelSelector做了一些其他工作。&lt;/p&gt;
+&lt;p&gt;Interceptor拦截器，负责对Event做一些修饰和过滤，如&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;对数据做一个替换&lt;/li&gt;
+&lt;li&gt;给Event增加时间戳&lt;/li&gt;
+&lt;li&gt;过滤不符合条件的Event&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;总之实现并配置需要的Interceptor，就可以在Event从Source进入Channel的过程中，做一些定制化的操作。&lt;/p&gt;
+&lt;p&gt;ChannelSelector用来选择合适的Channel，有两个实现：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;MultiplexingChannelSelector&lt;/li&gt;
+&lt;li&gt;ReplicatingChannelSelector&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;MultiplexingChannelSelector用来做分流，譬如Event的header有个属性，值可能A|B|C，不同值的Event我们希望进入到不同的Channel。&lt;/p&gt;
+&lt;p&gt;ReplicatingChannelSelector用来做复制，譬如Event我们既想记录到HDFS持久化，也想到spark做一些实时的计算，Event需要同时进入到两个Channel，然后到不同的Sink去。&lt;/p&gt;
+&lt;p&gt;通过Interceptor的处理后，Event会进入到ChannelSelector选择的Channel中。&lt;/p&gt;
+&lt;h4 id=&quot;022-Channel&quot;&gt;&lt;a href=&quot;#022-Channel&quot; class=&quot;headerlink&quot; title=&quot;022 Channel&quot;&gt;&lt;/a&gt;022 Channel&lt;/h4&gt;&lt;p&gt;不同的Channel实现有不同的处理Event的方式，但都支持Transaction。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;MemoryChannel：内存缓冲，速度快，容量受限于内存，较小，会丢数据&lt;/li&gt;
+&lt;li&gt;FileChannel：使用磁盘缓冲，速度慢，容量大，不会丢数据&lt;/li&gt;
+&lt;li&gt;SpillableMemoryChannel：内存和磁盘切换，当Event个数较少时，使用内存缓冲，大于阈值后切换成使用磁盘缓冲，会丢数据&lt;/li&gt;
+&lt;li&gt;KafkaChannel：使用Kafka做缓冲&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Event进入Channel的具体步骤为：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Channel.getTransaction&lt;/li&gt;
+&lt;li&gt;Transaction.begin(实现是空方法，什么都不做)&lt;/li&gt;
+&lt;li&gt;Channel.putEvent(一次 OR 多次)&lt;/li&gt;
+&lt;li&gt;Transaction.commit OR Transaction.rollback&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Event出Channel的具体步骤为：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Channel.getTransaction&lt;/li&gt;
+&lt;li&gt;Transaction.begin(实现是空方法，什么都不做)&lt;/li&gt;
+&lt;li&gt;Channel.takeEvent(一次 OR 多次)&lt;/li&gt;
+&lt;li&gt;Transaction.commit OR Transaction.rollback&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&quot;023-Sink&quot;&gt;&lt;a href=&quot;#023-Sink&quot; class=&quot;headerlink&quot; title=&quot;023 Sink&quot;&gt;&lt;/a&gt;023 Sink&lt;/h4&gt;&lt;p&gt;Sink通过SinkRunner来启动。SinkRunner内部有一个线程，轮询的方式调用SinkProcessor，SinkProcessor再调用Sink，Sink再去Channel获取Event，最后写入到目标介质中。&lt;/p&gt;
+&lt;p&gt;SinkProcessor有三个实现类：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;FailoverSinkProcessor：内部配置多个Sink，当一个出错时，故障转移&lt;/li&gt;
+&lt;li&gt;LoadBalancingSinkProcessor：依赖SinkSeletor，SinkSeletor内部可能有一个或者多个Sink，选择不同的Sink，负载均衡&lt;/li&gt;
+&lt;li&gt;DefaultSinkProcessor：默认依赖一个指定的Sink&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;通过很多这样的Agent，数据可以方便移动到不同的存储介质中。&lt;/p&gt;
+&lt;h3 id=&quot;03-使用场景&quot;&gt;&lt;a href=&quot;#03-使用场景&quot; class=&quot;headerlink&quot; title=&quot;03 使用场景&quot;&gt;&lt;/a&gt;03 使用场景&lt;/h3&gt;&lt;h4 id=&quot;031-收集日志&quot;&gt;&lt;a href=&quot;#031-收集日志&quot; class=&quot;headerlink&quot; title=&quot;031 收集日志&quot;&gt;&lt;/a&gt;031 收集日志&lt;/h4&gt;&lt;p&gt;通常Flume会以Agent的方式部署到所有的机器上，使用ExecSource作为数据源，执行tail -F操作指定目录(约定好的)，按行解析日志(日志格式要统一)，然后发送到Kafka集群中，Kafka后面可以根据业务的需要，继续用Agent导入到HDFS、Hbase、ES中，或者使用Spark做实时分析。&lt;/p&gt;
+&lt;h3 id=&quot;04-总结&quot;&gt;&lt;a href=&quot;#04-总结&quot; class=&quot;headerlink&quot; title=&quot;04 总结&quot;&gt;&lt;/a&gt;04 总结&lt;/h3&gt;&lt;p&gt;Flume是一个优秀的数据收集，迁移框架，感觉配合Kafka一起工作，可能更加灵活。&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;00-概述&quot;&gt;&lt;a href=&quot;#00-概述&quot; class=&quot;headerlink&quot; title=&quot;00 概述&quot;&gt;&lt;/a&gt;00 概述&lt;/h3&gt;&lt;p&gt;最近参与了公司数据收集平台的开发，对Flume做了一点简单的了解。&lt;/p&gt;
+&lt;p&gt;Flume从宏观上主要分为3个模块：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Source：数据来源，如日志，消息中间件等&lt;/li&gt;
+&lt;li&gt;Channel：管道，传输、缓冲数据，如文件系统、内存等，我们可以将Channel理解为管道或者队列&lt;/li&gt;
+&lt;li&gt;Sink：数据目的地，如HDFS等&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;数据从Source —-&amp;gt; Channel —-&amp;gt; Sink可能再到其他的Source —-&amp;gt; Channel —-&amp;gt; Sink，最终到达目的地。&lt;/p&gt;
+&lt;p&gt;Flume通过Agent将上面三个模块合理的组织起来，Agent可以想象成一个搬运工，数据从A收集到B，中间可能经历1-N个搬运工。&lt;/p&gt;
+&lt;p&gt;我们可以用下面这个图来描述Flume的工作流程&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/img/flume00.png&quot; width = &quot;100%&quot; height = &quot;400&quot; alt=&quot;flume00&quot; align=&quot;center&quot; /&gt;&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="技术" scheme="http://wikimore.github.io/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="flume" scheme="http://wikimore.github.io/tags/flume/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>编写自己的maven插件</title>
+    <link href="http://wikimore.github.io/2014-12-27-write-a-maven-plugin/"/>
+    <id>http://wikimore.github.io/2014-12-27-write-a-maven-plugin/</id>
+    <published>2014-12-27T08:38:40.000Z</published>
+    <updated>2016-03-06T13:51:34.000Z</updated>
+    
+    <content type="html">&lt;p&gt;Maven是我平时开发主要使用到的构建工具，主要命令包括：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;clean&lt;/li&gt;
+&lt;li&gt;test&lt;/li&gt;
+&lt;li&gt;compile&lt;/li&gt;
+&lt;li&gt;package&lt;/li&gt;
+&lt;li&gt;install&lt;/li&gt;
+&lt;li&gt;deploy&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;当然还有一些不是特别常用的命令，如：verify，site等&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;上面这些命令的执行就依赖于各种不同&lt;code&gt;maven-plugin&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;每个命令都会包含一个或者几个&lt;code&gt;Lifecycle&lt;/code&gt;，每个&lt;code&gt;Lifecycle&lt;/code&gt;有可能会默认的绑定到某一个(或几个)插件的某一个&lt;code&gt;goal&lt;/code&gt;上。&lt;/p&gt;
+&lt;p&gt;这里有两个概念&lt;code&gt;Lifecycle&lt;/code&gt;和&lt;code&gt;goal&lt;/code&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Lifecycle&lt;/code&gt;默认由Maven定义，默认&lt;code&gt;Lifecycle&lt;/code&gt;详见&lt;a href=&quot;http://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html#Lifecycle_Reference&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Lifecycle_Reference&lt;/a&gt;；&lt;/li&gt;
+&lt;li&gt;而&lt;code&gt;goal&lt;/code&gt;代表一个目标(完成一个任务)，每个以插件可以有一个或者多个&lt;code&gt;goal&lt;/code&gt;。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;譬如clean就包含3个Lifecycle&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;pre-clean&lt;/li&gt;
+&lt;li&gt;clean&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;post-clean&lt;/p&gt;
+&lt;p&gt;而&lt;code&gt;Lifecycle&lt;/code&gt;clean则内建绑定到&lt;code&gt;maven-clean-plugin&lt;/code&gt;的clean这个&lt;code&gt;goal&lt;/code&gt;上&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;更多详情请见&lt;a href=&quot;http://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html#Built-in_Lifecycle_Bindings&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Built-in_Lifecycle_Bindings&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;那么如何编写一个Maven的插件呢？&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;建立一个Maven的项目，一般项目名称就会是插件的名称，&lt;blockquote&gt;
+&lt;p&gt;项目的命名是有一定的讲究的，maven内建的插件名称都是&lt;code&gt;maven-xxx-plugin&lt;/code&gt;这样的模式，而我们的插件名称一般建议叫做&lt;code&gt;xxx-maven-plugin&lt;/code&gt;，这个在maven的官网上有说明。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;li&gt;修改pom的&lt;code&gt;packaging&lt;/code&gt;类型为maven-plugin&lt;blockquote&gt;
+&lt;p&gt;打包流程上会有不同&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;li&gt;增加依赖&lt;blockquote&gt;
+&lt;p&gt;根据插件功能的不同要依赖不同的jar&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;li&gt;增加插件依赖&lt;blockquote&gt;
+&lt;p&gt;maven-plugin-plugin&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;li&gt;编写自己的类XxxxMojo，并继承&lt;code&gt;AbstractMojo&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;在类上增加Annotation&lt;code&gt;@Mojo&lt;/code&gt;来说明XxxxMojo：&lt;ul&gt;
+&lt;li&gt;name：&lt;code&gt;goal&lt;/code&gt;的名称&lt;/li&gt;
+&lt;li&gt;defaultPhase：默认绑定的&lt;code&gt;Lifecycle&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;实现execute方法&lt;/li&gt;
+&lt;li&gt;测试(可以使用JUnit，也有插件可以使用)&lt;/li&gt;
+&lt;li&gt;打包发布&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这样一个简单的maven插件就开发完成(&lt;a href=&quot;https://github.com/wikimore/sample-maven-plugin&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;我的Maven插件Sample工程&lt;/a&gt;)，但是要开发一个可用的插件，还有很多工作要做。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;http://books.sonatype.com/mvnref-book/reference/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;sonatype的maven说明&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/apache/maven-plugins&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Github上的Apache的maven插件源码&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Maven是我平时开发主要使用到的构建工具，主要命令包括：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;clean&lt;/li&gt;
+&lt;li&gt;test&lt;/li&gt;
+&lt;li&gt;compile&lt;/li&gt;
+&lt;li&gt;package&lt;/li&gt;
+&lt;li&gt;install&lt;/li&gt;
+&lt;li&gt;deploy&lt;/li&gt;
+&lt;/
+    
+    </summary>
+    
+      <category term="技术" scheme="http://wikimore.github.io/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="maven" scheme="http://wikimore.github.io/tags/maven/"/>
+    
+      <category term="plugin" scheme="http://wikimore.github.io/tags/plugin/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>如何用s2-geometry-lib构建一个简单的定位系统</title>
+    <link href="http://wikimore.github.io/2014-11-15-how-to-use-s2-geometry-lib-build-a-position-system/"/>
+    <id>http://wikimore.github.io/2014-11-15-how-to-use-s2-geometry-lib-build-a-position-system/</id>
+    <published>2014-11-15T15:38:40.000Z</published>
+    <updated>2014-12-18T09:15:23.000Z</updated>
+    
+    <content type="html">&lt;p&gt;s2-geometry-lib是一个谷歌开发的空间几何坐标库，提供很多空间操作的工具方法，包括Polygon、Loop、Line、Point等。&lt;/p&gt;
+&lt;p&gt;如果要定位一个用户所在的省市区，一般的思路是先构建每一个区域的Ploygon对象，然后根据用户的经纬度坐标，判断该经纬度属于哪一个区域中。这个操作每判断一个点都会进行遍历(最坏情况所有区域)和计算(区域是否contain)，这是非常消耗资源的，对现在互联网的一些服务，也很难满足性能需要。&lt;/p&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;p&gt;利用s2库就可能很好的优化上面的问题，s2库提供了一个Cell的概念，每个Cell相当于一个单元格，在一个单元格内的所有Point，都可以算出同一个CellId。&lt;/p&gt;
+&lt;p&gt;同时可以认为，一个Polygon可以用一个Cell的集合来表示。&lt;/p&gt;
+&lt;p&gt;那么这时的步骤就是通过区域的坐标，来初始化其内包含的所有的CellId，将这些CellId的id放入redis中做key，对应的value是区域名称(譬如，上海浦东新区)，构建完全国范围的CellId后，查询用户的区域就可以通过用户的坐标获得一个CellId，然后去redis中查询，在使用LocalCache后，基本就没有什么计算成本，完全可以满足性能需求。&lt;/p&gt;
+&lt;p&gt;下面是判断点的CellId是否能够匹配到一个区域的某个CellId的例子&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;public class App &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    public static void main(String[] args) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        S2RegionCoverer coverer = new S2RegionCoverer();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        ArrayList&amp;lt;S2CellId&amp;gt; covering = new ArrayList&amp;lt;S2CellId&amp;gt;();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        String city = &amp;quot;30:121,30:122,32:121,32:122&amp;quot;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        coverer.setMaxCells(100000);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        coverer.setMinLevel(11);//设定ZoomLevel&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        // 获得能够覆盖city这个区域的所有CellId(Cell的集合表示的范围略微大于city的范围，外接四边形)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        coverer.getCovering(GeometryTestCase.makePolygon(city), covering);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        // 获得能够覆盖city这个区域的所有CellId(Cell的集合表示的范围略微小于city的范围，内接四边形)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        // coverer.getInteriorCovering(GeometryTestCase.makePolygon(city), covering);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        //GeometryTestCase是s2库的一个测试类，makePolygon方法本来是默认的，我改成公共的&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        S2CellId s2cellid = S2CellId.fromLatLng(S2LatLng.fromDegrees(30.5, 121.5));&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        S2CellId paCellId = s2cellid.parent(11);//获得相同ZoomLevel的CellId&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        // 只有相同的ZoomLevel下才能找到相匹配的&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        for (int i = 0; i &amp;lt; covering.size(); i++) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            if (paCellId.id() == covering.get(i).id()) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                System.out.println(covering.get(i).id());//数据匹配的CellId&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;s2-geometry-lib是一个谷歌开发的空间几何坐标库，提供很多空间操作的工具方法，包括Polygon、Loop、Line、Point等。&lt;/p&gt;
+&lt;p&gt;如果要定位一个用户所在的省市区，一般的思路是先构建每一个区域的Ploygon对象，然后根据用户的经纬度坐标，判断该经纬度属于哪一个区域中。这个操作每判断一个点都会进行遍历(最坏情况所有区域)和计算(区域是否contain)，这是非常消耗资源的，对现在互联网的一些服务，也很难满足性能需要。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="技术" scheme="http://wikimore.github.io/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="s2" scheme="http://wikimore.github.io/tags/s2/"/>
+    
+      <category term="geometry" scheme="http://wikimore.github.io/tags/geometry/"/>
+    
+      <category term="设计" scheme="http://wikimore.github.io/tags/%E8%AE%BE%E8%AE%A1/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>说一说Java的HashMap</title>
+    <link href="http://wikimore.github.io/2014-03-24-intro-java-hashmap/"/>
+    <id>http://wikimore.github.io/2014-03-24-intro-java-hashmap/</id>
+    <published>2014-03-23T19:10:40.000Z</published>
+    <updated>2016-06-09T13:39:56.000Z</updated>
+    
+    <content type="html">&lt;p&gt;这篇文章将介绍Java7的HashMap实现.&lt;/p&gt;
+&lt;p&gt;Hash这个数据结构的实现有2种方式来解决hash冲突:&lt;code&gt;开放地址Hash法&lt;/code&gt;和&lt;code&gt;链表法&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;本文不介绍&lt;code&gt;开放地址Hash法&lt;/code&gt;,因为Java的HashMap是用&lt;code&gt;链表法&lt;/code&gt;实现的.&lt;/p&gt;
+&lt;p&gt;下图是HashMap的属性结构&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/img/hashmap_attr.png&quot; alt=&quot;image&quot;&gt;&lt;/p&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;实现说明&lt;ul&gt;
+&lt;li&gt;table,一个&lt;code&gt;Entry&lt;/code&gt;的&lt;code&gt;Array&lt;/code&gt;,&lt;code&gt;Array&lt;/code&gt;的每一位我们认为是一个&lt;code&gt;slot&lt;/code&gt;,每个&lt;code&gt;slot&lt;/code&gt;中可能存在零个到多个&lt;code&gt;Entry&lt;/code&gt;,多个&lt;code&gt;Entry&lt;/code&gt;组成一个单向链表,后加入的元素永远在链表的首位,最先加入的元素在链表尾部.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Entry&lt;/code&gt;存储我们的KEY和VALUE,有4个属性:key|value|next|hash,next是指向下一个&lt;code&gt;Entry&lt;/code&gt;的指针,hash是key的hash值.&lt;/li&gt;
+&lt;li&gt;loadFactor,HashMap中Entry和slot的比值大于loadFactor时,&lt;code&gt;Array&lt;/code&gt;resize,同时rehash.&lt;/li&gt;
+&lt;li&gt;modCount,HashMap被修改的次数,当遍历时会比较modCount来达到一旦发现修改就快速抛出异常的目的.&lt;/li&gt;
+&lt;li&gt;threshold,&lt;code&gt;Entry&lt;/code&gt;Array的大小.&lt;/li&gt;
+&lt;li&gt;size,HashMap中当前元素的个数.&lt;/li&gt;
+&lt;li&gt;Java7的版本会根据threshold的不同,改变hash函数的hashSeed,默认是&lt;code&gt;2^31-1&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;code&gt;HashMap可以理解成一个数组,而数组的每一项可能是一个单向链表.&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;下图是一个loadFactor为1,slot数为6,有6个元素(Entry)的HashMap,有3个key对应的Entry哈希到了slot0上,并且组成了一个单向的链表,slot1/3/5分别哈希到了一个Entry,而slot2/4没有哈希到任何Entry.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/img/hashmap.png&quot; alt=&quot;image&quot;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;PUT&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;1.检查table是否为empty,如果为empty,则要初始化,默认初始大小是16.&lt;/li&gt;
+&lt;li&gt;2.判断key是否为null,如果为null,将初始化一个hash值等于0的Entry到table的slot0中(也就是说key为null的Entry永远在slot0中).&lt;/li&gt;
+&lt;li&gt;3.key不为null,计算key的hash值.&lt;/li&gt;
+&lt;li&gt;4.根据hash值和table的长度计算slot的index(hash值模上table的长度).&lt;/li&gt;
+&lt;li&gt;5.用当前key和其hash值与该slot的每一个Entry的key和hash比较,如果存在key和hash值都相同的,表示put一个已经存在的key,那么用当前的value替换掉Entry的oldValue,并且返回oldValue.&lt;/li&gt;
+&lt;li&gt;6.如果不存在key和hash值都相同的情况,表示put了一个不存在的key,modCount加1,那么先根据loadFactor|threshold和当前HashMap的size,计算是否要对table进行resize,resize的策略是直接扩展到当前的2倍.&lt;/li&gt;
+&lt;li&gt;7.之后初始化一个newEntry,newEntry的next指针指向过去slotN指向的Entry,slotN指向newEntry.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;GET&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;1.检查table是否为empty,如果为empty,返回null.&lt;/li&gt;
+&lt;li&gt;2.判断key是否为null,如果为null,到slot0中查找是否有存在key=null的Entry,存在返回Entry的value,否则返回null.&lt;/li&gt;
+&lt;li&gt;3.key不为null,计算key的hash值.&lt;/li&gt;
+&lt;li&gt;4.根据hash值和table的长度计算slot的index(hash值模上table的长度).&lt;/li&gt;
+&lt;li&gt;5.用当前key和其hash值与该slot的每一个Entry的key和hash比较,如果存在key和hash值都相同的,返回该Entry的value,否则返回null.&lt;/li&gt;
+&lt;li&gt;6.如果不存在key和hash值都相同的情况,表示该key不存在,返回null.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;REMOVE&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;1.检查table是否为empty,如果为empty,返回null.&lt;/li&gt;
+&lt;li&gt;2.计算key的hash值,然后找到对应的slot.&lt;/li&gt;
+&lt;li&gt;3.遍历该slot中的每一个Entry,判断hash和key是否与要删除的相同,如果有相同的就删除,并返回该Entry,否则返回null&lt;/li&gt;
+&lt;li&gt;4.判断返回的Entry是否是null,不是就返回Entry的value.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;其他的API方法也大同小异,在这里不做详细的说明.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;使用注意&lt;ul&gt;
+&lt;li&gt;不可并发put,会造成死循环,如果要并发put,可以使用&lt;code&gt;ConcurrentHashMap&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;遍历时不可修改,会抛出&lt;code&gt;ConcurrentModificationException&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;如果遍历value,使用&lt;code&gt;entrySet&lt;/code&gt;,不要使用&lt;code&gt;keySet&lt;/code&gt;,减少遍历次数.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;putAll&lt;/code&gt;要注意,有时会造成2次resize.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;这篇文章将介绍Java7的HashMap实现.&lt;/p&gt;
+&lt;p&gt;Hash这个数据结构的实现有2种方式来解决hash冲突:&lt;code&gt;开放地址Hash法&lt;/code&gt;和&lt;code&gt;链表法&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;本文不介绍&lt;code&gt;开放地址Hash法&lt;/code&gt;,因为Java的HashMap是用&lt;code&gt;链表法&lt;/code&gt;实现的.&lt;/p&gt;
+&lt;p&gt;下图是HashMap的属性结构&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/img/hashmap_attr.png&quot; alt=&quot;image&quot;&gt;&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="技术" scheme="http://wikimore.github.io/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="java" scheme="http://wikimore.github.io/tags/java/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>关于构建feed系统的思考</title>
+    <link href="http://wikimore.github.io/2014-03-20-how-to-build-a-feed-system/"/>
+    <id>http://wikimore.github.io/2014-03-20-how-to-build-a-feed-system/</id>
+    <published>2014-03-20T13:10:40.000Z</published>
+    <updated>2016-06-09T13:39:43.000Z</updated>
+    
+    <content type="html">&lt;p&gt;feed系统就是类似于weibo和twitter的通过用户关注行为来帮助用户聚合的获取内容的系统.&lt;/p&gt;
+&lt;p&gt;feed系统有两种模式,&lt;code&gt;push&lt;/code&gt;和&lt;code&gt;pull&lt;/code&gt;.&lt;/p&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;push&lt;/code&gt;模式就是当一个用户产生内容后,系统将内容推送到该用户所有粉丝的&lt;code&gt;收件箱&lt;/code&gt;中,当粉丝数很小的时候这也许是一个不错的选择,但是如果有几百万甚至千万的粉丝的时候,假设推送到一个用户收件箱要1ms,那么全部推送完要多久?某些用户收到该内容可能要延迟几十分钟到几小时.而且&lt;code&gt;push&lt;/code&gt;模式会用尽系统所有的资源,即使某些粉丝永远不会再使用该系统.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;pull&lt;/code&gt;模式就是当用户请求feed流时,系统到该用户的所有关注用户的&lt;code&gt;发件箱&lt;/code&gt;中查询内容,聚合排序后返回给用户,省去了&lt;code&gt;push&lt;/code&gt;模式的延迟,可以说是按需使用系统资源.但如果用户关注了2000人,这样查询的性能会成为首要面对的问题,可能需要做好shard,并行的查询再统一排序.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;两种模式各有各的优势,但劣势也非常明显.&lt;/p&gt;
+&lt;p&gt;如果想构建一个实时的,高性能的feed系统,我们要做什么呢?&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;用户活跃度统计子系统&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;push&lt;/code&gt;和&lt;code&gt;pull&lt;/code&gt;混合使用&lt;ul&gt;
+&lt;li&gt;活跃用户采用&lt;code&gt;push&lt;/code&gt;模式&lt;/li&gt;
+&lt;li&gt;按照用户活跃度采用不同的&lt;code&gt;push&lt;/code&gt;优先级&lt;/li&gt;
+&lt;li&gt;僵尸用户采用&lt;code&gt;pull&lt;/code&gt;模式&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;优化&lt;code&gt;收件箱&lt;/code&gt;和&lt;code&gt;发件箱&lt;/code&gt;的数据结构&lt;/li&gt;
+&lt;li&gt;缓存,活跃用户的数据一定要在内存中&lt;/li&gt;
+&lt;li&gt;并行化&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这样就通过分级,减少实时&lt;code&gt;push&lt;/code&gt;的用户数量,达到准实时的效果,并且降低单次&lt;code&gt;push&lt;/code&gt;和&lt;code&gt;pull&lt;/code&gt;的时间,提高了系统整体的速度和吞吐量.&lt;/p&gt;
+&lt;p&gt;需要一些什么样的中间件呢?&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;消息中间件,主要要完成推送任务的缓冲,异步化推送,譬如kafka,rabbitMQ.&lt;/li&gt;
+&lt;li&gt;高查询性能的可扩展的能够支持列表设计的数据库,&lt;code&gt;pull&lt;/code&gt;极其的快,存储用户的&lt;code&gt;发件箱&lt;/code&gt;,譬如mysql.&lt;/li&gt;
+&lt;li&gt;极其快速的可扩展的能够支持列表设计的数据库,存储活跃用户的&lt;code&gt;收件箱&lt;/code&gt;,譬如redis,ssdb.&lt;/li&gt;
+&lt;li&gt;极其快速的可扩展的支持linkedhash数据结构的数据库,存储用户的&lt;code&gt;粉丝&lt;/code&gt;列表,譬如redis的zset.&lt;/li&gt;
+&lt;li&gt;极其快速的内存数据库,存储活跃用户列表,譬如redis.&lt;/li&gt;
+&lt;li&gt;有一个支持multi process的RPC框架那就更好了.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;大概想了这么多,不知道这样的系统能支撑一个什么样的数量级,至于去年听的weibo分享时说的streaming api我也不清楚具体是什么东西,不过应该很吊的样子,可能到他们的量级才会遇到那样的问题,我这个阶段也就只能思考到这个程度了,前几天还看到highscalability上有用elastic search做的feed流,感觉他们也算另辟蹊径吧.&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;feed系统就是类似于weibo和twitter的通过用户关注行为来帮助用户聚合的获取内容的系统.&lt;/p&gt;
+&lt;p&gt;feed系统有两种模式,&lt;code&gt;push&lt;/code&gt;和&lt;code&gt;pull&lt;/code&gt;.&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="技术" scheme="http://wikimore.github.io/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="架构" scheme="http://wikimore.github.io/tags/%E6%9E%B6%E6%9E%84/"/>
+    
+      <category term="feed" scheme="http://wikimore.github.io/tags/feed/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>ruby的Mutex与MonitorMixin</title>
+    <link href="http://wikimore.github.io/2014-03-18-ruby-mutex-and-monitormixin/"/>
+    <id>http://wikimore.github.io/2014-03-18-ruby-mutex-and-monitormixin/</id>
+    <published>2014-03-18T12:10:40.000Z</published>
+    <updated>2014-12-18T09:15:23.000Z</updated>
+    
+    <content type="html">&lt;p&gt;使用eventmachine和fiber的过程中发现一些以前OK的同步/锁功能的代码会出错,查资料发现ruby有两种线程间同步方式.&lt;/p&gt;
+&lt;p&gt;一种同步方式是使用Mutex,但是它有一定的局限性,见下面的代码&lt;/p&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;figure class=&quot;highlight ruby&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;25&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;26&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;27&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;28&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;require&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&quot;thread&quot;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;#Mutex Example&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;MutexExample&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;initialize&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;super&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    @mutex = Mutex.new&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;first&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    @mutex.synchronize &lt;span class=&quot;keyword&quot;&gt;do&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      puts &lt;span class=&quot;string&quot;&gt;&quot;first step&quot;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &lt;span class=&quot;keyword&quot;&gt;yield&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;second&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    first &lt;span class=&quot;keyword&quot;&gt;do&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      @mutex.synchronize &lt;span class=&quot;keyword&quot;&gt;do&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        puts &lt;span class=&quot;string&quot;&gt;&quot;second step&quot;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;MutexExample.new.second&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;运行上面的代码,会出现deadlock; recursive locking (ThreadError)错误,因为Mutex是不可重入的,当线程已经获得过一次锁后,不能再次获得.&lt;/p&gt;
+&lt;p&gt;一些库项目,譬如ActiveRecord使用了Mutex来加锁,但是当我们使用fiber的时候,触发上面的场景就会报错,因为fiber是单线程的.&lt;/p&gt;
+&lt;p&gt;如何让代码在thread和fiber模式下都能良好的运行呢?&lt;/p&gt;
+&lt;p&gt;那就是使用MonitorMixin&lt;/p&gt;
+&lt;figure class=&quot;highlight ruby&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;25&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;26&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;27&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;require&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&quot;monitor&quot;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;#MonitorMixin Example&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;MonitorMixinExample&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;include&lt;/span&gt; MonitorMixin&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;initialize&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;super&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;first&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    synchronize &lt;span class=&quot;keyword&quot;&gt;do&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      puts &lt;span class=&quot;string&quot;&gt;&quot;first step&quot;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &lt;span class=&quot;keyword&quot;&gt;yield&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;second&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    first &lt;span class=&quot;keyword&quot;&gt;do&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      synchronize &lt;span class=&quot;keyword&quot;&gt;do&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        puts &lt;span class=&quot;string&quot;&gt;&quot;second step&quot;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;MonitorMixinExample.new.second&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;上面的代码运行不会报错,并且能够正确的输出.&lt;/p&gt;
+&lt;p&gt;redis-rb这个项目中使用的是MonitorMixin,而没有使用Mutex,在fiber模式下运行良好.&lt;/p&gt;
+&lt;p&gt;总之,如果代码可能会同时运行在thread和fiber模式下,那么还是尽量是用MonitorMixin吧!&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;使用eventmachine和fiber的过程中发现一些以前OK的同步/锁功能的代码会出错,查资料发现ruby有两种线程间同步方式.&lt;/p&gt;
+&lt;p&gt;一种同步方式是使用Mutex,但是它有一定的局限性,见下面的代码&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="技术" scheme="http://wikimore.github.io/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="ruby" scheme="http://wikimore.github.io/tags/ruby/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>关于eventmachine的timeout</title>
+    <link href="http://wikimore.github.io/2014-03-10-eventmachine-time-out/"/>
+    <id>http://wikimore.github.io/2014-03-10-eventmachine-time-out/</id>
+    <published>2014-03-09T18:10:40.000Z</published>
+    <updated>2014-12-18T09:15:23.000Z</updated>
+    
+    <content type="html">&lt;p&gt;工作中负责实现thrift的eventmachine客户端版本,在实现过程中就遇到了读写timeout如何实现的问题.&lt;/p&gt;
+&lt;p&gt;eventmachine的connection有两个连接的参数&lt;code&gt;pending_connect_timeout&lt;/code&gt;和&lt;code&gt;comm_inactivity_timeout&lt;/code&gt;,但就是没有read和write的timeout的配置参数,这样的话,业务调用就没有超时,根本不能够在线上使用.&lt;/p&gt;
+&lt;p&gt;后来发现em有&lt;code&gt;Timer&lt;/code&gt;功能,那么就在每次调用read的时候,同时初始化一个&lt;code&gt;Timer&lt;/code&gt;,利用&lt;code&gt;Timer&lt;/code&gt;来控制超时.&lt;/p&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;def read(size,timeout)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  timer = nil&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  if timeout and timeout &amp;gt; 0&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    timer = EventMachine.add_timer(timeout)&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      // timeout_callback&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  end&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  .&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  .&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  // read code&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  .&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  .&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  if timer&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    EventMachine.cancel_timer(timer)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  end&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;end&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;经过测试,这个方案还是可以的,我本来以为这样会增加CPU的消耗,但是测试并没有发现CPU占用有增长(应该是em的轮询线程就一个mainloop的原因,Timer多了只是增加了轮询的个数),就是每次都会初始化一个&lt;code&gt;Timer&lt;/code&gt;对象,感觉有点坑爹.但是也没有什么好办法,而且后来发现&lt;a href=&quot;https://issues.apache.org/jira/browse/THRIFT-146&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Thrift官方的EM支持&lt;/a&gt;就是这个方案来设置超时的,所以就在线上使用了.&lt;/p&gt;
+&lt;p&gt;后来和老大讨论了这个问题,老大也觉得挺坑爹,给我一个建议,能否使用&lt;code&gt;Period_Timer&lt;/code&gt;,他发现Java的so_timeout不是设置SO_RCVTIMEO实现的,见&lt;a href=&quot;http://hg.openjdk.java.net/jdk7u/jdk7u60/jdk/file/c4763416f516/src/solaris/native/java/net/SocketInputStream.c&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;SocketInputStream.c&lt;/a&gt;,其中使用了NET_timeout函数,感觉上像是循环调用select/poll的api,如果在timeout时间范围内fd还不是readable,那么就超时,否则读数据(不过这样我就不明白如何确定数据读完).&lt;/p&gt;
+&lt;p&gt;通过这个问题,感觉自己有时间得去看看epoll/kqueue/select/poll等unix网络相关的内容.以后会记录这个问题的详细研究结果.&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;工作中负责实现thrift的eventmachine客户端版本,在实现过程中就遇到了读写timeout如何实现的问题.&lt;/p&gt;
+&lt;p&gt;eventmachine的connection有两个连接的参数&lt;code&gt;pending_connect_timeout&lt;/code&gt;和&lt;code&gt;comm_inactivity_timeout&lt;/code&gt;,但就是没有read和write的timeout的配置参数,这样的话,业务调用就没有超时,根本不能够在线上使用.&lt;/p&gt;
+&lt;p&gt;后来发现em有&lt;code&gt;Timer&lt;/code&gt;功能,那么就在每次调用read的时候,同时初始化一个&lt;code&gt;Timer&lt;/code&gt;,利用&lt;code&gt;Timer&lt;/code&gt;来控制超时.&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="技术" scheme="http://wikimore.github.io/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="ruby" scheme="http://wikimore.github.io/tags/ruby/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>年过完了,上班.</title>
+    <link href="http://wikimore.github.io/2014-02-07-sui-bian-xie-xie/"/>
+    <id>http://wikimore.github.io/2014-02-07-sui-bian-xie-xie/</id>
+    <published>2014-02-07T15:50:40.000Z</published>
+    <updated>2014-12-18T09:15:23.000Z</updated>
+    
+    <content type="html">&lt;p&gt;新年过完第一天班,很轻松.&lt;/p&gt;
+&lt;p&gt;不过想到今年的任务,又觉得压力山大.整站为支撑更多的用户访问的优化扩展,还有一些乱起八糟的新需求,哎…&lt;/p&gt;
+&lt;p&gt;时间过的好快,来公司一年半多了,工作生活总体来说是很愉快的,体重也是直线上升,团队里有很多优秀的同事,自己在技术上也进步颇多,自我感觉很不错的说…&lt;/p&gt;
+&lt;p&gt;自己在进步,公司也越来越大,形式上一片大好,不过我总觉得公司发展太快,技术的积累有点跟不上,经常老板一拍脑袋想个需求就把技术折腾到不行,需求做完了发现不能得到预期的用户反馈,这点有点让人烦躁…&lt;/p&gt;
+&lt;p&gt;不过这些都不应该是我关注的,只要做好自己的工作,学到技术就行了,像我这样不太会说话的,多说反而不好,希望这一年能在技术上更进一步,厚积才能薄发,在这里记录自己技术上的点点滴滴…&lt;/p&gt;
+&lt;p&gt;未来嘛!希望和靠谱的技术同僚创建一个技术导向的公司,哈哈,或者去个技术导向的公司,总之,和单纯的技术男一起工作就很好,大家互相学习,共同进步…&lt;/p&gt;
+&lt;p&gt;最后,要提醒自己注意身体,不能再长肉了……&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;新年过完第一天班,很轻松.&lt;/p&gt;
+&lt;p&gt;不过想到今年的任务,又觉得压力山大.整站为支撑更多的用户访问的优化扩展,还有一些乱起八糟的新需求,哎…&lt;/p&gt;
+&lt;p&gt;时间过的好快,来公司一年半多了,工作生活总体来说是很愉快的,体重也是直线上升,团队里有很多优秀的同事,自己在技术上
+    
+    </summary>
+    
+      <category term="心情" scheme="http://wikimore.github.io/categories/%E5%BF%83%E6%83%85/"/>
+    
+    
+      <category term="生活" scheme="http://wikimore.github.io/tags/%E7%94%9F%E6%B4%BB/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Hello world</title>
+    <link href="http://wikimore.github.io/2014-01-27-hello-world/"/>
+    <id>http://wikimore.github.io/2014-01-27-hello-world/</id>
+    <published>2014-01-27T15:38:40.000Z</published>
+    <updated>2014-12-18T09:15:23.000Z</updated>
+    
+    <content type="html">&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;Main&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(String[] args)&lt;/span&gt;&lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    System.out.println(&lt;span class=&quot;string&quot;&gt;&quot;Hello World.&quot;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;</content>
+    
+    <summary type="html">
+    
+      &lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=
+    
+    </summary>
+    
+      <category term="技术" scheme="http://wikimore.github.io/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="java" scheme="http://wikimore.github.io/tags/java/"/>
+    
+  </entry>
+  
+</feed>
