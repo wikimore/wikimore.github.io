@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://wikimore.github.io/"/>
-  <updated>2016-06-09T14:24:21.000Z</updated>
+  <updated>2016-06-13T06:18:52.000Z</updated>
   <id>http://wikimore.github.io/</id>
   
   <author>
@@ -14,6 +14,63 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title></title>
+    <link href="http://wikimore.github.io/2016-06-10-scala-parsers/"/>
+    <id>http://wikimore.github.io/2016-06-10-scala-parsers/</id>
+    <published>2016-06-09T16:00:00.000Z</published>
+    <updated>2016-06-13T06:18:52.000Z</updated>
+    
+    <content type="html">&lt;hr&gt;
+&lt;p&gt;layout: post&lt;br&gt;date: 2016-06-10 16:58:14&lt;br&gt;title: Scala的Parsers初探&lt;br&gt;tags: [scala,parser]&lt;/p&gt;
+&lt;h2 id=&quot;categories-技术&quot;&gt;&lt;a href=&quot;#categories-技术&quot; class=&quot;headerlink&quot; title=&quot;categories: 技术&quot;&gt;&lt;/a&gt;categories: 技术&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;scala-parser-combinators&lt;/strong&gt;是Scala的一个module，&lt;a href=&quot;https://github.com/scala/scala-parser-combinators&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Github地址&lt;/a&gt;，使用者可以通过定义多个Parser，并组合起来，完成想要的工作。&lt;/p&gt;
+&lt;p&gt;主要的类/接口有：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Parser：一个或者一类输入的解析类，多个Parser之间可以互相组合&lt;/li&gt;
+&lt;li&gt;Parsers：定义输入的类型，定义/组合/连接多个Parser&lt;/li&gt;
+&lt;li&gt;Reader：输入源抽象，包括字符串/流等实现&lt;/li&gt;
+&lt;li&gt;ParseResult：解析结果，成功/失败/错误等&lt;/li&gt;
+&lt;li&gt;Positional：定位源的位置&lt;/li&gt;
+&lt;li&gt;Position：表示位置&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Parser有几个主要的方法，通过这些方法，可以完成多个parser的组合。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;p ~ q&lt;/code&gt;：p成功并且余下的输入对q也成功，返回&lt;code&gt;p的结果~q的结果&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;p ~&amp;gt; q&lt;/code&gt;：p成功并切后面输入对q也成功，返回&lt;code&gt;q的结果&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;p &amp;lt;~ q&lt;/code&gt;：p成功并切后面输入对q也成功，返回&lt;code&gt;p的结果&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;p ~! q&lt;/code&gt;：p成功并且余下的输入对q也成功，返回&lt;code&gt;p的结果~q的结果&lt;/code&gt;，和&lt;code&gt;~&lt;/code&gt;的区别是如果失败，不会回溯，直接就报错了&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;p | q&lt;/code&gt;：p成功或者q成功，如果p失败，会回溯匹配q，否则直接返回&lt;code&gt;p的结果&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;p ||| q&lt;/code&gt;：p成功或者q成功，如果p失败，会回溯匹配q，即使p成功，也会匹配q，如果p和q都成功，则返回p和q的结果中最长的那个&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;p ^^ f&lt;/code&gt;：如果p成功，返回函数f处理后的p的结果&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;p ^^^ v&lt;/code&gt;：如果p成功，丢弃p的结果，直接返回v的结果&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;p ^? f&lt;/code&gt;：如果p匹配成功，并且&lt;code&gt;f&lt;/code&gt;的isDefinedAt执行&lt;code&gt;p&lt;/code&gt;的结果返回true，返回函数f处理后的p的结果&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;p *&lt;/code&gt;：重复的使用p来匹配，直到匹配失败，返回一个匹配成功的结果的数组，可以都不成功&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;p +&lt;/code&gt;：重复的使用p来匹配，直到匹配失败，返回一个匹配成功的结果的数组，至少必须成功一次&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;p ?&lt;/code&gt;：可选的匹配，匹配成功返回&lt;code&gt;Some(x)&lt;/code&gt;，失败返回&lt;code&gt;None&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Parsers还有一些常用的方法：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;rep(p)&lt;/code&gt;：重复的使用p来匹配，直到匹配失败，返回一个匹配成功的结果的数组，可以都不成功&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;rep1(p)&lt;/code&gt;：重复的使用p来匹配，直到匹配失败，返回一个匹配成功的结果的数组，至少必须成功一次&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;rep1(p,q)&lt;/code&gt;：先使用p匹配一次，这一次必须成功，然后重复的使用q来匹配，直到q匹配失败，返回一个匹配成功的结果的数组&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;repN(n, p)&lt;/code&gt;：重复的使用p来匹配，返回一个匹配成功的结果的数组，必须刚好匹配成功N次&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;opt(p)&lt;/code&gt;：可选的匹配，匹配成功返回&lt;code&gt;Some(x)&lt;/code&gt;，失败返回&lt;code&gt;None&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;下面是一个计算器(整数的加减乘除)的例子，通过多种不同的parser的组合，共同完成表达式的解析。&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;25&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;26&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;27&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;28&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;import scala.util.parsing.combinator.RegexParsers&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;import scala.util.parsing.combinator.ImplicitConversions&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;object Calculator extends RegexParsers with ImplicitConversions &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  lazy val number: Parser[Int] = &amp;quot;&amp;quot;&amp;quot;-?\d+&amp;quot;&amp;quot;&amp;quot;.r ^^ &amp;#123; _.mkString.toInt &amp;#125; // 匹配整数&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  lazy val expr0: Parser[Int] = number | &amp;apos;(&amp;apos; ~&amp;gt; expr2 &amp;lt;~ &amp;apos;)&amp;apos;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  lazy val expr1: Parser[Int] = expr0 ~ rep(&amp;apos;*&amp;apos; ~ expr0 | &amp;apos;/&amp;apos; ~ expr0) ^^ &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    case (number ~ list) =&amp;gt; list.foldLeft(number) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      case (x, (&amp;apos;*&amp;apos; ~ y)) =&amp;gt; x * y&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      case (x, (&amp;apos;/&amp;apos; ~ y)) =&amp;gt; x / y&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  lazy val expr2: Parser[Int] = expr1 ~ rep(&amp;apos;+&amp;apos; ~ expr1 | &amp;apos;-&amp;apos; ~ expr1) ^^ &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    case (number ~ list) =&amp;gt; list.foldLeft(number) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      case (x, (&amp;apos;+&amp;apos; ~ y)) =&amp;gt; x + y&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      case (x, (&amp;apos;-&amp;apos; ~ y)) =&amp;gt; x - y&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  def parse(in: String): Int = &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    val result = parseAll(expr2, in)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    result.get&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  def main(args: Array[String]): Unit = &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    println(Calculator.parse(&amp;quot;1+(2*2)+(-3)+(4+6/3)*5&amp;quot;))&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;hr&gt;
+&lt;p&gt;layout: post&lt;br&gt;date: 2016-06-10 16:58:14&lt;br&gt;title: Scala的Parsers初探&lt;br&gt;tags: [scala,parser]&lt;/p&gt;
+&lt;h2 id=&quot;categories-技术&quot;&gt;&lt;a href=&quot;#cat
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>Mustache语法说明</title>
