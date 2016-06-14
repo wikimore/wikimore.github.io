@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://wikimore.github.io/"/>
-  <updated>2016-06-13T06:18:52.000Z</updated>
+  <updated>2016-06-14T05:10:58.000Z</updated>
   <id>http://wikimore.github.io/</id>
   
   <author>
@@ -16,15 +16,13 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title></title>
+    <title>Scala的Parsers初探</title>
     <link href="http://wikimore.github.io/2016-06-10-scala-parsers/"/>
     <id>http://wikimore.github.io/2016-06-10-scala-parsers/</id>
-    <published>2016-06-09T16:00:00.000Z</published>
-    <updated>2016-06-13T06:18:52.000Z</updated>
+    <published>2016-06-10T08:58:14.000Z</published>
+    <updated>2016-06-14T05:10:58.000Z</updated>
     
-    <content type="html">&lt;hr&gt;
-&lt;p&gt;layout: post&lt;br&gt;date: 2016-06-10 16:58:14&lt;br&gt;title: Scala的Parsers初探&lt;br&gt;tags: [scala,parser]&lt;/p&gt;
-&lt;h2 id=&quot;categories-技术&quot;&gt;&lt;a href=&quot;#categories-技术&quot; class=&quot;headerlink&quot; title=&quot;categories: 技术&quot;&gt;&lt;/a&gt;categories: 技术&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;scala-parser-combinators&lt;/strong&gt;是Scala的一个module，&lt;a href=&quot;https://github.com/scala/scala-parser-combinators&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Github地址&lt;/a&gt;，使用者可以通过定义多个Parser，并组合起来，完成想要的工作。&lt;/p&gt;
+    <content type="html">&lt;p&gt;&lt;strong&gt;scala-parser-combinators&lt;/strong&gt;是Scala的一个module，&lt;a href=&quot;https://github.com/scala/scala-parser-combinators&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Github地址&lt;/a&gt;，使用者可以通过定义多个Parser，并组合起来，完成想要的工作。&lt;/p&gt;
 &lt;p&gt;主要的类/接口有：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Parser：一个或者一类输入的解析类，多个Parser之间可以互相组合&lt;/li&gt;
@@ -63,12 +61,16 @@
     
     <summary type="html">
     
-      &lt;hr&gt;
-&lt;p&gt;layout: post&lt;br&gt;date: 2016-06-10 16:58:14&lt;br&gt;title: Scala的Parsers初探&lt;br&gt;tags: [scala,parser]&lt;/p&gt;
-&lt;h2 id=&quot;categories-技术&quot;&gt;&lt;a href=&quot;#cat
+      &lt;p&gt;&lt;strong&gt;scala-parser-combinators&lt;/strong&gt;是Scala的一个module，&lt;a href=&quot;https://github.com/scala/scala-parser-combinators&quot; target=&quot;_blank&quot; rel=
     
     </summary>
     
+      <category term="技术" scheme="http://wikimore.github.io/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="scala" scheme="http://wikimore.github.io/tags/scala/"/>
+    
+      <category term="parser" scheme="http://wikimore.github.io/tags/parser/"/>
     
   </entry>
   
@@ -412,7 +414,7 @@
     <link href="http://wikimore.github.io/2016-03-03-heap-sort/"/>
     <id>http://wikimore.github.io/2016-03-03-heap-sort/</id>
     <published>2016-03-02T16:00:00.000Z</published>
-    <updated>2016-06-09T14:25:14.000Z</updated>
+    <updated>2016-06-13T06:23:17.000Z</updated>
     
     <content type="html">&lt;p&gt;堆排序是一种基于比较的排序算法，可以简单的认为是一种改进的选择排序，虽然在实际中比快速排序要慢，但是其优势是最坏情况基本也是O(n log n)的时间复杂度，空间复杂度是O(1)，也就是不需要额外的内存空间。堆排序是稳定的排序算法。&lt;/p&gt;
 &lt;p&gt;理解堆排序首先要了解什么是堆，堆分为大根堆和小根堆，如果根节点是最小的数，为小根堆，根节点是最大的数，为大根堆，堆一般使用一维的数组来表示，可以看做是一个完全的二叉树：&lt;/p&gt;
@@ -567,7 +569,7 @@
     <link href="http://wikimore.github.io/2015-07-12-flume-ng-memory-channel/"/>
     <id>http://wikimore.github.io/2015-07-12-flume-ng-memory-channel/</id>
     <published>2015-07-11T16:00:00.000Z</published>
-    <updated>2016-06-09T15:41:38.000Z</updated>
+    <updated>2016-06-13T06:23:12.000Z</updated>
     
     <content type="html">&lt;h3 id=&quot;00-概述&quot;&gt;&lt;a href=&quot;#00-概述&quot; class=&quot;headerlink&quot; title=&quot;00 概述&quot;&gt;&lt;/a&gt;00 概述&lt;/h3&gt;&lt;p&gt;MemoryChannel是使用纯内存缓冲Event的Channel实现，所以速度上比较快速，容量不会太大，可靠性不够，所以适用一些可以丢数据，但对性能要求较高的业务。&lt;/p&gt;
 &lt;h3 id=&quot;01-实现原理&quot;&gt;&lt;a href=&quot;#01-实现原理&quot; class=&quot;headerlink&quot; title=&quot;01 实现原理&quot;&gt;&lt;/a&gt;01 实现原理&lt;/h3&gt;&lt;p&gt;主要类：&lt;code&gt;MemoryChannel&lt;/code&gt;和&lt;code&gt;MemoryTransaction&lt;/code&gt;&lt;/p&gt;
@@ -912,7 +914,7 @@
     <link href="http://wikimore.github.io/2014-03-20-how-to-build-a-feed-system/"/>
     <id>http://wikimore.github.io/2014-03-20-how-to-build-a-feed-system/</id>
     <published>2014-03-20T13:10:40.000Z</published>
-    <updated>2016-06-09T14:26:22.000Z</updated>
+    <updated>2016-06-13T06:23:03.000Z</updated>
     
     <content type="html">&lt;p&gt;feed系统就是类似于weibo和twitter的通过用户关注行为来帮助用户聚合的获取内容的系统.&lt;/p&gt;
 &lt;p&gt;feed系统有两种模式,&lt;code&gt;push&lt;/code&gt;和&lt;code&gt;pull&lt;/code&gt;.&lt;/p&gt;
@@ -970,7 +972,7 @@
     <link href="http://wikimore.github.io/2014-03-18-ruby-mutex-and-monitormixin/"/>
     <id>http://wikimore.github.io/2014-03-18-ruby-mutex-and-monitormixin/</id>
     <published>2014-03-18T12:10:40.000Z</published>
-    <updated>2016-06-09T14:26:33.000Z</updated>
+    <updated>2016-06-13T06:22:28.000Z</updated>
     
     <content type="html">&lt;p&gt;使用eventmachine和fiber的过程中发现一些以前OK的同步/锁功能的代码会出错,查资料发现ruby有两种线程间同步方式.&lt;/p&gt;
 &lt;p&gt;一种同步方式是使用Mutex,但是它有一定的局限性,见下面的代码&lt;/p&gt;
@@ -1005,7 +1007,7 @@
     <link href="http://wikimore.github.io/2014-03-10-eventmachine-time-out/"/>
     <id>http://wikimore.github.io/2014-03-10-eventmachine-time-out/</id>
     <published>2014-03-09T18:10:40.000Z</published>
-    <updated>2016-06-09T14:26:44.000Z</updated>
+    <updated>2016-06-13T06:22:41.000Z</updated>
     
     <content type="html">&lt;p&gt;工作中负责实现thrift的eventmachine客户端版本,在实现过程中就遇到了读写timeout如何实现的问题.&lt;/p&gt;
 &lt;p&gt;eventmachine的connection有两个连接的参数&lt;code&gt;pending_connect_timeout&lt;/code&gt;和&lt;code&gt;comm_inactivity_timeout&lt;/code&gt;,但就是没有read和write的timeout的配置参数,这样的话,业务调用就没有超时,根本不能够在线上使用.&lt;/p&gt;
