@@ -354,8 +354,7 @@
 
       
         
-          
-            <h4 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h4><p>最近升级到Spring4.x，DAO层也同步升级到最新版本的mybatis，写了一些代码生成插件，同时也学习下mybatis，不过代码注释确实不多，不过主流程还算能够看懂。</p>
+          <h4 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h4><p>最近升级到Spring4.x，DAO层也同步升级到最新版本的mybatis，写了一些代码生成插件，同时也学习下mybatis，不过代码注释确实不多，不过主流程还算能够看懂。</p>
 <p>理解mybatis的调用流程，先确定核心的几个类：</p>
 <ul>
 <li>Configuration</li>
@@ -365,201 +364,11 @@
 <li>StatementHandler</li>
 </ul>
 <p>通过这些类，组成了mybatis核心调用流程。</p>
-<h4 id="Configuration"><a href="#Configuration" class="headerlink" title="Configuration"></a>Configuration</h4><p>mybatis启动会做加载全局配置文件、关联Mapper对应的sql、关联数据源等操作，结果会全部汇聚到Configuration中。</p>
-<p>Configuration中的属性有很多，我比较关注的是：</p>
-<ul>
-<li>MapperRegistry管理所有的Mapper</li>
-<li>Envrionment管理数据源和事务</li>
-<li>TypeHandlerRegistry管理所有JDBC类型与Java类型之间的转换</li>
-<li>InterceptorChain管理拦截器</li>
-<li>MappedStatement执行sql映射关系缓存</li>
-</ul>
-<p>还有很多其他属性，如缓存，但是说实话，这个我真的用不到。</p>
-<p>Configuration实例会贯穿mybatis整个调用链中，可以理解为整个DAO层的Context上下文。</p>
-<h4 id="MapperProxy"><a href="#MapperProxy" class="headerlink" title="MapperProxy"></a>MapperProxy</h4><p>mybatis和ibatis从表面上看最大的不同就是它只有接口(Mapper)，那么我们调用接口的实现在哪？</p>
-<p>mybatis是对象SQL映射，调用一个SQL的过程可以抽象为3个主要部分：</p>
-<ul>
-<li>解析参数</li>
-<li>执行映射SQL</li>
-<li>解析结果</li>
-</ul>
-<p>既然每个实现的操作步骤是类似的，mybatis就用动态代理来生成代理实现类，而不用每个都生成一个实现，这个动态代理类就是MapperProxy。</p>
-<p>MapperProxy看名字就很明显，是代理Mapper的，其本身实现了InvocationHandler接口，内部主要有3个属性：</p>
-<ul>
-<li>mapperInterface代理的mapper接口类，如<code>GiftMapper</code></li>
-<li>methodCache是一个Map结构，key是Method，value中缓存的是MapperMethod对象</li>
-<li>sqlSession</li>
-</ul>
-<p>MapperMethod内部依赖：</p>
-<ul>
-<li>MethodSignature管理包括参数类型、参数转换、返回值类型、返回值类型转换等属性;</li>
-<li>SqlCommand管理SQL的id和类型</li>
-</ul>
-<h4 id="SqlSession"><a href="#SqlSession" class="headerlink" title="SqlSession"></a>SqlSession</h4><p>一次事务可以有一个或者多个操作，通常在一个线程中依次执行，整个过程可以称之为一个会话，SqlSession我理解就是会话的抽象，会话结束后，也需要销毁。</p>
-<p>SqlSession提供了多种对数据库操作的接口，如：</p>
-<ul>
-<li>selectOne</li>
-<li>selectMap</li>
-<li>selectList</li>
-<li>update</li>
-<li>insert</li>
-<li>delete</li>
-<li>commit</li>
-<li>rollback</li>
-</ul>
-<p>基本涵盖了绝大多数数据库操作。</p>
-<p>SqlSession的实现主要分2类：</p>
-<ul>
-<li>DefaultSqlSession</li>
-<li>SqlSessionManager和SqlSessionTemplate</li>
-</ul>
-<p>DefaultSqlSession内部依赖Executor来执行具体的SQL，需要自己做事务操作，连接释放，异常处理等，但是这样对用户不是特别友好，所以就有了SqlSessionManager和SqlSessionTemplate。</p>
-<p>SqlSessionManager用于独立使用mybatis，SqlSessionTemplate用于mybatis与spring集成。他们内部都依赖于一个DefaultSqlSession，并用的动态代理的方式，依赖SqlSessionInterceptor来做连接释放、异常处理、事务操作等。唯一的不同是SqlSessionManager对线程缓存了DefaultSqlSession的代理实例，而SqlSessionTemplate并没有缓存，而是根据事务声明情况分别采取不同的策略。</p>
-<h4 id="Executor"><a href="#Executor" class="headerlink" title="Executor"></a>Executor</h4><p>Executor并非最终执行SQL的抽象，其内部会构造StatementHandler实例，并最终由StatementHandler来执行SQL,抽象出Executor层mybatis做了缓存、批处理、Statement重用以及最基本的实现。</p>
-<ul>
-<li>CachingExecutor</li>
-<li>BatchExecutor</li>
-<li>ReuseExecutor</li>
-<li>SimpleExecutor</li>
-</ul>
-<h5 id="CachingExecutor"><a href="#CachingExecutor" class="headerlink" title="CachingExecutor"></a>CachingExecutor</h5><p>结合一些分布式缓存来提高查询效率，降低数据库压力。不过一般互联网会使用到mybatis缓存的并不多见，单体的系统可能会用到，个人认为作为一个可选模块可能更好，这里不多介绍。</p>
-<h5 id="BatchExecutor"><a href="#BatchExecutor" class="headerlink" title="BatchExecutor"></a>BatchExecutor</h5><p>继承自抽象类BaseExecutor，一些数据迁移、数据交换的场景可能会用到，能够极大的提升效率。</p>
-<h5 id="ReuseExecutor"><a href="#ReuseExecutor" class="headerlink" title="ReuseExecutor"></a>ReuseExecutor</h5><p>继承自抽象类BaseExecutor，内部使用一个Map来缓存Statement，在一个事务中尽量重用Statement</p>
-<h5 id="SimpleExecutor"><a href="#SimpleExecutor" class="headerlink" title="SimpleExecutor"></a>SimpleExecutor</h5><p>最基本的Executor实现，继承自抽象类BaseExecutor，默认使用此Executor。</p>
-<h4 id="StatementHandler"><a href="#StatementHandler" class="headerlink" title="StatementHandler"></a>StatementHandler</h4><p>最终依赖JDBC执行SQL的抽象，分为：</p>
-<ul>
-<li>CallableStatementHandler</li>
-<li>PreparedStatementHandler</li>
-<li>SimpleStatementHandler</li>
-<li>RoutingStatementHandler</li>
-</ul>
-<p>前3个对应JDBC的CallableStatement、PreparedStatement和Statement。</p>
-<p>RoutingStatementHandler采用委托模式，根据实际请求，委托对应的StatementHandler来执行Statement。</p>
-<p>StatementHandler依赖ParameterHandler来处理参数，依赖ResultSetHandler来处理SQL执行结果，依赖TypeHandler来处理JDBC Type与Java Type之间的转换。</p>
-<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>调用流程的关系如下图:</p>
-<p><img src="/assets/img/mybatis001.png" alt="image"></p>
-<p>理解这几个抽象，应该就能大概的了解mybatis的整个调用流程了。</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016-09-27-2016-09-27-threadlocal-and-netty-fastthreadlocal/" itemprop="url">
-                  Java的ThreadLocal与Netty的FastThreadLocal
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-09-27T23:04:47+08:00" content="2016-09-27">
-              2016-09-27
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/技术/" itemprop="url" rel="index">
-                    <span itemprop="name">技术</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016-09-27-2016-09-27-threadlocal-and-netty-fastthreadlocal/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016-09-27-2016-09-27-threadlocal-and-netty-fastthreadlocal/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
-          
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2017-02-25-2017-02-25-mybatis-1/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
         
       
     </div>
@@ -1562,11 +1371,133 @@
 
 
     
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016-03-03-2016-03-03-heap-sort/" itemprop="url">
+                  排序算法之HeapSort
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-03-03T00:00:00+08:00" content="2016-03-03">
+              2016-03-03
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/技术/" itemprop="url" rel="index">
+                    <span itemprop="name">技术</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016-03-03-2016-03-03-heap-sort/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016-03-03-2016-03-03-heap-sort/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>堆排序是一种基于比较的排序算法，可以简单的认为是一种改进的选择排序，虽然在实际中比快速排序要慢，但是其优势是最坏情况基本也是O(n log n)的时间复杂度，空间复杂度是O(1)，也就是不需要额外的内存空间。堆排序是稳定的排序算法。<br>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2016-03-03-2016-03-03-heap-sort/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
   </section>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1607,7 +1538,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">21</span>
+              <span class="site-state-item-count">20</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
