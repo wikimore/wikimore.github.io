@@ -1,0 +1,788 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="aspectj," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="wikimore's blog" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="00 概述AspectJ是一个面向切面的框架：
+
+定义了一套面向切面的语法
+一个扩展了javac的编译器，编译java或者aj的源代码，生成遵守Java虚拟机规范的字节码
+支持编译器织入和加载时织入">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AspectJ浅析">
+<meta property="og:url" content="http://wikimore.github.io/2016-01-10-2016-01-10-aspectj-intro/index.html">
+<meta property="og:site_name" content="wikimore's blog">
+<meta property="og:description" content="00 概述AspectJ是一个面向切面的框架：
+
+定义了一套面向切面的语法
+一个扩展了javac的编译器，编译java或者aj的源代码，生成遵守Java虚拟机规范的字节码
+支持编译器织入和加载时织入">
+<meta property="og:updated_time" content="2016-11-14T15:28:08.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AspectJ浅析">
+<meta name="twitter:description" content="00 概述AspectJ是一个面向切面的框架：
+
+定义了一套面向切面的语法
+一个扩展了javac的编译器，编译java或者aj的源代码，生成遵守Java虚拟机规范的字节码
+支持编译器织入和加载时织入">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <title> AspectJ浅析 | wikimore's blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-48827445-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta custom-logo">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">wikimore's blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">每天学习一点点，持续进步每一天</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                AspectJ浅析
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-01-10T16:31:29+08:00" content="2016-01-10">
+              2016-01-10
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/技术/" itemprop="url" rel="index">
+                    <span itemprop="name">技术</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016-01-10-2016-01-10-aspectj-intro/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016-01-10-2016-01-10-aspectj-intro/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="00-概述"><a href="#00-概述" class="headerlink" title="00 概述"></a>00 概述</h3><p>AspectJ是一个面向切面的框架：</p>
+<ul>
+<li>定义了一套面向切面的语法</li>
+<li>一个扩展了javac的编译器，编译java或者aj的源代码，生成遵守Java虚拟机规范的字节码</li>
+<li>支持编译器织入和加载时织入<a id="more"></a>
+<h3 id="01-编译期织入-Compile-Time-Weaver"><a href="#01-编译期织入-Compile-Time-Weaver" class="headerlink" title="01 编译期织入(Compile Time Weaver)"></a>01 编译期织入(Compile Time Weaver)</h3></li>
+</ul>
+<p>编译期织入是指在编译期，使用AspectJ的编译器(ajc)编译.aj以及.java文件，根据配置，对.java源码织入动态逻辑。</p>
+<p>一般使用Eclipse的AJDT工具或者maven的aspectj插件来自动编译。</p>
+<p>动手写一个使用maven的aspectj插件来编译的例子：</p>
+<p>先贴一个App类，有一个main方法，内部分别调用log4j的log和自己写的一个log方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">package io.github.wikimore.ajtest;</div><div class="line"></div><div class="line">import org.apache.log4j.Logger;</div><div class="line"></div><div class="line">public class App &#123;</div><div class="line">    private static final Logger LOG = Logger.getLogger(&quot;AspectJ&quot;);</div><div class="line">    public static void main(String[] args) &#123;</div><div class="line">        LOG.error(&quot;message&quot;);</div><div class="line">        Log.log(&quot;lllllll&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>自己写的Log很简单，就是打印到stdout中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">package io.github.wikimore.ajtest;</div><div class="line"></div><div class="line">public class Log &#123;</div><div class="line">    public static void log(String s) &#123;</div><div class="line">        System.out.println(&quot;log ---&gt; &quot; + s);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>main方法的输出应该是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ERROR (AspectJ:13) - message</div><div class="line">log ---&gt; lllllll</div></pre></td></tr></table></figure>
+<blockquote>
+<p>log4j配置不同输出不完全一样</p>
+</blockquote>
+<p>以上和aspectj还没有任何关系，下面我们想在2个方法的前面后面加一些输出：</p>
+<h4 id="编写aj源文件：定义AOP的类、方法以及织入的代码"><a href="#编写aj源文件：定义AOP的类、方法以及织入的代码" class="headerlink" title="编写aj源文件：定义AOP的类、方法以及织入的代码"></a>编写aj源文件：定义AOP的类、方法以及织入的代码</h4><p>Log4jAspect.aj为织入log4j的代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">package io.github.wikimore.ajtest.aspectj.config;</div><div class="line"></div><div class="line">public aspect Log4jAspect &#123;</div><div class="line"></div><div class="line">    pointcut beforeExecute():call(* org.apache.log4j.Appender.doAppend(*));</div><div class="line"></div><div class="line">    Object around() throws Throwable:beforeExecute() &#123;</div><div class="line">        System.out.println(&quot;before log4j log&quot;);</div><div class="line">        Throwable throwable = null;</div><div class="line">        Object retVal = null;</div><div class="line">        try&#123;</div><div class="line">            retVal = proceed();</div><div class="line">        &#125; catch (Throwable t) &#123;</div><div class="line">            throwable = t;</div><div class="line">        &#125;</div><div class="line">        if(throwable != null ) &#123;</div><div class="line">        	    System.out.println(&quot;error&quot;);</div><div class="line">            throw throwable;</div><div class="line">        &#125;</div><div class="line">truetruetrueSystem.out.println(&quot;after log4j log&quot;);</div><div class="line">   		return retVal;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>LogAspect.aj为织入Log的代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">package io.github.wikimore.ajtest.aspectj.config;</div><div class="line"></div><div class="line">public aspect LogAspect &#123;</div><div class="line"></div><div class="line">    pointcut beforeExecute():call(* io.github.wikimore.ajtest.Log.log(*));</div><div class="line"></div><div class="line">    Object around() throws RuntimeException:beforeExecute() &#123;</div><div class="line">        System.out.println(&quot;before log&quot;);</div><div class="line">        Throwable throwable = null;</div><div class="line">        Object retVal = null;</div><div class="line">        try&#123;</div><div class="line">            retVal = proceed();</div><div class="line">        &#125; catch (Throwable t) &#123;</div><div class="line">            throwable = t;</div><div class="line">        &#125;</div><div class="line">        if(throwable != null ) &#123;</div><div class="line">        	System.out.println(&quot;error&quot;);</div><div class="line">            throw new RuntimeException(throwable);</div><div class="line">        &#125;</div><div class="line">truetrue   System.out.println(&quot;after log&quot;);</div><div class="line">   		return retVal;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="编写aop的xml配置文件：明确哪些aj源文件会被编译-代码织入-，该文件放到META-INF文件夹下，命名aop-xml"><a href="#编写aop的xml配置文件：明确哪些aj源文件会被编译-代码织入-，该文件放到META-INF文件夹下，命名aop-xml" class="headerlink" title="编写aop的xml配置文件：明确哪些aj源文件会被编译(代码织入)，该文件放到META-INF文件夹下，命名aop.xml"></a>编写aop的xml配置文件：明确哪些aj源文件会被编译(代码织入)，该文件放到META-INF文件夹下，命名aop.xml</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version=&quot;1.0&quot;?&gt;</div><div class="line">&lt;aspectj&gt;</div><div class="line">true&lt;weaver options=&quot;-verbose -showWeaveInfo&quot;&gt;</div><div class="line">truetrue&lt;!--指定weave范围 --&gt;</div><div class="line">truetrue&lt;include within=&quot;org.apache.log4j..*&quot; /&gt;</div><div class="line">truetrue&lt;include within=&quot;io.github.wikimore.ajtest..*&quot; /&gt;</div><div class="line">true&lt;/weaver&gt;</div><div class="line">true&lt;aspects&gt;</div><div class="line">truetrue&lt;aspect name=&quot;io.github.wikimore.ajtest.aspectj.config.Log4jAspect&quot; /&gt;</div><div class="line">truetrue&lt;aspect name=&quot;io.github.wikimore.ajtest.aspectj.config.LogAspect&quot; /&gt;</div><div class="line">true&lt;/aspects&gt;</div><div class="line">&lt;/aspectj&gt;</div></pre></td></tr></table></figure>
+<h4 id="maven增加aspectj的编译插件，需要用ajc来编译-代替javac"><a href="#maven增加aspectj的编译插件，需要用ajc来编译-代替javac" class="headerlink" title="maven增加aspectj的编译插件，需要用ajc来编译(代替javac)"></a>maven增加aspectj的编译插件，需要用ajc来编译(代替javac)</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line">&lt;plugin&gt;</div><div class="line">true&lt;groupId&gt;org.codehaus.mojo&lt;/groupId&gt;</div><div class="line">true&lt;artifactId&gt;aspectj-maven-plugin&lt;/artifactId&gt;</div><div class="line">true&lt;version&gt;1.5&lt;/version&gt;</div><div class="line">true&lt;configuration&gt;</div><div class="line">truetrue&lt;complianceLevel&gt;1.6&lt;/complianceLevel&gt;</div><div class="line">truetrue&lt;includes&gt;</div><div class="line">truetruetrue&lt;include&gt;**/*.java&lt;/include&gt;</div><div class="line">truetruetrue&lt;include&gt;**/*.aj&lt;/include&gt;</div><div class="line">truetrue&lt;/includes&gt;</div><div class="line">truetrue&lt;!-- aj文件夹的路径 --&gt;</div><div class="line">truetrue&lt;aspectDirectory&gt;src/main/java/io/github/wikimore/ajtest/aspectj.config&lt;/aspectDirectory&gt;</div><div class="line">truetrue&lt;XaddSerialVersionUID&gt;true&lt;/XaddSerialVersionUID&gt;</div><div class="line">truetrue&lt;showWeaveInfo&gt;true&lt;/showWeaveInfo&gt;</div><div class="line">true&lt;/configuration&gt;</div><div class="line">true&lt;executions&gt;</div><div class="line">truetrue&lt;execution&gt;</div><div class="line">truetruetrue&lt;id&gt;compile_with_aspectj&lt;/id&gt;</div><div class="line">truetruetrue&lt;goals&gt;</div><div class="line">truetruetruetrue&lt;goal&gt;compile&lt;/goal&gt;</div><div class="line">truetruetrue&lt;/goals&gt;</div><div class="line">truetrue&lt;/execution&gt;</div><div class="line">truetrue&lt;execution&gt;</div><div class="line">truetruetrue&lt;id&gt;test-compile_with_aspectj&lt;/id&gt;</div><div class="line">truetruetrue&lt;goals&gt;</div><div class="line">truetruetruetrue&lt;goal&gt;test-compile&lt;/goal&gt;</div><div class="line">truetruetrue&lt;/goals&gt;</div><div class="line">truetrue&lt;/execution&gt;</div><div class="line">true&lt;/executions&gt;</div><div class="line">true&lt;dependencies&gt;</div><div class="line">truetrue&lt;dependency&gt;</div><div class="line">truetruetrue&lt;groupId&gt;org.aspectj&lt;/groupId&gt;</div><div class="line">truetruetrue&lt;artifactId&gt;aspectjtools&lt;/artifactId&gt;</div><div class="line">truetruetrue&lt;version&gt;1.7.3&lt;/version&gt;</div><div class="line">truetrue&lt;/dependency&gt;</div><div class="line">true&lt;/dependencies&gt;</div><div class="line">&lt;/plugin&gt;</div></pre></td></tr></table></figure>
+<p>执行<code>mvn clean compile</code>，编译后运行App的main方法发现输出如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">ERROR (AspectJ:13) - message</div><div class="line">before log</div><div class="line">log ---&gt; lllllll</div><div class="line">after log</div></pre></td></tr></table></figure>
+<p>我们自己编写的类已经被aop了，但是log4j并没有，很疑惑？</p>
+<p>接下来执行javap或者用反编译工具看看生成的class是什么样的。</p>
+<p>下面是javap打印出的LogAspect.class和Log4jAspect.class</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">Compiled from &quot;LogAspect.aj&quot;</div><div class="line">public class io.github.wikimore.ajtest.aspectj.config.LogAspect extends java.lang.Object&#123;</div><div class="line">    public static final io.github.wikimore.ajtest.aspectj.config.LogAspect ajc$perSingletonInstance;</div><div class="line">    static &#123;&#125;;</div><div class="line">    public io.github.wikimore.ajtest.aspectj.config.LogAspect();</div><div class="line">    void ajc$pointcut$$beforeExecute$5f();</div><div class="line">    public java.lang.Object ajc$around$io_github_wikimore_ajtest_aspectj_config_LogAspect$1$c5f6d277(org.aspectj.runtime.internal.AroundClosure)       throws java.lang.RuntimeException;</div><div class="line">    static java.lang.Object ajc$around$io_github_wikimore_ajtest_aspectj_config_LogAspect$1$c5f6d277proceed(org.aspectj.runtime.internal.AroundClosure)       throws java.lang.Throwable;</div><div class="line">    public static io.github.wikimore.ajtest.aspectj.config.LogAspect aspectOf();</div><div class="line">    public static boolean hasAspect();</div><div class="line">&#125;</div><div class="line"></div><div class="line">Compiled from &quot;Log4jAspect.aj&quot;</div><div class="line">public class io.github.wikimore.ajtest.aspectj.config.Log4jAspect &#123;</div><div class="line">  public static final io.github.wikimore.ajtest.aspectj.config.Log4jAspect ajc$perSingletonInstance;</div><div class="line">  static &#123;&#125;;</div><div class="line">  public io.github.wikimore.ajtest.aspectj.config.Log4jAspect();</div><div class="line">  void ajc$pointcut$$beforeExecute$61();</div><div class="line">  public java.lang.Object ajc$around$io_github_wikimore_ajtest_aspectj_config_Log4jAspect$1$c5f6d277(org.aspectj.runtime.internal.AroundClosure) throws java.lang.Throwable;</div><div class="line">  static java.lang.Object ajc$around$io_github_wikimore_ajtest_aspectj_config_Log4jAspect$1$c5f6d277proceed(org.aspectj.runtime.internal.AroundClosure) throws java.lang.Throwable;</div><div class="line">  public static io.github.wikimore.ajtest.aspectj.config.Log4jAspect aspectOf();</div><div class="line">  public static boolean hasAspect();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>aj文件编译后生成了很多类似<code>ajc$around$</code>的方法，但是为什么log4j的没有被AOP呢？</p>
+<p>再用jd-gui查看App.class和Log.class</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">public static void main(String[] args) &#123;</div><div class="line">trueLOG.error(&quot;message&quot;);</div><div class="line">trueString str = &quot;lllllll&quot;; log_aroundBody1$advice(str, LogAspect.aspectOf(), null);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">public class Log</div><div class="line">&#123;</div><div class="line">  public static void log(String s)</div><div class="line">  &#123;</div><div class="line">    System.out.println(&quot;log ---&gt; &quot; + s);</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>App中的<code>Log.log(&quot;lllllll&quot;);</code>方法被<code>替换</code>了！！！但是<code>LOG.error(&quot;message&quot;);</code>并没有被替换</li>
+<li>Log本身代码并没有变化</li>
+</ul>
+<blockquote>
+<p>log_aroundBody1$advice这个方法在哪里我也没找到。。</p>
+</blockquote>
+<p>从这个我们大致可以推测出：</p>
+<ul>
+<li>aj编译器不能在编译时对已经编译好的代码进行织入(log4j)</li>
+<li>aj编译时织入是在调用处，而非代码实现处，可以理解为aspectj用一个方法<code>log_aroundBody1$advice</code>包住了要aop的方法<code>log</code>，所有调用<code>log</code>的地方改为调用<code>log_aroundBody1$advice</code></li>
+</ul>
+<p>以上就是aspectj的CTW，如果要AOP log4j的方法，就需要LTW了。</p>
+<h3 id="02-加载期织入-Loading-Time-Weaver"><a href="#02-加载期织入-Loading-Time-Weaver" class="headerlink" title="02 加载期织入(Loading Time Weaver)"></a>02 加载期织入(Loading Time Weaver)</h3><p>加载期织入提供一中更加灵活的方式，在类被虚拟机加载的时候，动态的织入代码到目标类中。</p>
+<p>LTW依赖于java的agent，不了解的可以先参考<a href="https://docs.oracle.com/javase/7/docs/api/java/lang/instrument/package-summary.html" target="_blank" rel="external">Oracle文档</a>、<a href="https://jcp.org/en/jsr/detail?id=163" target="_blank" rel="external">JSR-163</a>，下面也会有说到，现在市面上很多APM厂商监控Java就是基于agent。</p>
+<p>上面的例子我们需要在执行时加入一些参数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">// $&#123;path&#125;替换成你的路径</div><div class="line">-javaagent:/$&#123;path&#125;/aspectjweaver-1.7.3.jar</div></pre></td></tr></table></figure>
+<p>输入如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">[AppClassLoader@40affc70] info AspectJ Weaver Version 1.7.3 built on Thursday Jun 13, 2013 at 19:41:31 GMT</div><div class="line">[AppClassLoader@40affc70] info register classloader sun.misc.Launcher$AppClassLoader@40affc70</div><div class="line">[AppClassLoader@40affc70] info using configuration /Users/nali/dev/frmworkspace/ajtest/target/classes/META-INF/aop.xml</div><div class="line">[AppClassLoader@40affc70] info register aspect io.github.wikimore.ajtest.aspectj.config.Log4jAspect</div><div class="line">[AppClassLoader@40affc70] info register aspect io.github.wikimore.ajtest.aspectj.config.LogAspect</div><div class="line">[AppClassLoader@40affc70] info processing reweavable type io.github.wikimore.ajtest.App: io/github/wikimore/ajtest/App.java</div><div class="line">[AppClassLoader@40affc70] info successfully verified type io.github.wikimore.ajtest.aspectj.config.LogAspect exists.  Originates from io/github/wikimore/ajtest/aspectj/config/Users/nali/dev/frmworkspace/ajtest/src/main/java/io/github/wikimore/ajtest/aspectj/config/LogAspect.aj</div><div class="line">[AppClassLoader@40affc70] weaveinfo Join point &apos;method-call(void io.github.wikimore.ajtest.Log.log(java.lang.String))&apos; in Type &apos;io.github.wikimore.ajtest.App&apos; (App.java:14) advised by around advice from &apos;io.github.wikimore.ajtest.aspectj.config.LogAspect&apos; (LogAspect.aj:7)</div><div class="line">[AppClassLoader@40affc70] error at org/apache/log4j/helpers/AppenderAttachableImpl.java:66::0 can&apos;t throw checked exception &apos;java.lang.Throwable&apos; at this join point &apos;method-call(void org.apache.log4j.Appender.doAppend(org.apache.log4j.spi.LoggingEvent))&apos;</div><div class="line">[AppClassLoader@40affc70] error at io/github/wikimore/ajtest/aspectj/config/Users/nali/dev/frmworkspace/ajtest/src/main/java/io/github/wikimore/ajtest/aspectj/config/Log4jAspect.aj:7::0 can&apos;t throw checked exception &apos;java.lang.Throwable&apos; at this join point &apos;method-call(void org.apache.log4j.Appender.doAppend(org.apache.log4j.spi.LoggingEvent))&apos;</div><div class="line">[AppClassLoader@40affc70] weaveinfo Join point &apos;method-call(void org.apache.log4j.Appender.doAppend(org.apache.log4j.spi.LoggingEvent))&apos; in Type &apos;org.apache.log4j.helpers.AppenderAttachableImpl&apos; (AppenderAttachableImpl.java:66) advised by around advice from &apos;io.github.wikimore.ajtest.aspectj.config.Log4jAspect&apos; (Log4jAspect.aj:7)</div><div class="line">[AppClassLoader@40affc70] info processing reweavable type io.github.wikimore.ajtest.aspectj.config.Log4jAspect: io/github/wikimore/ajtest/aspectj/config/Log4jAspect.aj</div><div class="line">before log4j log</div><div class="line">ERROR (AspectJ:13) - message</div><div class="line">after log4j log</div><div class="line">[AppClassLoader@40affc70] info processing reweavable type io.github.wikimore.ajtest.aspectj.config.LogAspect: io/github/wikimore/ajtest/aspectj/config/LogAspect.aj</div><div class="line">before log</div><div class="line">log ---&gt; lllllll</div><div class="line">after log</div></pre></td></tr></table></figure>
+<p>可以发现aspectj在执行前进行了代码织入操作。</p>
+<h4 id="021-如何实现LTW？"><a href="#021-如何实现LTW？" class="headerlink" title="021 如何实现LTW？"></a>021 如何实现LTW？</h4><p>JSR-163提供了preMain入口，可以再main方法被执行前，执行逻辑，需要在META-INF/MENIFEST.MF增加类似如下代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Premain-Class: org.aspectj.weaver.loadtime.Agent</div></pre></td></tr></table></figure>
+<p>这里的Agent就是aspectjweaver的LTW入口类，该类必须有一个<code>premain</code>方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">public static void premain(String options, Instrumentation instrumentation) &#123;</div><div class="line">       /* Handle duplicate agents */</div><div class="line">       if (s_instrumentation != null) &#123;</div><div class="line">           return;</div><div class="line">       &#125;</div><div class="line">       s_instrumentation = instrumentation;</div><div class="line">       s_instrumentation.addTransformer(s_transformer);</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<p>这里的Instrumentation可以增加一个ClassFileTransformer实现(具体说明可以查看Javadoc)。</p>
+<p>ClassFileTransformer提供transform方法，该方法的官方解释如下：</p>
+<blockquote>
+<p>The implementation of this method may transform the supplied class file and return a new replacement class file.</p>
+</blockquote>
+<p>发现bytecode在这里是可以被替换的，具体的替换逻辑还在依赖的类里。</p>
+<p>ClassFileTransformer依赖aspectj提供了一个ClassPreProcessor接口，该接口最主要的方法是preProcess，具体实现类是Aj，但是Aj类并没有自己实现weave逻辑，而是依赖WeavingAdaptor的子类ClassLoaderWeavingAdaptor来实现。</p>
+<p>在初始化ClassLoaderWeavingAdaptor时，会顺序加载META-INF/aop.xml|META-INF/aop-ajc.xml|org/aspectj/aop.xml，获取拦截的定义，具体在initialize方法中，通过DefaultWeavingContext来加载。</p>
+<p>WeavingAdaptor主要方法是weaveClass，从名字上就能看出来，这个类也不是真正执行weave的，WeavingAdaptor依赖BcelWeaver，BCEL是什么？官方解释如下：</p>
+<blockquote>
+<p>The Byte Code Engineering Library (Apache Commons BCEL™) is intended to give users a convenient way to analyze, create, and manipulate (binary) Java class files (those ending with .class). Classes are represented by objects which contain all the symbolic information of the given class: methods, fields and byte code instructions, in particular.</p>
+</blockquote>
+<p>原来这家伙是操作bytecode的，BcelWeaver依赖BcelClassWeaver来织入代码，内部应该有一个编译器来完成真正的织入工作。</p>
+<h3 id="03-总结"><a href="#03-总结" class="headerlink" title="03 总结"></a>03 总结</h3><p>AspectJ可以更灵活的编写Java代码，使用LTW功能可以拦截第三方库，做一些扩展功能。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/aspectj/" rel="tag">#aspectj</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015-07-12-2015-07-12-flume-ng-memory-channel/" rel="next" title="Flume-ng中的MemoryChannel">
+                <i class="fa fa-chevron-left"></i> Flume-ng中的MemoryChannel
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016-03-03-2016-03-03-heap-sort/" rel="prev" title="排序算法之HeapSort">
+                排序算法之HeapSort <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016-01-10-2016-01-10-aspectj-intro/"
+           data-title="AspectJ浅析" data-url="http://wikimore.github.io/2016-01-10-2016-01-10-aspectj-intro/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="wikimore" />
+          <p class="site-author-name" itemprop="name">wikimore</p>
+          <p class="site-description motion-element" itemprop="description">wikimore's blog</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">21</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">25</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/wikimore" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/wikimore" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-fw fa-twitter"></i>
+                  
+                  Twitter
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://weibo.com/wikimore" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#00-概述"><span class="nav-number">1.</span> <span class="nav-text">00 概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#01-编译期织入-Compile-Time-Weaver"><span class="nav-number">2.</span> <span class="nav-text">01 编译期织入(Compile Time Weaver)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#编写aj源文件：定义AOP的类、方法以及织入的代码"><span class="nav-number">2.1.</span> <span class="nav-text">编写aj源文件：定义AOP的类、方法以及织入的代码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#编写aop的xml配置文件：明确哪些aj源文件会被编译-代码织入-，该文件放到META-INF文件夹下，命名aop-xml"><span class="nav-number">2.2.</span> <span class="nav-text">编写aop的xml配置文件：明确哪些aj源文件会被编译(代码织入)，该文件放到META-INF文件夹下，命名aop.xml</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#maven增加aspectj的编译插件，需要用ajc来编译-代替javac"><span class="nav-number">2.3.</span> <span class="nav-text">maven增加aspectj的编译插件，需要用ajc来编译(代替javac)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#02-加载期织入-Loading-Time-Weaver"><span class="nav-number">3.</span> <span class="nav-text">02 加载期织入(Loading Time Weaver)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#021-如何实现LTW？"><span class="nav-number">3.1.</span> <span class="nav-text">021 如何实现LTW？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#03-总结"><span class="nav-number">4.</span> <span class="nav-text">03 总结</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2014 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wikimore</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"wikimore"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    <script src="/vendors/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+<script type="text/javascript" async src="//push.zhanzhang.baidu.com/push.js">
+</script>
+
+
+</body>
+</html>
