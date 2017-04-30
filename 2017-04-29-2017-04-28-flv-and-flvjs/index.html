@@ -86,7 +86,7 @@
 <link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="mybatis," />
+  <meta name="keywords" content="flv,flvjs," />
 
 
 
@@ -104,45 +104,19 @@
 
 
 
-<meta name="description" content="概述最近升级到Spring4.x，DAO层也同步升级到最新版本的mybatis，写了一些代码生成插件，同时也学习下mybatis，不过代码注释确实不多，不过主流程还算能够看懂。
-理解mybatis的调用流程，先确定核心的几个类：
-
-Configuration
-MapperProxy
-SqlSession
-Executor
-StatementHandler
-
-通过这些类，组成了mybatis核心调用">
+<meta name="description" content="最近有个项目要用flvjs播放httpflv格式的纯音频流，在实践的过程中发现数据是在不停的加载，可是没有声音。
+遇到这样的问题，第一个想法就是协议是不是哪里不匹配，先了解flv协议是最好的选择。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="mybatis初探">
-<meta property="og:url" content="http://wikimore.github.io/2017-02-25-2017-02-25-mybatis-1/index.html">
+<meta property="og:title" content="flvjs不能播放纯音频问题解决">
+<meta property="og:url" content="http://wikimore.github.io/2017-04-29-2017-04-28-flv-and-flvjs/index.html">
 <meta property="og:site_name" content="wikimore's blog">
-<meta property="og:description" content="概述最近升级到Spring4.x，DAO层也同步升级到最新版本的mybatis，写了一些代码生成插件，同时也学习下mybatis，不过代码注释确实不多，不过主流程还算能够看懂。
-理解mybatis的调用流程，先确定核心的几个类：
-
-Configuration
-MapperProxy
-SqlSession
-Executor
-StatementHandler
-
-通过这些类，组成了mybatis核心调用">
-<meta property="og:image" content="http://wikimore.github.io/assets/img/mybatis001.png">
-<meta property="og:updated_time" content="2017-03-19T15:30:02.000Z">
+<meta property="og:description" content="最近有个项目要用flvjs播放httpflv格式的纯音频流，在实践的过程中发现数据是在不停的加载，可是没有声音。
+遇到这样的问题，第一个想法就是协议是不是哪里不匹配，先了解flv协议是最好的选择。">
+<meta property="og:updated_time" content="2017-04-30T07:35:39.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="mybatis初探">
-<meta name="twitter:description" content="概述最近升级到Spring4.x，DAO层也同步升级到最新版本的mybatis，写了一些代码生成插件，同时也学习下mybatis，不过代码注释确实不多，不过主流程还算能够看懂。
-理解mybatis的调用流程，先确定核心的几个类：
-
-Configuration
-MapperProxy
-SqlSession
-Executor
-StatementHandler
-
-通过这些类，组成了mybatis核心调用">
-<meta name="twitter:image" content="http://wikimore.github.io/assets/img/mybatis001.png">
+<meta name="twitter:title" content="flvjs不能播放纯音频问题解决">
+<meta name="twitter:description" content="最近有个项目要用flvjs播放httpflv格式的纯音频流，在实践的过程中发现数据是在不停的加载，可是没有声音。
+遇到这样的问题，第一个想法就是协议是不是哪里不匹配，先了解flv协议是最好的选择。">
 
 
 
@@ -163,7 +137,7 @@ StatementHandler
 
 
 
-  <title> mybatis初探 | wikimore's blog </title>
+  <title> flvjs不能播放纯音频问题解决 | wikimore's blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -312,7 +286,7 @@ StatementHandler
             
             
               
-                mybatis初探
+                flvjs不能播放纯音频问题解决
               
             
           </h1>
@@ -324,38 +298,19 @@ StatementHandler
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2017-02-25T23:04:47+08:00" content="2017-02-25">
-              2017-02-25
+            <time itemprop="dateCreated" datetime="2017-04-29T13:52:49+08:00" content="2017-04-29">
+              2017-04-29
             </time>
           </span>
 
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/技术/" itemprop="url" rel="index">
-                    <span itemprop="name">技术</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
           
 
           
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2017-02-25-2017-02-25-mybatis-1/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2017-02-25-2017-02-25-mybatis-1/" itemprop="commentsCount"></span>
+                <a href="/2017-04-29-2017-04-28-flv-and-flvjs/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017-04-29-2017-04-28-flv-and-flvjs/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -378,91 +333,53 @@ StatementHandler
       
 
       
-        <h4 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h4><p>最近升级到Spring4.x，DAO层也同步升级到最新版本的mybatis，写了一些代码生成插件，同时也学习下mybatis，不过代码注释确实不多，不过主流程还算能够看懂。</p>
-<p>理解mybatis的调用流程，先确定核心的几个类：</p>
+        <p>最近有个项目要用flvjs播放httpflv格式的纯音频流，在实践的过程中发现数据是在不停的加载，可是没有声音。</p>
+<p>遇到这样的问题，第一个想法就是协议是不是哪里不匹配，先了解flv协议是最好的选择。<br><a id="more"></a></p>
+<h3 id="flv协议简单说明-audio部分"><a href="#flv协议简单说明-audio部分" class="headerlink" title="flv协议简单说明(audio部分)"></a>flv协议简单说明(audio部分)</h3><p>FLV协议是adobe开发设计的，现在已经公开，在数据格式上类似SWF格式，主要分为<code>Header</code>和<code>Body</code>两个部分。</p>
+<h4 id="Header"><a href="#Header" class="headerlink" title="Header"></a>Header</h4><p>负责记录协议类型、版本、流信息、长度等信息。</p>
+<p>前3个字节固定是<code>FLV</code>3个字母的ASCII码，表明是FLV格式</p>
+<p>第4个字节表示FLV协议的版本，目前是第一个版本</p>
+<p>第5个字节表示FLV的流信息，暂时只有第6bit和第8bit有意义，其他位都应该是0，第6bit标识是否存在Audio，第8bit标识是否存在Video。</p>
+<p>第6-9个字节表示整个<code>Header</code>的长度，是一个UI32类型的数字，值一般是9，官方SPEC说在未来的版本可能会有更大的<code>Header</code>。</p>
+<h4 id="Body"><a href="#Body" class="headerlink" title="Body"></a>Body</h4><p>FLV协议的<code>Body</code>主要由一个UI32的指针和<code>TAG</code>交替循环组成。</p>
+<p>指针标识前一个<code>TAG</code>的长度，为什么不是后一个<code>TAG</code>的长度呢？可能和数据是流有关，有时候没法知道后面一个<code>TAG</code>的大小。</p>
+<p><code>TAG</code>包含各种数据类型，先说说<code>TAG</code>的格式定义吧。</p>
+<p>第一个字节的前2个bit为预留，第3个bit标识包是否需要过滤或预处理，后5个bit标识类型，目前支持的类型有</p>
 <ul>
-<li>Configuration</li>
-<li>MapperProxy</li>
-<li>SqlSession</li>
-<li>Executor</li>
-<li>StatementHandler</li>
+<li>8 Audio</li>
+<li>9 Video</li>
+<li>18 Script Data</li>
 </ul>
-<p>通过这些类，组成了mybatis核心调用流程。</p>
-<a id="more"></a>
-<h4 id="Configuration"><a href="#Configuration" class="headerlink" title="Configuration"></a>Configuration</h4><p>mybatis启动会做加载全局配置文件、关联Mapper对应的sql、关联数据源等操作，结果会全部汇聚到Configuration中。</p>
-<p>Configuration中的属性有很多，我比较关注的是：</p>
+<p>之后3个字节表示整个<code>TAG</code>的数据长度，从StreamID后开始计算的数据的长度。</p>
+<p>之后4个字节表示相对第一个<code>TAG</code>被接受的毫秒时间戳，第一个<code>TAG</code>始终是0，需要注意的是，前3字节是低位，第4字节表示高位。</p>
+<p>第9-11字节表示StreamID，SPEC要求始终为0。</p>
+<p>再后面分别根据TAG类型的不同标识不同类型Header，这个需要具体类型具体解析，已知的包括：</p>
 <ul>
-<li>MapperRegistry管理所有的Mapper</li>
-<li>Envrionment管理数据源和事务</li>
-<li>TypeHandlerRegistry管理所有JDBC类型与Java类型之间的转换</li>
-<li>InterceptorChain管理拦截器</li>
-<li>MappedStatement执行sql映射关系缓存</li>
+<li>AudioTagHeader 如果tagtype==8</li>
+<li>VideoTagHeader 如果tagtype==9</li>
+<li>EncryptionHeader 如果是否过滤 == 1</li>
+<li>FilterParams 如果是否过滤 == 1</li>
 </ul>
-<p>还有很多其他属性，如缓存，但是说实话，这个我真的用不到。</p>
-<p>Configuration实例会贯穿mybatis整个调用链中，可以理解为整个DAO层的Context上下文。</p>
-<h4 id="MapperProxy"><a href="#MapperProxy" class="headerlink" title="MapperProxy"></a>MapperProxy</h4><p>mybatis和ibatis从表面上看最大的不同就是它只有接口(Mapper)，那么我们调用接口的实现在哪？</p>
-<p>mybatis是对象SQL映射，调用一个SQL的过程可以抽象为3个主要部分：</p>
-<ul>
-<li>解析参数</li>
-<li>执行映射SQL</li>
-<li>解析结果</li>
-</ul>
-<p>既然每个实现的操作步骤是类似的，mybatis就用动态代理来生成代理实现类，而不用每个都生成一个实现，这个动态代理类就是MapperProxy。</p>
-<p>MapperProxy看名字就很明显，是代理Mapper的，其本身实现了InvocationHandler接口，内部主要有3个属性：</p>
-<ul>
-<li>mapperInterface代理的mapper接口类，如<code>GiftMapper</code></li>
-<li>methodCache是一个Map结构，key是Method，value中缓存的是MapperMethod对象</li>
-<li>sqlSession</li>
-</ul>
-<p>MapperMethod内部依赖：</p>
-<ul>
-<li>MethodSignature管理包括参数类型、参数转换、返回值类型、返回值类型转换等属性;</li>
-<li>SqlCommand管理SQL的id和类型</li>
-</ul>
-<h4 id="SqlSession"><a href="#SqlSession" class="headerlink" title="SqlSession"></a>SqlSession</h4><p>一次事务可以有一个或者多个操作，通常在一个线程中依次执行，整个过程可以称之为一个会话，SqlSession我理解就是会话的抽象，会话结束后，也需要销毁。</p>
-<p>SqlSession提供了多种对数据库操作的接口，如：</p>
-<ul>
-<li>selectOne</li>
-<li>selectMap</li>
-<li>selectList</li>
-<li>update</li>
-<li>insert</li>
-<li>delete</li>
-<li>commit</li>
-<li>rollback</li>
-</ul>
-<p>基本涵盖了绝大多数数据库操作。</p>
-<p>SqlSession的实现主要分2类：</p>
-<ul>
-<li>DefaultSqlSession</li>
-<li>SqlSessionManager和SqlSessionTemplate</li>
-</ul>
-<p>DefaultSqlSession内部依赖Executor来执行具体的SQL，需要自己做事务操作，连接释放，异常处理等，但是这样对用户不是特别友好，所以就有了SqlSessionManager和SqlSessionTemplate。</p>
-<p>SqlSessionManager用于独立使用mybatis，SqlSessionTemplate用于mybatis与spring集成。他们内部都依赖于一个DefaultSqlSession，并用的动态代理的方式，依赖SqlSessionInterceptor来做连接释放、异常处理、事务操作等。唯一的不同是SqlSessionManager对线程缓存了DefaultSqlSession的代理实例，而SqlSessionTemplate并没有缓存，而是根据事务声明情况分别采取不同的策略。</p>
-<h4 id="Executor"><a href="#Executor" class="headerlink" title="Executor"></a>Executor</h4><p>Executor并非最终执行SQL的抽象，其内部会构造StatementHandler实例，并最终由StatementHandler来执行SQL,抽象出Executor层mybatis做了缓存、批处理、Statement重用以及最基本的实现。</p>
-<ul>
-<li>CachingExecutor</li>
-<li>BatchExecutor</li>
-<li>ReuseExecutor</li>
-<li>SimpleExecutor</li>
-</ul>
-<h5 id="CachingExecutor"><a href="#CachingExecutor" class="headerlink" title="CachingExecutor"></a>CachingExecutor</h5><p>结合一些分布式缓存来提高查询效率，降低数据库压力。不过一般互联网会使用到mybatis缓存的并不多见，单体的系统可能会用到，个人认为作为一个可选模块可能更好，这里不多介绍。</p>
-<h5 id="BatchExecutor"><a href="#BatchExecutor" class="headerlink" title="BatchExecutor"></a>BatchExecutor</h5><p>继承自抽象类BaseExecutor，一些数据迁移、数据交换的场景可能会用到，能够极大的提升效率。</p>
-<h5 id="ReuseExecutor"><a href="#ReuseExecutor" class="headerlink" title="ReuseExecutor"></a>ReuseExecutor</h5><p>继承自抽象类BaseExecutor，内部使用一个Map来缓存Statement，在一个事务中尽量重用Statement</p>
-<h5 id="SimpleExecutor"><a href="#SimpleExecutor" class="headerlink" title="SimpleExecutor"></a>SimpleExecutor</h5><p>最基本的Executor实现，继承自抽象类BaseExecutor，默认使用此Executor。</p>
-<h4 id="StatementHandler"><a href="#StatementHandler" class="headerlink" title="StatementHandler"></a>StatementHandler</h4><p>最终依赖JDBC执行SQL的抽象，分为：</p>
-<ul>
-<li>CallableStatementHandler</li>
-<li>PreparedStatementHandler</li>
-<li>SimpleStatementHandler</li>
-<li>RoutingStatementHandler</li>
-</ul>
-<p>前3个对应JDBC的CallableStatement、PreparedStatement和Statement。</p>
-<p>RoutingStatementHandler采用委托模式，根据实际请求，委托对应的StatementHandler来执行Statement。</p>
-<p>StatementHandler依赖ParameterHandler来处理参数，依赖ResultSetHandler来处理SQL执行结果，依赖TypeHandler来处理JDBC Type与Java Type之间的转换。</p>
-<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>调用流程的关系如下图:</p>
-<p><img src="/assets/img/mybatis001.png" alt="image"></p>
-<p>理解这几个抽象，应该就能大概的了解mybatis的整个调用流程了。</p>
+<p>最后是真正的数据，如果是AudioTag那么就是音频数据，如果是VideoTag就是视频数据，如果是ScriptTag就是Script数据。</p>
+<blockquote>
+<p>因为本例只讨论纯音频流，所以我也没去了解VideoTag，下面介绍下AudioTag</p>
+</blockquote>
+<h5 id="Audio-Tag"><a href="#Audio-Tag" class="headerlink" title="Audio Tag"></a>Audio Tag</h5><p>AudioTag会定义声音的格式、采样率、采样大小、类型等等，最后是真正的音频数据。</p>
+<p>前4bit定义声音的格式：包括PCM、MP3、Nellymoser、AAC、Speex等等，5-6bit定义声音的采样率：从5.5 kHz~44kHz总共4种，第7bit标识声音采样大小，仅针对非压缩格式，第8bit标识声音类型，mono或者stereo。</p>
+<p>如果音频格式是AAC的话，还有一个字节表示AACPacketType，0标识AAC sequence header，1表示AAC raw data</p>
+<blockquote>
+<p>具体可以参考<a href="https://www.adobe.com/content/dam/Adobe/en/devnet/flv/pdfs/video_file_format_spec_v10.pdf" target="_blank" rel="external">flv-spec</a></p>
+</blockquote>
+<h3 id="flvjs"><a href="#flvjs" class="headerlink" title="flvjs"></a>flvjs</h3><p>简单了解了FLV协议，再回到flvjs不能播放的问题上，先了解下flvjs的原理，看了一下<a href="https://github.com/Bilibili/flv.js/blob/master/docs/design.md" target="_blank" rel="external">设计图</a>，感觉是FLV自己下载数据，然后按照flv的格式解析出真正的音频或者视频数据，再交由原生的播放器来播放。</p>
+<p>参照之前说的，数据下载是正常的，那么只有可能是编解码的问题，debug看看到底是哪里有问题，但是debug之后我发现所有的编解码都是正常的，只是有一个AMF解析错误，主要原因是onMetaData的数据是空的，而flvjs没有处理这个情况，造成数组越界，具体代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">try &#123;</div><div class="line">    var name = AMF.parseValue(arrayBuffer, dataOffset, dataSize); // dataOffset=24  dataSize=13</div><div class="line">    // name = &quot;onMetaData&quot; 然后下面的dataSize-name.size=0</div><div class="line">    var value = AMF.parseValue(arrayBuffer, dataOffset + name.size, dataSize - name.size);</div><div class="line">    data[name.data] = value.data;</div><div class="line">&#125; catch (e) &#123;</div><div class="line">    _logger2.default.e(&apos;AMF&apos;, e.toString());</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>但是这个错误并不会影响后面数据解析的流程，到底是哪里的问题呢？之后我发现在解析完音频数据后，并没有将数据交给播放器播放。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">if (this._isInitialMetadataDispatched()) &#123;</div><div class="line">    // Non-initial metadata, force dispatch (or flush) parsed frames to remuxer</div><div class="line">    if (this._dispatch &amp;&amp; (this._audioTrack.length || this._videoTrack.length)) &#123;</div><div class="line">        this._onDataAvailable(this._audioTrack, this._videoTrack);</div><div class="line">    &#125;</div><div class="line">&#125; else &#123;</div><div class="line">    this._audioInitialMetadataDispatched = true;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>_isInitialMetadataDispatched这个方法永远返回false。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">function _isInitialMetadataDispatched() &#123;</div><div class="line">    if (this._hasAudio &amp;&amp; this._hasVideo) &#123;</div><div class="line">        // both audio &amp; video</div><div class="line">        return this._audioInitialMetadataDispatched &amp;&amp; this._videoInitialMetadataDispatched;</div><div class="line">    &#125;</div><div class="line">    if (this._hasAudio &amp;&amp; !this._hasVideo) &#123;</div><div class="line">        // audio only</div><div class="line">        return this._audioInitialMetadataDispatched;</div><div class="line">    &#125;</div><div class="line">    if (!this._hasAudio &amp;&amp; this._hasVideo) &#123;</div><div class="line">        // video only</div><div class="line">        return this._videoInitialMetadataDispatched;</div><div class="line">    &#125;</div><div class="line">    return false;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>为什么这个方法一直返回false呢，原来flvjs会探测协议，发现既有音频数据也有视频数据(这就是flv协议Header中流信息定义的)，当flvjs解析完音频后，期望解析视频后一起交由播放器来播放，但是因为实际是没有视频数据，所以音频数据也不会被播放。</p>
+<p>目前该问题已经通过强制设置_hasVideo=false解决，并且也反馈给flvjs的作者，新版flvjs也提供了配置来解决纯音频不能播放的问题。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>不停的解决问题其实就是不停的学习的过程，这是程序员必备的素质之一，对未知领域需要敬畏，但不能因为不了解而放弃。只要找到问题的原因，即使最后不能解决，也一样会有收获。</p>
 
       
     </div>
@@ -485,7 +402,9 @@ StatementHandler
       
         <div class="post-tags">
           
-            <a href="/tags/mybatis/" rel="tag">#mybatis</a>
+            <a href="/tags/flv/" rel="tag">#flv</a>
+          
+            <a href="/tags/flvjs/" rel="tag">#flvjs</a>
           
         </div>
       
@@ -494,17 +413,13 @@ StatementHandler
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016-09-22-2016-09-22-zig-zag-intro/" rel="next" title="varint和zigzag编码">
-                <i class="fa fa-chevron-left"></i> varint和zigzag编码
+              <a href="/2017-02-25-2017-02-25-mybatis-1/" rel="next" title="mybatis初探">
+                <i class="fa fa-chevron-left"></i> mybatis初探
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017-04-29-2017-04-28-flv-and-flvjs/" rel="prev" title="flvjs不能播放纯音频问题解决">
-                flvjs不能播放纯音频问题解决 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -530,8 +445,8 @@ StatementHandler
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2017-02-25-2017-02-25-mybatis-1/"
-           data-title="mybatis初探" data-url="http://wikimore.github.io/2017-02-25-2017-02-25-mybatis-1/">
+      <div class="ds-thread" data-thread-key="2017-04-29-2017-04-28-flv-and-flvjs/"
+           data-title="flvjs不能播放纯音频问题解决" data-url="http://wikimore.github.io/2017-04-29-2017-04-28-flv-and-flvjs/">
       </div>
     
   </div>
@@ -658,7 +573,7 @@ StatementHandler
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Configuration"><span class="nav-number">2.</span> <span class="nav-text">Configuration</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#MapperProxy"><span class="nav-number">3.</span> <span class="nav-text">MapperProxy</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SqlSession"><span class="nav-number">4.</span> <span class="nav-text">SqlSession</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Executor"><span class="nav-number">5.</span> <span class="nav-text">Executor</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#CachingExecutor"><span class="nav-number">5.1.</span> <span class="nav-text">CachingExecutor</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#BatchExecutor"><span class="nav-number">5.2.</span> <span class="nav-text">BatchExecutor</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ReuseExecutor"><span class="nav-number">5.3.</span> <span class="nav-text">ReuseExecutor</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#SimpleExecutor"><span class="nav-number">5.4.</span> <span class="nav-text">SimpleExecutor</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#StatementHandler"><span class="nav-number">6.</span> <span class="nav-text">StatementHandler</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#总结"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#flv协议简单说明-audio部分"><span class="nav-number">1.</span> <span class="nav-text">flv协议简单说明(audio部分)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Header"><span class="nav-number">1.1.</span> <span class="nav-text">Header</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Body"><span class="nav-number">1.2.</span> <span class="nav-text">Body</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Audio-Tag"><span class="nav-number">1.2.1.</span> <span class="nav-text">Audio Tag</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#flvjs"><span class="nav-number">2.</span> <span class="nav-text">flvjs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
           </div>
         </section>

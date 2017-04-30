@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://wikimore.github.io/"/>
-  <updated>2017-03-19T15:30:02.000Z</updated>
+  <updated>2017-04-30T07:35:39.000Z</updated>
   <id>http://wikimore.github.io/</id>
   
   <author>
@@ -14,6 +14,76 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>flvjs不能播放纯音频问题解决</title>
+    <link href="http://wikimore.github.io/2017-04-29-2017-04-28-flv-and-flvjs/"/>
+    <id>http://wikimore.github.io/2017-04-29-2017-04-28-flv-and-flvjs/</id>
+    <published>2017-04-29T05:52:49.000Z</published>
+    <updated>2017-04-30T07:35:39.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>最近有个项目要用flvjs播放httpflv格式的纯音频流，在实践的过程中发现数据是在不停的加载，可是没有声音。</p>
+<p>遇到这样的问题，第一个想法就是协议是不是哪里不匹配，先了解flv协议是最好的选择。<br><a id="more"></a></p>
+<h3 id="flv协议简单说明-audio部分"><a href="#flv协议简单说明-audio部分" class="headerlink" title="flv协议简单说明(audio部分)"></a>flv协议简单说明(audio部分)</h3><p>FLV协议是adobe开发设计的，现在已经公开，在数据格式上类似SWF格式，主要分为<code>Header</code>和<code>Body</code>两个部分。</p>
+<h4 id="Header"><a href="#Header" class="headerlink" title="Header"></a>Header</h4><p>负责记录协议类型、版本、流信息、长度等信息。</p>
+<p>前3个字节固定是<code>FLV</code>3个字母的ASCII码，表明是FLV格式</p>
+<p>第4个字节表示FLV协议的版本，目前是第一个版本</p>
+<p>第5个字节表示FLV的流信息，暂时只有第6bit和第8bit有意义，其他位都应该是0，第6bit标识是否存在Audio，第8bit标识是否存在Video。</p>
+<p>第6-9个字节表示整个<code>Header</code>的长度，是一个UI32类型的数字，值一般是9，官方SPEC说在未来的版本可能会有更大的<code>Header</code>。</p>
+<h4 id="Body"><a href="#Body" class="headerlink" title="Body"></a>Body</h4><p>FLV协议的<code>Body</code>主要由一个UI32的指针和<code>TAG</code>交替循环组成。</p>
+<p>指针标识前一个<code>TAG</code>的长度，为什么不是后一个<code>TAG</code>的长度呢？可能和数据是流有关，有时候没法知道后面一个<code>TAG</code>的大小。</p>
+<p><code>TAG</code>包含各种数据类型，先说说<code>TAG</code>的格式定义吧。</p>
+<p>第一个字节的前2个bit为预留，第3个bit标识包是否需要过滤或预处理，后5个bit标识类型，目前支持的类型有</p>
+<ul>
+<li>8 Audio</li>
+<li>9 Video</li>
+<li>18 Script Data</li>
+</ul>
+<p>之后3个字节表示整个<code>TAG</code>的数据长度，从StreamID后开始计算的数据的长度。</p>
+<p>之后4个字节表示相对第一个<code>TAG</code>被接受的毫秒时间戳，第一个<code>TAG</code>始终是0，需要注意的是，前3字节是低位，第4字节表示高位。</p>
+<p>第9-11字节表示StreamID，SPEC要求始终为0。</p>
+<p>再后面分别根据TAG类型的不同标识不同类型Header，这个需要具体类型具体解析，已知的包括：</p>
+<ul>
+<li>AudioTagHeader 如果tagtype==8</li>
+<li>VideoTagHeader 如果tagtype==9</li>
+<li>EncryptionHeader 如果是否过滤 == 1</li>
+<li>FilterParams 如果是否过滤 == 1</li>
+</ul>
+<p>最后是真正的数据，如果是AudioTag那么就是音频数据，如果是VideoTag就是视频数据，如果是ScriptTag就是Script数据。</p>
+<blockquote>
+<p>因为本例只讨论纯音频流，所以我也没去了解VideoTag，下面介绍下AudioTag</p>
+</blockquote>
+<h5 id="Audio-Tag"><a href="#Audio-Tag" class="headerlink" title="Audio Tag"></a>Audio Tag</h5><p>AudioTag会定义声音的格式、采样率、采样大小、类型等等，最后是真正的音频数据。</p>
+<p>前4bit定义声音的格式：包括PCM、MP3、Nellymoser、AAC、Speex等等，5-6bit定义声音的采样率：从5.5 kHz~44kHz总共4种，第7bit标识声音采样大小，仅针对非压缩格式，第8bit标识声音类型，mono或者stereo。</p>
+<p>如果音频格式是AAC的话，还有一个字节表示AACPacketType，0标识AAC sequence header，1表示AAC raw data</p>
+<blockquote>
+<p>具体可以参考<a href="https://www.adobe.com/content/dam/Adobe/en/devnet/flv/pdfs/video_file_format_spec_v10.pdf" target="_blank" rel="external">flv-spec</a></p>
+</blockquote>
+<h3 id="flvjs"><a href="#flvjs" class="headerlink" title="flvjs"></a>flvjs</h3><p>简单了解了FLV协议，再回到flvjs不能播放的问题上，先了解下flvjs的原理，看了一下<a href="https://github.com/Bilibili/flv.js/blob/master/docs/design.md" target="_blank" rel="external">设计图</a>，感觉是FLV自己下载数据，然后按照flv的格式解析出真正的音频或者视频数据，再交由原生的播放器来播放。</p>
+<p>参照之前说的，数据下载是正常的，那么只有可能是编解码的问题，debug看看到底是哪里有问题，但是debug之后我发现所有的编解码都是正常的，只是有一个AMF解析错误，主要原因是onMetaData的数据是空的，而flvjs没有处理这个情况，造成数组越界，具体代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">try &#123;</div><div class="line">    var name = AMF.parseValue(arrayBuffer, dataOffset, dataSize); // dataOffset=24  dataSize=13</div><div class="line">    // name = &quot;onMetaData&quot; 然后下面的dataSize-name.size=0</div><div class="line">    var value = AMF.parseValue(arrayBuffer, dataOffset + name.size, dataSize - name.size);</div><div class="line">    data[name.data] = value.data;</div><div class="line">&#125; catch (e) &#123;</div><div class="line">    _logger2.default.e(&apos;AMF&apos;, e.toString());</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>但是这个错误并不会影响后面数据解析的流程，到底是哪里的问题呢？之后我发现在解析完音频数据后，并没有将数据交给播放器播放。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">if (this._isInitialMetadataDispatched()) &#123;</div><div class="line">    // Non-initial metadata, force dispatch (or flush) parsed frames to remuxer</div><div class="line">    if (this._dispatch &amp;&amp; (this._audioTrack.length || this._videoTrack.length)) &#123;</div><div class="line">        this._onDataAvailable(this._audioTrack, this._videoTrack);</div><div class="line">    &#125;</div><div class="line">&#125; else &#123;</div><div class="line">    this._audioInitialMetadataDispatched = true;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>_isInitialMetadataDispatched这个方法永远返回false。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">function _isInitialMetadataDispatched() &#123;</div><div class="line">    if (this._hasAudio &amp;&amp; this._hasVideo) &#123;</div><div class="line">        // both audio &amp; video</div><div class="line">        return this._audioInitialMetadataDispatched &amp;&amp; this._videoInitialMetadataDispatched;</div><div class="line">    &#125;</div><div class="line">    if (this._hasAudio &amp;&amp; !this._hasVideo) &#123;</div><div class="line">        // audio only</div><div class="line">        return this._audioInitialMetadataDispatched;</div><div class="line">    &#125;</div><div class="line">    if (!this._hasAudio &amp;&amp; this._hasVideo) &#123;</div><div class="line">        // video only</div><div class="line">        return this._videoInitialMetadataDispatched;</div><div class="line">    &#125;</div><div class="line">    return false;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>为什么这个方法一直返回false呢，原来flvjs会探测协议，发现既有音频数据也有视频数据(这就是flv协议Header中流信息定义的)，当flvjs解析完音频后，期望解析视频后一起交由播放器来播放，但是因为实际是没有视频数据，所以音频数据也不会被播放。</p>
+<p>目前该问题已经通过强制设置_hasVideo=false解决，并且也反馈给flvjs的作者，新版flvjs也提供了配置来解决纯音频不能播放的问题。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>不停的解决问题其实就是不停的学习的过程，这是程序员必备的素质之一，对未知领域需要敬畏，但不能因为不了解而放弃。只要找到问题的原因，即使最后不能解决，也一样会有收获。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;最近有个项目要用flvjs播放httpflv格式的纯音频流，在实践的过程中发现数据是在不停的加载，可是没有声音。&lt;/p&gt;
+&lt;p&gt;遇到这样的问题，第一个想法就是协议是不是哪里不匹配，先了解flv协议是最好的选择。&lt;br&gt;
+    
+    </summary>
+    
+    
+      <category term="flv" scheme="http://wikimore.github.io/tags/flv/"/>
+    
+      <category term="flvjs" scheme="http://wikimore.github.io/tags/flvjs/"/>
+    
+  </entry>
   
   <entry>
     <title>mybatis初探</title>
@@ -1204,30 +1274,6 @@
     
     
       <category term="ruby" scheme="http://wikimore.github.io/tags/ruby/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Hello world</title>
-    <link href="http://wikimore.github.io/2014-01-27-2014-01-27-hello-world/"/>
-    <id>http://wikimore.github.io/2014-01-27-2014-01-27-hello-world/</id>
-    <published>2014-01-27T15:38:40.000Z</published>
-    <updated>2016-11-14T15:28:08.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>第一篇日志献给<code>Hello World</code>。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</div><div class="line">    System.out.println(<span class="string">"Hello World."</span>);</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;第一篇日志献给&lt;code&gt;Hello World&lt;/code&gt;。&lt;/p&gt;
-&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div clas
-    
-    </summary>
-    
-      <category term="技术" scheme="http://wikimore.github.io/categories/%E6%8A%80%E6%9C%AF/"/>
-    
-    
-      <category term="java" scheme="http://wikimore.github.io/tags/java/"/>
     
   </entry>
   
