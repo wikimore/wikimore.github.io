@@ -5,7 +5,7 @@
   
 
 
-<html class="theme-next muse use-motion">
+<html class="theme-next mist use-motion">
 <head>
   <meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
@@ -106,12 +106,13 @@
 
 <meta name="description" content="wikimore&apos;s blog">
 <meta property="og:type" content="website">
-<meta property="og:title" content="wikimore's blog">
+<meta property="og:title" content="wikimore&#39;s blog">
 <meta property="og:url" content="http://wikimore.github.io/page/2/index.html">
-<meta property="og:site_name" content="wikimore's blog">
+<meta property="og:site_name" content="wikimore&#39;s blog">
 <meta property="og:description" content="wikimore&apos;s blog">
+<meta property="og:locale" content="zh-Hans">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="wikimore's blog">
+<meta name="twitter:title" content="wikimore&#39;s blog">
 <meta name="twitter:description" content="wikimore&apos;s blog">
 
 
@@ -119,12 +120,12 @@
 <script type="text/javascript" id="hexo.configuration">
   var NexT = window.NexT || {};
   var CONFIG = {
-    scheme: 'Muse',
+    scheme: 'Mist',
     sidebar: {"position":"left","display":"post"},
     fancybox: true,
     motion: true,
     duoshuo: {
-      userId: 0,
+      userId: undefined,
       author: '博主'
     }
   };
@@ -285,7 +286,122 @@
             
               
                 
-                <a class="post-title-link" href="/2016-03-03-2016-03-03-heap-sort/" itemprop="url">
+                <a class="post-title-link" href="/2016/03/10/java-concurrency-countdownlatch/" itemprop="url">
+                  Java并发之CountDownLatch
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-03-10T00:00:00+08:00" content="2016-03-10">
+              2016-03-10
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/技术/" itemprop="url" rel="index">
+                    <span itemprop="name">技术</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>CountDownLatch是juc包下一个非常简单的并发辅助类，提供线程间等待的支持，如一组线程A等待另外一组线程B完成某些操作后(一组可以是一个或者多个线程)，才能继续执行时，可以使用CountDownLatch来完成控制。<br>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2016/03/10/java-concurrency-countdownlatch/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/03/03/heap-sort/" itemprop="url">
                   排序算法之HeapSort
                 </a>
               
@@ -327,13 +443,6 @@
 
           
             
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016-03-03-2016-03-03-heap-sort/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016-03-03-2016-03-03-heap-sort/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
           
 
           
@@ -356,7 +465,7 @@
         
           <p>堆排序是一种基于比较的排序算法，可以简单的认为是一种改进的选择排序，虽然在实际中比快速排序要慢，但是其优势是最坏情况基本也是O(n log n)的时间复杂度，空间复杂度是O(1)，也就是不需要额外的内存空间。堆排序是稳定的排序算法。<br>
           <div class="post-more-link text-center">
-            <a class="btn" href="/2016-03-03-2016-03-03-heap-sort/#more" rel="contents">
+            <a class="btn" href="/2016/03/03/heap-sort/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -407,7 +516,7 @@
             
               
                 
-                <a class="post-title-link" href="/2016-01-10-2016-01-10-aspectj-intro/" itemprop="url">
+                <a class="post-title-link" href="/2016/01/10/aspectj-intro/" itemprop="url">
                   AspectJ浅析
                 </a>
               
@@ -449,13 +558,6 @@
 
           
             
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016-01-10-2016-01-10-aspectj-intro/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016-01-10-2016-01-10-aspectj-intro/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
           
 
           
@@ -482,7 +584,7 @@
 <li>一个扩展了javac的编译器，编译java或者aj的源代码，生成遵守Java虚拟机规范的字节码</li>
 <li>支持编译器织入和加载时织入
           <div class="post-more-link text-center">
-            <a class="btn" href="/2016-01-10-2016-01-10-aspectj-intro/#more" rel="contents">
+            <a class="btn" href="/2016/01/10/aspectj-intro/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -533,7 +635,7 @@
             
               
                 
-                <a class="post-title-link" href="/2015-07-12-2015-07-12-flume-ng-memory-channel/" itemprop="url">
+                <a class="post-title-link" href="/2015/07/12/flume-ng-memory-channel/" itemprop="url">
                   Flume-ng中的MemoryChannel
                 </a>
               
@@ -575,13 +677,6 @@
 
           
             
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2015-07-12-2015-07-12-flume-ng-memory-channel/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015-07-12-2015-07-12-flume-ng-memory-channel/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
           
 
           
@@ -604,7 +699,7 @@
         
           <h3 id="00-概述"><a href="#00-概述" class="headerlink" title="00 概述"></a>00 概述</h3><p>MemoryChannel是使用纯内存缓冲Event的Channel实现，所以速度上比较快速，容量不会太大，可靠性不够，所以适用一些可以丢数据，但对性能要求较高的业务。<br>
           <div class="post-more-link text-center">
-            <a class="btn" href="/2015-07-12-2015-07-12-flume-ng-memory-channel/#more" rel="contents">
+            <a class="btn" href="/2015/07/12/flume-ng-memory-channel/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -655,7 +750,7 @@
             
               
                 
-                <a class="post-title-link" href="/2015-02-07-2015-02-04-flume-ng-introduction/" itemprop="url">
+                <a class="post-title-link" href="/2015/02/07/flume-ng-introduction/" itemprop="url">
                   Flume-ng工作原理简介
                 </a>
               
@@ -697,13 +792,6 @@
 
           
             
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2015-02-07-2015-02-04-flume-ng-introduction/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015-02-07-2015-02-04-flume-ng-introduction/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
           
 
           
@@ -731,7 +819,7 @@
 <li>Channel：管道，传输、缓冲数据，如文件系统、内存等，我们可以将Channel理解为管道或者队列</li>
 <li>Sink：数据目的地，如HDFS等
           <div class="post-more-link text-center">
-            <a class="btn" href="/2015-02-07-2015-02-04-flume-ng-introduction/#more" rel="contents">
+            <a class="btn" href="/2015/02/07/flume-ng-introduction/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -782,7 +870,7 @@
             
               
                 
-                <a class="post-title-link" href="/2014-12-27-2014-12-27-write-a-maven-plugin/" itemprop="url">
+                <a class="post-title-link" href="/2014/12/27/write-a-maven-plugin/" itemprop="url">
                   编写自己的maven插件
                 </a>
               
@@ -824,13 +912,6 @@
 
           
             
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2014-12-27-2014-12-27-write-a-maven-plugin/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2014-12-27-2014-12-27-write-a-maven-plugin/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
           
 
           
@@ -853,7 +934,7 @@
         
           <p>Maven是一个Java语言编写的项目依赖和构建工具。<br>
           <div class="post-more-link text-center">
-            <a class="btn" href="/2014-12-27-2014-12-27-write-a-maven-plugin/#more" rel="contents">
+            <a class="btn" href="/2014/12/27/write-a-maven-plugin/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -904,7 +985,7 @@
             
               
                 
-                <a class="post-title-link" href="/2014-11-15-2014-11-15-how-to-use-s2-geometry-lib-build-a-position-system/" itemprop="url">
+                <a class="post-title-link" href="/2014/11/15/how-to-use-s2-geometry-lib-build-a-position-system/" itemprop="url">
                   google-s2简介
                 </a>
               
@@ -946,13 +1027,6 @@
 
           
             
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2014-11-15-2014-11-15-how-to-use-s2-geometry-lib-build-a-position-system/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2014-11-15-2014-11-15-how-to-use-s2-geometry-lib-build-a-position-system/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
           
 
           
@@ -975,7 +1049,7 @@
         
           <p>s2-geometry-lib是一个谷歌开发的空间几何坐标库，提供很多空间操作的工具方法，包括Polygon、Loop、Line、Point等。<br>
           <div class="post-more-link text-center">
-            <a class="btn" href="/2014-11-15-2014-11-15-how-to-use-s2-geometry-lib-build-a-position-system/#more" rel="contents">
+            <a class="btn" href="/2014/11/15/how-to-use-s2-geometry-lib-build-a-position-system/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1026,7 +1100,7 @@
             
               
                 
-                <a class="post-title-link" href="/2014-03-24-2014-03-24-intro-java-hashmap/" itemprop="url">
+                <a class="post-title-link" href="/2014/03/24/intro-java-hashmap/" itemprop="url">
                   说一说Java的HashMap
                 </a>
               
@@ -1068,13 +1142,6 @@
 
           
             
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2014-03-24-2014-03-24-intro-java-hashmap/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2014-03-24-2014-03-24-intro-java-hashmap/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
           
 
           
@@ -1099,7 +1166,7 @@
 <p>Hash这个数据结构的实现有2种方式来解决hash冲突:<code>开放地址Hash法</code>和<code>链表法</code>.</p>
 <p>本文不介绍<code>开放地址Hash法</code>,因为Java的HashMap是用<code>链表法</code>实现的.</p>
           <div class="post-more-link text-center">
-            <a class="btn" href="/2014-03-24-2014-03-24-intro-java-hashmap/#more" rel="contents">
+            <a class="btn" href="/2014/03/24/intro-java-hashmap/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1150,7 +1217,7 @@
             
               
                 
-                <a class="post-title-link" href="/2014-03-20-2014-03-20-how-to-build-a-feed-system/" itemprop="url">
+                <a class="post-title-link" href="/2014/03/20/how-to-build-a-feed-system/" itemprop="url">
                   关于构建feed系统的思考
                 </a>
               
@@ -1192,13 +1259,6 @@
 
           
             
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2014-03-20-2014-03-20-how-to-build-a-feed-system/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2014-03-20-2014-03-20-how-to-build-a-feed-system/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
           
 
           
@@ -1222,7 +1282,7 @@
           <p>feed系统就是类似于weibo和twitter的通过用户关注行为来帮助用户聚合的获取内容的系统.</p>
 <p>feed系统有两种模式,<code>push</code>和<code>pull</code>.</p>
           <div class="post-more-link text-center">
-            <a class="btn" href="/2014-03-20-2014-03-20-how-to-build-a-feed-system/#more" rel="contents">
+            <a class="btn" href="/2014/03/20/how-to-build-a-feed-system/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1273,7 +1333,7 @@
             
               
                 
-                <a class="post-title-link" href="/2014-03-18-2014-03-18-ruby-mutex-and-monitormixin/" itemprop="url">
+                <a class="post-title-link" href="/2014/03/18/ruby-mutex-and-monitormixin/" itemprop="url">
                   ruby的Mutex与MonitorMixin
                 </a>
               
@@ -1315,13 +1375,6 @@
 
           
             
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2014-03-18-2014-03-18-ruby-mutex-and-monitormixin/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2014-03-18-2014-03-18-ruby-mutex-and-monitormixin/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
           
 
           
@@ -1344,129 +1397,7 @@
         
           <p>使用eventmachine和fiber的过程中发现一些以前OK的同步/锁功能的代码会出错,查资料发现ruby有两种线程间同步方式.</p>
           <div class="post-more-link text-center">
-            <a class="btn" href="/2014-03-18-2014-03-18-ruby-mutex-and-monitormixin/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2014-03-10-2014-03-09-eventmachine-time-out/" itemprop="url">
-                  关于eventmachine的timeout
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2014-03-10T02:10:40+08:00" content="2014-03-10">
-              2014-03-10
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/技术/" itemprop="url" rel="index">
-                    <span itemprop="name">技术</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2014-03-10-2014-03-09-eventmachine-time-out/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2014-03-10-2014-03-09-eventmachine-time-out/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>工作中负责实现thrift的eventmachine客户端版本,在实现过程中就遇到了读写timeout如何实现的问题.<br>
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2014-03-10-2014-03-09-eventmachine-time-out/#more" rel="contents">
+            <a class="btn" href="/2014/03/18/ruby-mutex-and-monitormixin/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1541,7 +1472,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">21</span>
+              <span class="site-state-item-count">22</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -1645,7 +1576,7 @@
 <div class="theme-info">
   主题 -
   <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
-    NexT.Muse
+    NexT.Mist
   </a>
 </div>
 
@@ -1722,30 +1653,9 @@
 
   
 
-  
-    
-  
-
-  <script type="text/javascript">
-    var duoshuoQuery = {short_name:"wikimore"};
-    (function() {
-      var ds = document.createElement('script');
-      ds.type = 'text/javascript';ds.async = true;
-      ds.id = 'duoshuo-script';
-      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-      ds.charset = 'UTF-8';
-      (document.getElementsByTagName('head')[0]
-      || document.getElementsByTagName('body')[0]).appendChild(ds);
-    })();
-  </script>
-
-  
-    
-    <script src="/vendors/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
-    <script src="/js/src/hook-duoshuo.js"></script>
-  
 
 
+  
 
 
 

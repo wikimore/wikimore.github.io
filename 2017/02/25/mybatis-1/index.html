@@ -1,0 +1,759 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="mybatis," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="wikimore's blog" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="最近升级到Spring4.x，DAO层也同步升级到最新版本的mybatis，写了一些代码生成插件，同时也学习下mybatis，不过代码注释确实不多，不过主流程还算能够看懂。">
+<meta name="keywords" content="mybatis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mybatis初探">
+<meta property="og:url" content="http://wikimore.github.io/2017/02/25/mybatis-1/index.html">
+<meta property="og:site_name" content="wikimore&#39;s blog">
+<meta property="og:description" content="最近升级到Spring4.x，DAO层也同步升级到最新版本的mybatis，写了一些代码生成插件，同时也学习下mybatis，不过代码注释确实不多，不过主流程还算能够看懂。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://wikimore.github.io/assets/img/mybatis001.png">
+<meta property="og:updated_time" content="2017-09-06T16:07:00.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="mybatis初探">
+<meta name="twitter:description" content="最近升级到Spring4.x，DAO层也同步升级到最新版本的mybatis，写了一些代码生成插件，同时也学习下mybatis，不过代码注释确实不多，不过主流程还算能够看懂。">
+<meta name="twitter:image" content="http://wikimore.github.io/assets/img/mybatis001.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: undefined,
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <title> mybatis初探 | wikimore's blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-48827445-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta custom-logo">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">wikimore's blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">每天学习一点点，持续进步每一天</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                mybatis初探
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2017-02-25T23:04:47+08:00" content="2017-02-25">
+              2017-02-25
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/技术/" itemprop="url" rel="index">
+                    <span itemprop="name">技术</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近升级到Spring4.x，DAO层也同步升级到最新版本的mybatis，写了一些代码生成插件，同时也学习下mybatis，不过代码注释确实不多，不过主流程还算能够看懂。</p>
+<a id="more"></a>
+<p>理解mybatis的调用流程，先确定核心的几个类：</p>
+<ul>
+<li>Configuration</li>
+<li>MapperProxy</li>
+<li>SqlSession</li>
+<li>Executor</li>
+<li>StatementHandler</li>
+</ul>
+<p>通过这些类，组成了mybatis核心调用流程。</p>
+<h4 id="Configuration"><a href="#Configuration" class="headerlink" title="Configuration"></a>Configuration</h4><p>mybatis启动会做加载全局配置文件、关联Mapper对应的sql、关联数据源等操作，结果会全部汇聚到Configuration中。</p>
+<p>Configuration中的属性有很多，我比较关注的是：</p>
+<ul>
+<li>MapperRegistry管理所有的Mapper</li>
+<li>Envrionment管理数据源和事务</li>
+<li>TypeHandlerRegistry管理所有JDBC类型与Java类型之间的转换</li>
+<li>InterceptorChain管理拦截器</li>
+<li>MappedStatement执行sql映射关系缓存</li>
+</ul>
+<p>还有很多其他属性，如缓存，但是说实话，这个我真的用不到。</p>
+<p>Configuration实例会贯穿mybatis整个调用链中，可以理解为整个DAO层的Context上下文。</p>
+<h4 id="MapperProxy"><a href="#MapperProxy" class="headerlink" title="MapperProxy"></a>MapperProxy</h4><p>mybatis和ibatis从表面上看最大的不同就是它只有接口(Mapper)，那么我们调用接口的实现在哪？</p>
+<p>mybatis是对象SQL映射，调用一个SQL的过程可以抽象为3个主要部分：</p>
+<ul>
+<li>解析参数</li>
+<li>执行映射SQL</li>
+<li>解析结果</li>
+</ul>
+<p>既然每个实现的操作步骤是类似的，mybatis就用动态代理来生成代理实现类，而不用每个都生成一个实现，这个动态代理类就是MapperProxy。</p>
+<p>MapperProxy看名字就很明显，是代理Mapper的，其本身实现了InvocationHandler接口，内部主要有3个属性：</p>
+<ul>
+<li>mapperInterface代理的mapper接口类，如<code>GiftMapper</code></li>
+<li>methodCache是一个Map结构，key是Method，value中缓存的是MapperMethod对象</li>
+<li>sqlSession</li>
+</ul>
+<p>MapperMethod内部依赖：</p>
+<ul>
+<li>MethodSignature管理包括参数类型、参数转换、返回值类型、返回值类型转换等属性;</li>
+<li>SqlCommand管理SQL的id和类型</li>
+</ul>
+<h4 id="SqlSession"><a href="#SqlSession" class="headerlink" title="SqlSession"></a>SqlSession</h4><p>一次事务可以有一个或者多个操作，通常在一个线程中依次执行，整个过程可以称之为一个会话，SqlSession我理解就是会话的抽象，会话结束后，也需要销毁。</p>
+<p>SqlSession提供了多种对数据库操作的接口，如：</p>
+<ul>
+<li>selectOne</li>
+<li>selectMap</li>
+<li>selectList</li>
+<li>update</li>
+<li>insert</li>
+<li>delete</li>
+<li>commit</li>
+<li>rollback</li>
+</ul>
+<p>基本涵盖了绝大多数数据库操作。</p>
+<p>SqlSession的实现主要分2类：</p>
+<ul>
+<li>DefaultSqlSession</li>
+<li>SqlSessionManager和SqlSessionTemplate</li>
+</ul>
+<p>DefaultSqlSession内部依赖Executor来执行具体的SQL，需要自己做事务操作，连接释放，异常处理等，但是这样对用户不是特别友好，所以就有了SqlSessionManager和SqlSessionTemplate。</p>
+<p>SqlSessionManager用于独立使用mybatis，SqlSessionTemplate用于mybatis与spring集成。他们内部都依赖于一个DefaultSqlSession，并用的动态代理的方式，依赖SqlSessionInterceptor来做连接释放、异常处理、事务操作等。唯一的不同是SqlSessionManager对线程缓存了DefaultSqlSession的代理实例，而SqlSessionTemplate并没有缓存，而是根据事务声明情况分别采取不同的策略。</p>
+<h4 id="Executor"><a href="#Executor" class="headerlink" title="Executor"></a>Executor</h4><p>Executor并非最终执行SQL的抽象，其内部会构造StatementHandler实例，并最终由StatementHandler来执行SQL,抽象出Executor层mybatis做了缓存、批处理、Statement重用以及最基本的实现。</p>
+<ul>
+<li>CachingExecutor</li>
+<li>BatchExecutor</li>
+<li>ReuseExecutor</li>
+<li>SimpleExecutor</li>
+</ul>
+<h5 id="CachingExecutor"><a href="#CachingExecutor" class="headerlink" title="CachingExecutor"></a>CachingExecutor</h5><p>结合一些分布式缓存来提高查询效率，降低数据库压力。不过一般互联网会使用到mybatis缓存的并不多见，单体的系统可能会用到，个人认为作为一个可选模块可能更好，这里不多介绍。</p>
+<h5 id="BatchExecutor"><a href="#BatchExecutor" class="headerlink" title="BatchExecutor"></a>BatchExecutor</h5><p>继承自抽象类BaseExecutor，一些数据迁移、数据交换的场景可能会用到，能够极大的提升效率。</p>
+<h5 id="ReuseExecutor"><a href="#ReuseExecutor" class="headerlink" title="ReuseExecutor"></a>ReuseExecutor</h5><p>继承自抽象类BaseExecutor，内部使用一个Map来缓存Statement，在一个事务中尽量重用Statement</p>
+<h5 id="SimpleExecutor"><a href="#SimpleExecutor" class="headerlink" title="SimpleExecutor"></a>SimpleExecutor</h5><p>最基本的Executor实现，继承自抽象类BaseExecutor，默认使用此Executor。</p>
+<h4 id="StatementHandler"><a href="#StatementHandler" class="headerlink" title="StatementHandler"></a>StatementHandler</h4><p>最终依赖JDBC执行SQL的抽象，分为：</p>
+<ul>
+<li>CallableStatementHandler</li>
+<li>PreparedStatementHandler</li>
+<li>SimpleStatementHandler</li>
+<li>RoutingStatementHandler</li>
+</ul>
+<p>前3个对应JDBC的CallableStatement、PreparedStatement和Statement。</p>
+<p>RoutingStatementHandler采用委托模式，根据实际请求，委托对应的StatementHandler来执行Statement。</p>
+<p>StatementHandler依赖ParameterHandler来处理参数，依赖ResultSetHandler来处理SQL执行结果，依赖TypeHandler来处理JDBC Type与Java Type之间的转换。</p>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>调用流程的关系如下图:</p>
+<p><img src="/assets/img/mybatis001.png" alt="image"></p>
+<p>理解这几个抽象，应该就能大概的了解mybatis的整个调用流程了。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/mybatis/" rel="tag">#mybatis</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/09/22/zig-zag-intro/" rel="next" title="varint和zigzag编码">
+                <i class="fa fa-chevron-left"></i> varint和zigzag编码
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/04/29/flv-and-flvjs/" rel="prev" title="flvjs不能播放纯音频问题解决">
+                flvjs不能播放纯音频问题解决 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="wikimore" />
+          <p class="site-author-name" itemprop="name">wikimore</p>
+          <p class="site-description motion-element" itemprop="description">wikimore's blog</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">22</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">27</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/wikimore" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/wikimore" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-fw fa-twitter"></i>
+                  
+                  Twitter
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://weibo.com/wikimore" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#Configuration"><span class="nav-number">1.</span> <span class="nav-text">Configuration</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#MapperProxy"><span class="nav-number">2.</span> <span class="nav-text">MapperProxy</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SqlSession"><span class="nav-number">3.</span> <span class="nav-text">SqlSession</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Executor"><span class="nav-number">4.</span> <span class="nav-text">Executor</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#CachingExecutor"><span class="nav-number">4.1.</span> <span class="nav-text">CachingExecutor</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#BatchExecutor"><span class="nav-number">4.2.</span> <span class="nav-text">BatchExecutor</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ReuseExecutor"><span class="nav-number">4.3.</span> <span class="nav-text">ReuseExecutor</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#SimpleExecutor"><span class="nav-number">4.4.</span> <span class="nav-text">SimpleExecutor</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#StatementHandler"><span class="nav-number">5.</span> <span class="nav-text">StatementHandler</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2014 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wikimore</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+<script type="text/javascript" async src="//push.zhanzhang.baidu.com/push.js">
+</script>
+
+
+</body>
+</html>

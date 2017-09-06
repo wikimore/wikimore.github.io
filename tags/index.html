@@ -5,7 +5,7 @@
   
 
 
-<html class="theme-next muse use-motion">
+<html class="theme-next mist use-motion">
 <head>
   <meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
@@ -108,8 +108,9 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="tags">
 <meta property="og:url" content="http://wikimore.github.io/tags/index.html">
-<meta property="og:site_name" content="wikimore's blog">
+<meta property="og:site_name" content="wikimore&#39;s blog">
 <meta property="og:description" content="wikimore&apos;s blog">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2016-08-16T05:49:08.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="tags">
@@ -120,12 +121,12 @@
 <script type="text/javascript" id="hexo.configuration">
   var NexT = window.NexT || {};
   var CONFIG = {
-    scheme: 'Muse',
+    scheme: 'Mist',
     sidebar: {"position":"left","display":"post"},
     fancybox: true,
     motion: true,
     duoshuo: {
-      userId: 0,
+      userId: undefined,
       author: '博主'
     }
   };
@@ -276,7 +277,7 @@
             目前共计 27 个标签
         </div>
         <div class="tag-cloud-tags">
-          <a href="/tags/aspectj/" style="font-size: 12px; color: #ccc">aspectj</a> <a href="/tags/concurrency/" style="font-size: 24px; color: #4f4f4f">concurrency</a> <a href="/tags/flume/" style="font-size: 18px; color: #8e8e8e">flume</a> <a href="/tags/flv/" style="font-size: 12px; color: #ccc">flv</a> <a href="/tags/flvjs/" style="font-size: 12px; color: #ccc">flvjs</a> <a href="/tags/java/" style="font-size: 30px; color: #111">java</a> <a href="/tags/maven/" style="font-size: 12px; color: #ccc">maven</a> <a href="/tags/mustache/" style="font-size: 12px; color: #ccc">mustache</a> <a href="/tags/mybatis/" style="font-size: 12px; color: #ccc">mybatis</a> <a href="/tags/parser/" style="font-size: 12px; color: #ccc">parser</a> <a href="/tags/rpc/" style="font-size: 18px; color: #8e8e8e">rpc</a> <a href="/tags/ruby/" style="font-size: 18px; color: #8e8e8e">ruby</a> <a href="/tags/s2/" style="font-size: 12px; color: #ccc">s2</a> <a href="/tags/scala/" style="font-size: 12px; color: #ccc">scala</a> <a href="/tags/thrift/" style="font-size: 18px; color: #8e8e8e">thrift</a> <a href="/tags/varint/" style="font-size: 12px; color: #ccc">varint</a> <a href="/tags/zigzag/" style="font-size: 12px; color: #ccc">zigzag</a> <a href="/tags/排序算法/" style="font-size: 12px; color: #ccc">排序算法</a> <a href="/tags/架构/" style="font-size: 12px; color: #ccc">架构</a>
+          <a href="/tags/aspectj/" style="font-size: 12px; color: #ccc">aspectj</a> <a href="/tags/concurrency/" style="font-size: 24px; color: #4f4f4f">concurrency</a> <a href="/tags/flume/" style="font-size: 18px; color: #8e8e8e">flume</a> <a href="/tags/flv/" style="font-size: 12px; color: #ccc">flv</a> <a href="/tags/flvjs/" style="font-size: 12px; color: #ccc">flvjs</a> <a href="/tags/java/" style="font-size: 30px; color: #111">java</a> <a href="/tags/maven/" style="font-size: 12px; color: #ccc">maven</a> <a href="/tags/mustache/" style="font-size: 12px; color: #ccc">mustache</a> <a href="/tags/mybatis/" style="font-size: 12px; color: #ccc">mybatis</a> <a href="/tags/netty/" style="font-size: 12px; color: #ccc">netty</a> <a href="/tags/parser/" style="font-size: 12px; color: #ccc">parser</a> <a href="/tags/rpc/" style="font-size: 18px; color: #8e8e8e">rpc</a> <a href="/tags/ruby/" style="font-size: 18px; color: #8e8e8e">ruby</a> <a href="/tags/s2/" style="font-size: 12px; color: #ccc">s2</a> <a href="/tags/scala/" style="font-size: 12px; color: #ccc">scala</a> <a href="/tags/thrift/" style="font-size: 18px; color: #8e8e8e">thrift</a> <a href="/tags/varint/" style="font-size: 12px; color: #ccc">varint</a> <a href="/tags/zigzag/" style="font-size: 12px; color: #ccc">zigzag</a> <a href="/tags/排序算法/" style="font-size: 12px; color: #ccc">排序算法</a> <a href="/tags/架构/" style="font-size: 12px; color: #ccc">架构</a>
         </div>
       </div>
     
@@ -319,7 +320,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">21</span>
+              <span class="site-state-item-count">22</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -423,7 +424,7 @@
 <div class="theme-info">
   主题 -
   <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
-    NexT.Muse
+    NexT.Mist
   </a>
 </div>
 
@@ -500,30 +501,9 @@
 
   
 
-  
-    
-  
-
-  <script type="text/javascript">
-    var duoshuoQuery = {short_name:"wikimore"};
-    (function() {
-      var ds = document.createElement('script');
-      ds.type = 'text/javascript';ds.async = true;
-      ds.id = 'duoshuo-script';
-      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-      ds.charset = 'UTF-8';
-      (document.getElementsByTagName('head')[0]
-      || document.getElementsByTagName('body')[0]).appendChild(ds);
-    })();
-  </script>
-
-  
-    
-    <script src="/vendors/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
-    <script src="/js/src/hook-duoshuo.js"></script>
-  
 
 
+  
 
 
 
