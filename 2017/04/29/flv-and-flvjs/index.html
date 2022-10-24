@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="最近有个项目要用flvjs播放httpflv格式的纯音频流，在实践的过程中发现数据是在不停的加载，可是没有声音。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="flvjs不能播放纯音频问题解决">
+<meta property="og:url" content="https://wikimore.github.io/2017/04/29/flv-and-flvjs/index.html">
+<meta property="og:site_name" content="千流而下">
+<meta property="og:description" content="最近有个项目要用flvjs播放httpflv格式的纯音频流，在实践的过程中发现数据是在不停的加载，可是没有声音。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-04-29T05:52:49.000Z">
+<meta property="article:modified_time" content="2022-10-24T11:17:53.876Z">
+<meta property="article:author" content="黎渊">
+<meta property="article:tag" content="flv">
+<meta property="article:tag" content="flvjs">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>flvjs不能播放纯音频问题解决</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2017/09/15/netty-intro/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2017/02/25/mybatis-1/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://wikimore.github.io/2017/04/29/flv-and-flvjs/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://wikimore.github.io/2017/04/29/flv-and-flvjs/&text=flvjs不能播放纯音频问题解决"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://wikimore.github.io/2017/04/29/flv-and-flvjs/&title=flvjs不能播放纯音频问题解决"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://wikimore.github.io/2017/04/29/flv-and-flvjs/&is_video=false&description=flvjs不能播放纯音频问题解决"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=flvjs不能播放纯音频问题解决&body=Check out this article: https://wikimore.github.io/2017/04/29/flv-and-flvjs/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://wikimore.github.io/2017/04/29/flv-and-flvjs/&title=flvjs不能播放纯音频问题解决"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://wikimore.github.io/2017/04/29/flv-and-flvjs/&title=flvjs不能播放纯音频问题解决"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://wikimore.github.io/2017/04/29/flv-and-flvjs/&title=flvjs不能播放纯音频问题解决"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://wikimore.github.io/2017/04/29/flv-and-flvjs/&title=flvjs不能播放纯音频问题解决"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://wikimore.github.io/2017/04/29/flv-and-flvjs/&name=flvjs不能播放纯音频问题解决&description=&lt;p&gt;最近有个项目要用flvjs播放httpflv格式的纯音频流，在实践的过程中发现数据是在不停的加载，可是没有声音。&lt;/p&gt;"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://wikimore.github.io/2017/04/29/flv-and-flvjs/&t=flvjs不能播放纯音频问题解决"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#flv%E5%8D%8F%E8%AE%AE%E7%AE%80%E5%8D%95%E8%AF%B4%E6%98%8E-audio%E9%83%A8%E5%88%86"><span class="toc-number">1.</span> <span class="toc-text">flv协议简单说明(audio部分)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Header"><span class="toc-number">1.1.</span> <span class="toc-text">Header</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Body"><span class="toc-number">1.2.</span> <span class="toc-text">Body</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Audio-Tag"><span class="toc-number">1.2.1.</span> <span class="toc-text">Audio Tag</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#flvjs"><span class="toc-number">2.</span> <span class="toc-text">flvjs</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">3.</span> <span class="toc-text">总结</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        flvjs不能播放纯音频问题解决
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">黎渊</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2017-04-29T05:52:49.000Z" itemprop="datePublished">2017-04-29</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/flv/" rel="tag">flv</a>, <a class="tag-link-link" href="/tags/flvjs/" rel="tag">flvjs</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>最近有个项目要用flvjs播放httpflv格式的纯音频流，在实践的过程中发现数据是在不停的加载，可是没有声音。</p>
+<span id="more"></span>
+<p>遇到这样的问题，第一个想法就是协议是不是哪里不匹配，先了解flv协议是最好的选择。</p>
+<h3 id="flv协议简单说明-audio部分"><a href="#flv协议简单说明-audio部分" class="headerlink" title="flv协议简单说明(audio部分)"></a>flv协议简单说明(audio部分)</h3><p>FLV协议是adobe开发设计的，现在已经公开，在数据格式上类似SWF格式，主要分为<code>Header</code>和<code>Body</code>两个部分。</p>
+<h4 id="Header"><a href="#Header" class="headerlink" title="Header"></a>Header</h4><p>负责记录协议类型、版本、流信息、长度等信息。</p>
+<p>前3个字节固定是<code>FLV</code>3个字母的ASCII码，表明是FLV格式</p>
+<p>第4个字节表示FLV协议的版本，目前是第一个版本</p>
+<p>第5个字节表示FLV的流信息，暂时只有第6bit和第8bit有意义，其他位都应该是0，第6bit标识是否存在Audio，第8bit标识是否存在Video。</p>
+<p>第6-9个字节表示整个<code>Header</code>的长度，是一个UI32类型的数字，值一般是9，官方SPEC说在未来的版本可能会有更大的<code>Header</code>。</p>
+<h4 id="Body"><a href="#Body" class="headerlink" title="Body"></a>Body</h4><p>FLV协议的<code>Body</code>主要由一个UI32的指针和<code>TAG</code>交替循环组成。</p>
+<p>指针标识前一个<code>TAG</code>的长度，为什么不是后一个<code>TAG</code>的长度呢？可能和数据是流有关，有时候没法知道后面一个<code>TAG</code>的大小。</p>
+<p><code>TAG</code>包含各种数据类型，先说说<code>TAG</code>的格式定义吧。</p>
+<p>第一个字节的前2个bit为预留，第3个bit标识包是否需要过滤或预处理，后5个bit标识类型，目前支持的类型有</p>
+<ul>
+<li>8 Audio</li>
+<li>9 Video</li>
+<li>18 Script Data</li>
+</ul>
+<p>之后3个字节表示整个<code>TAG</code>的数据长度，从StreamID后开始计算的数据的长度。</p>
+<p>之后4个字节表示相对第一个<code>TAG</code>被接受的毫秒时间戳，第一个<code>TAG</code>始终是0，需要注意的是，前3字节是低位，第4字节表示高位。</p>
+<p>第9-11字节表示StreamID，SPEC要求始终为0。</p>
+<p>再后面分别根据TAG类型的不同标识不同类型Header，这个需要具体类型具体解析，已知的包括：</p>
+<ul>
+<li>AudioTagHeader 如果tagtype&#x3D;&#x3D;8</li>
+<li>VideoTagHeader 如果tagtype&#x3D;&#x3D;9</li>
+<li>EncryptionHeader 如果是否过滤 &#x3D;&#x3D; 1</li>
+<li>FilterParams 如果是否过滤 &#x3D;&#x3D; 1</li>
+</ul>
+<p>最后是真正的数据，如果是AudioTag那么就是音频数据，如果是VideoTag就是视频数据，如果是ScriptTag就是Script数据。</p>
+<blockquote>
+<p>因为本例只讨论纯音频流，所以我也没去了解VideoTag，下面介绍下AudioTag</p>
+</blockquote>
+<h5 id="Audio-Tag"><a href="#Audio-Tag" class="headerlink" title="Audio Tag"></a>Audio Tag</h5><p>AudioTag会定义声音的格式、采样率、采样大小、类型等等，最后是真正的音频数据。</p>
+<p>前4bit定义声音的格式：包括PCM、MP3、Nellymoser、AAC、Speex等等，5-6bit定义声音的采样率：从5.5 kHz~44kHz总共4种，第7bit标识声音采样大小，仅针对非压缩格式，第8bit标识声音类型，mono或者stereo。</p>
+<p>如果音频格式是AAC的话，还有一个字节表示AACPacketType，0标识AAC sequence header，1表示AAC raw data</p>
+<blockquote>
+<p>具体可以参考<a target="_blank" rel="noopener" href="https://www.adobe.com/content/dam/Adobe/en/devnet/flv/pdfs/video_file_format_spec_v10.pdf">flv-spec</a></p>
+</blockquote>
+<h3 id="flvjs"><a href="#flvjs" class="headerlink" title="flvjs"></a>flvjs</h3><p>简单了解了FLV协议，再回到flvjs不能播放的问题上，先了解下flvjs的原理，看了一下<a target="_blank" rel="noopener" href="https://github.com/Bilibili/flv.js/blob/master/docs/design.md">设计图</a>，感觉是FLV自己下载数据，然后按照flv的格式解析出真正的音频或者视频数据，再交由原生的播放器来播放。</p>
+<p>参照之前说的，数据下载是正常的，那么只有可能是编解码的问题，debug看看到底是哪里有问题，但是debug之后我发现所有的编解码都是正常的，只是有一个AMF解析错误，主要原因是onMetaData的数据是空的，而flvjs没有处理这个情况，造成数组越界，具体代码如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">try &#123;</span><br><span class="line">    var name = AMF.parseValue(arrayBuffer, dataOffset, dataSize); // dataOffset=24  dataSize=13</span><br><span class="line">    // name = &quot;onMetaData&quot; 然后下面的dataSize-name.size=0</span><br><span class="line">    var value = AMF.parseValue(arrayBuffer, dataOffset + name.size, dataSize - name.size);</span><br><span class="line">    data[name.data] = value.data;</span><br><span class="line">&#125; catch (e) &#123;</span><br><span class="line">    _logger2.default.e(&#x27;AMF&#x27;, e.toString());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>但是这个错误并不会影响后面数据解析的流程，到底是哪里的问题呢？之后我发现在解析完音频数据后，并没有将数据交给播放器播放。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">if (this._isInitialMetadataDispatched()) &#123;</span><br><span class="line">    // Non-initial metadata, force dispatch (or flush) parsed frames to remuxer</span><br><span class="line">    if (this._dispatch &amp;&amp; (this._audioTrack.length || this._videoTrack.length)) &#123;</span><br><span class="line">        this._onDataAvailable(this._audioTrack, this._videoTrack);</span><br><span class="line">    &#125;</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    this._audioInitialMetadataDispatched = true;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>_isInitialMetadataDispatched这个方法永远返回false。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">function _isInitialMetadataDispatched() &#123;</span><br><span class="line">    if (this._hasAudio &amp;&amp; this._hasVideo) &#123;</span><br><span class="line">        // both audio &amp; video</span><br><span class="line">        return this._audioInitialMetadataDispatched &amp;&amp; this._videoInitialMetadataDispatched;</span><br><span class="line">    &#125;</span><br><span class="line">    if (this._hasAudio &amp;&amp; !this._hasVideo) &#123;</span><br><span class="line">        // audio only</span><br><span class="line">        return this._audioInitialMetadataDispatched;</span><br><span class="line">    &#125;</span><br><span class="line">    if (!this._hasAudio &amp;&amp; this._hasVideo) &#123;</span><br><span class="line">        // video only</span><br><span class="line">        return this._videoInitialMetadataDispatched;</span><br><span class="line">    &#125;</span><br><span class="line">    return false;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>为什么这个方法一直返回false呢，原来flvjs会探测协议，发现既有音频数据也有视频数据(这就是flv协议Header中流信息定义的)，当flvjs解析完音频后，期望解析视频后一起交由播放器来播放，但是因为实际是没有视频数据，所以音频数据也不会被播放。</p>
+<p>目前该问题已经通过强制设置_hasVideo&#x3D;false解决，并且也反馈给flvjs的作者，新版flvjs也提供了配置来解决纯音频不能播放的问题。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>不停的解决问题其实就是不停的学习的过程，这是程序员必备的素质之一，对未知领域需要敬畏，但不能因为不了解而放弃。只要找到问题的原因，即使最后不能解决，也一样会有收获。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/categories/">分类</a></li>
+         
+          <li><a href="/tags/">标签</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#flv%E5%8D%8F%E8%AE%AE%E7%AE%80%E5%8D%95%E8%AF%B4%E6%98%8E-audio%E9%83%A8%E5%88%86"><span class="toc-number">1.</span> <span class="toc-text">flv协议简单说明(audio部分)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Header"><span class="toc-number">1.1.</span> <span class="toc-text">Header</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Body"><span class="toc-number">1.2.</span> <span class="toc-text">Body</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Audio-Tag"><span class="toc-number">1.2.1.</span> <span class="toc-text">Audio Tag</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#flvjs"><span class="toc-number">2.</span> <span class="toc-text">flvjs</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">3.</span> <span class="toc-text">总结</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://wikimore.github.io/2017/04/29/flv-and-flvjs/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://wikimore.github.io/2017/04/29/flv-and-flvjs/&text=flvjs不能播放纯音频问题解决"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://wikimore.github.io/2017/04/29/flv-and-flvjs/&title=flvjs不能播放纯音频问题解决"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://wikimore.github.io/2017/04/29/flv-and-flvjs/&is_video=false&description=flvjs不能播放纯音频问题解决"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=flvjs不能播放纯音频问题解决&body=Check out this article: https://wikimore.github.io/2017/04/29/flv-and-flvjs/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://wikimore.github.io/2017/04/29/flv-and-flvjs/&title=flvjs不能播放纯音频问题解决"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://wikimore.github.io/2017/04/29/flv-and-flvjs/&title=flvjs不能播放纯音频问题解决"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://wikimore.github.io/2017/04/29/flv-and-flvjs/&title=flvjs不能播放纯音频问题解决"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://wikimore.github.io/2017/04/29/flv-and-flvjs/&title=flvjs不能播放纯音频问题解决"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://wikimore.github.io/2017/04/29/flv-and-flvjs/&name=flvjs不能播放纯音频问题解决&description=&lt;p&gt;最近有个项目要用flvjs播放httpflv格式的纯音频流，在实践的过程中发现数据是在不停的加载，可是没有声音。&lt;/p&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://wikimore.github.io/2017/04/29/flv-and-flvjs/&t=flvjs不能播放纯音频问题解决"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2022-2025
+    黎渊
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

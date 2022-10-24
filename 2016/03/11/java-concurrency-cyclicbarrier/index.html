@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="CyclicBarrier是juc包下一个并发辅助类，类似于CountDownLatch，但又不同，CyclicBarrier保证一组线程在同一个地方互相等待，直到最后一个线程到来后，然后一起再继续向下执行。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java并发之CyclicBarrier">
+<meta property="og:url" content="https://wikimore.github.io/2016/03/11/java-concurrency-cyclicbarrier/index.html">
+<meta property="og:site_name" content="千流而下">
+<meta property="og:description" content="CyclicBarrier是juc包下一个并发辅助类，类似于CountDownLatch，但又不同，CyclicBarrier保证一组线程在同一个地方互相等待，直到最后一个线程到来后，然后一起再继续向下执行。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-03-10T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-10-24T11:17:53.872Z">
+<meta property="article:author" content="黎渊">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="concurrency">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Java并发之CyclicBarrier</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2016/03/12/java-concurrency-semaphore/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2016/03/10/java-concurrency-countdownlatch/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://wikimore.github.io/2016/03/11/java-concurrency-cyclicbarrier/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://wikimore.github.io/2016/03/11/java-concurrency-cyclicbarrier/&text=Java并发之CyclicBarrier"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://wikimore.github.io/2016/03/11/java-concurrency-cyclicbarrier/&title=Java并发之CyclicBarrier"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://wikimore.github.io/2016/03/11/java-concurrency-cyclicbarrier/&is_video=false&description=Java并发之CyclicBarrier"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Java并发之CyclicBarrier&body=Check out this article: https://wikimore.github.io/2016/03/11/java-concurrency-cyclicbarrier/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://wikimore.github.io/2016/03/11/java-concurrency-cyclicbarrier/&title=Java并发之CyclicBarrier"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://wikimore.github.io/2016/03/11/java-concurrency-cyclicbarrier/&title=Java并发之CyclicBarrier"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://wikimore.github.io/2016/03/11/java-concurrency-cyclicbarrier/&title=Java并发之CyclicBarrier"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://wikimore.github.io/2016/03/11/java-concurrency-cyclicbarrier/&title=Java并发之CyclicBarrier"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://wikimore.github.io/2016/03/11/java-concurrency-cyclicbarrier/&name=Java并发之CyclicBarrier&description=&lt;p&gt;CyclicBarrier是juc包下一个并发辅助类，类似于CountDownLatch，但又不同，CyclicBarrier保证一组线程在同一个地方互相等待，直到最后一个线程到来后，然后一起再继续向下执行。&lt;/p&gt;"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://wikimore.github.io/2016/03/11/java-concurrency-cyclicbarrier/&t=Java并发之CyclicBarrier"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Java并发之CyclicBarrier
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">黎渊</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2016-03-10T16:00:00.000Z" itemprop="datePublished">2016-03-11</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/concurrency/" rel="tag">concurrency</a>, <a class="tag-link-link" href="/tags/java/" rel="tag">java</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>CyclicBarrier是juc包下一个并发辅助类，类似于CountDownLatch，但又不同，CyclicBarrier保证一组线程在同一个地方互相等待，直到最后一个线程到来后，然后一起再继续向下执行。</p>
+<span id="more"></span>
+<p>CyclicBarrier提供了一个叫做<code>Generation(代/批)</code>的概念，每个<code>Generation</code>的线程由该<code>Generation</code>最后一个到达的唤醒其他先到的线程，一个CyclicBarrier允许有N个<code>Generation</code>。</p>
+<p>CyclicBarrier初始化支持两个参数:</p>
+<ul>
+<li>parties，int类型，标记多少个线程等待后，全部唤醒继续执行</li>
+<li>barrierAction，Runnable类型，如果不为null，最后一个到达barrier的线程会执行此Runnable</li>
+</ul>
+<p>最主要方法<code>await</code>，内部主要依赖<code>Lock</code>、<code>Condition</code>以及一个<code>count</code>计数来工作，<code>count</code>初始值为构造参数parties的值</p>
+<ul>
+<li><code>Lock</code>保证线程同步，同一时刻只有一个线程能够执行await的核心逻辑</li>
+<li>核心逻辑先做<code>--count</code>操作，然后判断<code>count计数</code>的值是否为0<ul>
+<li>如果不是，在<code>Condition</code>下等待</li>
+<li>如果是，执行barrierAction，然后唤醒所有等待在<code>Condition</code>的线程，最后新初始化一个<code>Generation</code>，并将parties的值赋值给<code>count</code>(重置计数)</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>注意：如果parties&#x3D;2，不要同时启动4个线程，因为并不能完全保证不同<code>Generation</code>的线程是顺序唤醒的，因为内部公用同一把<code>Lock</code></p>
+</blockquote>
+<p>代码示例：模拟轮渡载满才过河</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">public class Ferry &#123;</span><br><span class="line"></span><br><span class="line">  public static void main(String[] args) throws Throwable &#123;</span><br><span class="line">    int count = 4;</span><br><span class="line">    CyclicBarrier cyclicBarrier = new CyclicBarrier(count, new Runnable() &#123;</span><br><span class="line"></span><br><span class="line">      @Override</span><br><span class="line">      public void run() &#123;</span><br><span class="line">        System.out.println(&quot;船开了&quot;);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    Thread[] threads = new Thread[count];</span><br><span class="line">    for (int i = 0; i &lt; count; i++) &#123;</span><br><span class="line">      Thread t = new Thread(new Runnable() &#123;</span><br><span class="line"></span><br><span class="line">        @Override</span><br><span class="line">        public void run() &#123;</span><br><span class="line">          try &#123;</span><br><span class="line">            System.out.println(Thread.currentThread().getName() + &quot;等待过河&quot;);</span><br><span class="line">            cyclicBarrier.await();</span><br><span class="line">            System.out.println(Thread.currentThread().getName() + &quot;过河成功&quot;);</span><br><span class="line">          &#125; catch (InterruptedException e) &#123;</span><br><span class="line">          &#125; catch (BrokenBarrierException e) &#123;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;);</span><br><span class="line">      threads[i] = t;</span><br><span class="line">    &#125;</span><br><span class="line">    for (int i = 0; i &lt; count; i++) &#123;</span><br><span class="line">      threads[i].start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Thread.sleep(10000);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Thread-3等待过河</span><br><span class="line">Thread-2等待过河</span><br><span class="line">Thread-0等待过河</span><br><span class="line">Thread-1等待过河</span><br><span class="line">船开了</span><br><span class="line">Thread-1过河成功</span><br><span class="line">Thread-0过河成功</span><br><span class="line">Thread-2过河成功</span><br><span class="line">Thread-3过河成功</span><br></pre></td></tr></table></figure>
+<p>可以发现最后到达的线程会先执行(这个毋庸置疑)，其他线程随机顺序，这主要是因为内部的<code>Lock</code>使用的是非公平的，所以并非先到先执行。</p>
+<p>CyclicBarrier可以保证多个线程在某一处互相等待，然后继续执行，在某些特定的场景下使用会非常方便、有效。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/categories/">分类</a></li>
+         
+          <li><a href="/tags/">标签</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://wikimore.github.io/2016/03/11/java-concurrency-cyclicbarrier/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://wikimore.github.io/2016/03/11/java-concurrency-cyclicbarrier/&text=Java并发之CyclicBarrier"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://wikimore.github.io/2016/03/11/java-concurrency-cyclicbarrier/&title=Java并发之CyclicBarrier"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://wikimore.github.io/2016/03/11/java-concurrency-cyclicbarrier/&is_video=false&description=Java并发之CyclicBarrier"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Java并发之CyclicBarrier&body=Check out this article: https://wikimore.github.io/2016/03/11/java-concurrency-cyclicbarrier/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://wikimore.github.io/2016/03/11/java-concurrency-cyclicbarrier/&title=Java并发之CyclicBarrier"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://wikimore.github.io/2016/03/11/java-concurrency-cyclicbarrier/&title=Java并发之CyclicBarrier"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://wikimore.github.io/2016/03/11/java-concurrency-cyclicbarrier/&title=Java并发之CyclicBarrier"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://wikimore.github.io/2016/03/11/java-concurrency-cyclicbarrier/&title=Java并发之CyclicBarrier"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://wikimore.github.io/2016/03/11/java-concurrency-cyclicbarrier/&name=Java并发之CyclicBarrier&description=&lt;p&gt;CyclicBarrier是juc包下一个并发辅助类，类似于CountDownLatch，但又不同，CyclicBarrier保证一组线程在同一个地方互相等待，直到最后一个线程到来后，然后一起再继续向下执行。&lt;/p&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://wikimore.github.io/2016/03/11/java-concurrency-cyclicbarrier/&t=Java并发之CyclicBarrier"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2022-2025
+    黎渊
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

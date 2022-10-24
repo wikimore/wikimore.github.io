@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="这篇文章将介绍Java7的HashMap实现. Hash这个数据结构的实现有2种方式来解决hash冲突:开放地址Hash法和链表法. 本文不介绍开放地址Hash法,因为Java的HashMap是用链表法实现的.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="说一说Java的HashMap">
+<meta property="og:url" content="https://wikimore.github.io/2014/03/24/intro-java-hashmap/index.html">
+<meta property="og:site_name" content="千流而下">
+<meta property="og:description" content="这篇文章将介绍Java7的HashMap实现. Hash这个数据结构的实现有2种方式来解决hash冲突:开放地址Hash法和链表法. 本文不介绍开放地址Hash法,因为Java的HashMap是用链表法实现的.">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wikimore.github.io/assets/img/hashmap_attr.png">
+<meta property="og:image" content="https://wikimore.github.io/assets/img/hashmap.png">
+<meta property="article:published_time" content="2014-03-23T19:10:40.000Z">
+<meta property="article:modified_time" content="2022-10-24T11:17:53.874Z">
+<meta property="article:author" content="黎渊">
+<meta property="article:tag" content="java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wikimore.github.io/assets/img/hashmap_attr.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>说一说Java的HashMap</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2014/11/15/how-to-use-s2-geometry-lib-build-a-position-system/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2014/03/20/how-to-build-a-feed-system/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://wikimore.github.io/2014/03/24/intro-java-hashmap/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://wikimore.github.io/2014/03/24/intro-java-hashmap/&text=说一说Java的HashMap"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://wikimore.github.io/2014/03/24/intro-java-hashmap/&title=说一说Java的HashMap"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://wikimore.github.io/2014/03/24/intro-java-hashmap/&is_video=false&description=说一说Java的HashMap"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=说一说Java的HashMap&body=Check out this article: https://wikimore.github.io/2014/03/24/intro-java-hashmap/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://wikimore.github.io/2014/03/24/intro-java-hashmap/&title=说一说Java的HashMap"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://wikimore.github.io/2014/03/24/intro-java-hashmap/&title=说一说Java的HashMap"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://wikimore.github.io/2014/03/24/intro-java-hashmap/&title=说一说Java的HashMap"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://wikimore.github.io/2014/03/24/intro-java-hashmap/&title=说一说Java的HashMap"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://wikimore.github.io/2014/03/24/intro-java-hashmap/&name=说一说Java的HashMap&description=&lt;p&gt;这篇文章将介绍Java7的HashMap实现.&lt;/p&gt;
+&lt;p&gt;Hash这个数据结构的实现有2种方式来解决hash冲突:&lt;code&gt;开放地址Hash法&lt;/code&gt;和&lt;code&gt;链表法&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;本文不介绍&lt;code&gt;开放地址Hash法&lt;/code&gt;,因为Java的HashMap是用&lt;code&gt;链表法&lt;/code&gt;实现的.&lt;/p&gt;"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://wikimore.github.io/2014/03/24/intro-java-hashmap/&t=说一说Java的HashMap"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        说一说Java的HashMap
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">黎渊</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2014-03-23T19:10:40.000Z" itemprop="datePublished">2014-03-24</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/java/" rel="tag">java</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>这篇文章将介绍Java7的HashMap实现.</p>
+<p>Hash这个数据结构的实现有2种方式来解决hash冲突:<code>开放地址Hash法</code>和<code>链表法</code>.</p>
+<p>本文不介绍<code>开放地址Hash法</code>,因为Java的HashMap是用<code>链表法</code>实现的.</p>
+<span id="more"></span>
+
+<p>下图是HashMap的属性结构</p>
+<p><img src="/assets/img/hashmap_attr.png" alt="image"></p>
+<ul>
+<li>实现说明<ul>
+<li>table,一个<code>Entry</code>的<code>Array</code>,<code>Array</code>的每一位我们认为是一个<code>slot</code>,每个<code>slot</code>中可能存在零个到多个<code>Entry</code>,多个<code>Entry</code>组成一个单向链表,后加入的元素永远在链表的首位,最先加入的元素在链表尾部.</li>
+<li><code>Entry</code>存储我们的KEY和VALUE,有4个属性:key|value|next|hash,next是指向下一个<code>Entry</code>的指针,hash是key的hash值.</li>
+<li>loadFactor,HashMap中Entry和slot的比值大于loadFactor时,<code>Array</code>resize,同时rehash.</li>
+<li>modCount,HashMap被修改的次数,当遍历时会比较modCount来达到一旦发现修改就快速抛出异常的目的.</li>
+<li>threshold,<code>Entry</code>Array的大小.</li>
+<li>size,HashMap中当前元素的个数.</li>
+<li>Java7的版本会根据threshold的不同,改变hash函数的hashSeed,默认是<code>2^31-1</code></li>
+</ul>
+</li>
+</ul>
+<p><code>HashMap可以理解成一个数组,而数组的每一项可能是一个单向链表.</code></p>
+<p>下图是一个loadFactor为1,slot数为6,有6个元素(Entry)的HashMap,有3个key对应的Entry哈希到了slot0上,并且组成了一个单向的链表,slot1&#x2F;3&#x2F;5分别哈希到了一个Entry,而slot2&#x2F;4没有哈希到任何Entry.</p>
+<p><img src="/assets/img/hashmap.png" alt="image"></p>
+<ul>
+<li><p>PUT</p>
+<ul>
+<li>1.检查table是否为empty,如果为empty,则要初始化,默认初始大小是16.</li>
+<li>2.判断key是否为null,如果为null,将初始化一个hash值等于0的Entry到table的slot0中(也就是说key为null的Entry永远在slot0中).</li>
+<li>3.key不为null,计算key的hash值.</li>
+<li>4.根据hash值和table的长度计算slot的index(hash值模上table的长度).</li>
+<li>5.用当前key和其hash值与该slot的每一个Entry的key和hash比较,如果存在key和hash值都相同的,表示put一个已经存在的key,那么用当前的value替换掉Entry的oldValue,并且返回oldValue.</li>
+<li>6.如果不存在key和hash值都相同的情况,表示put了一个不存在的key,modCount加1,那么先根据loadFactor|threshold和当前HashMap的size,计算是否要对table进行resize,resize的策略是直接扩展到当前的2倍.</li>
+<li>7.之后初始化一个newEntry,newEntry的next指针指向过去slotN指向的Entry,slotN指向newEntry.</li>
+</ul>
+</li>
+<li><p>GET</p>
+<ul>
+<li>1.检查table是否为empty,如果为empty,返回null.</li>
+<li>2.判断key是否为null,如果为null,到slot0中查找是否有存在key&#x3D;null的Entry,存在返回Entry的value,否则返回null.</li>
+<li>3.key不为null,计算key的hash值.</li>
+<li>4.根据hash值和table的长度计算slot的index(hash值模上table的长度).</li>
+<li>5.用当前key和其hash值与该slot的每一个Entry的key和hash比较,如果存在key和hash值都相同的,返回该Entry的value,否则返回null.</li>
+<li>6.如果不存在key和hash值都相同的情况,表示该key不存在,返回null.</li>
+</ul>
+</li>
+<li><p>REMOVE</p>
+<ul>
+<li>1.检查table是否为empty,如果为empty,返回null.</li>
+<li>2.计算key的hash值,然后找到对应的slot.</li>
+<li>3.遍历该slot中的每一个Entry,判断hash和key是否与要删除的相同,如果有相同的就删除,并返回该Entry,否则返回null</li>
+<li>4.判断返回的Entry是否是null,不是就返回Entry的value.</li>
+</ul>
+</li>
+</ul>
+<p>其他的API方法也大同小异,在这里不做详细的说明.</p>
+<ul>
+<li>使用注意<ul>
+<li>不可并发put,会造成死循环,如果要并发put,可以使用<code>ConcurrentHashMap</code>.</li>
+<li>遍历时不可修改,会抛出<code>ConcurrentModificationException</code>.</li>
+<li>如果遍历value,使用<code>entrySet</code>,不要使用<code>keySet</code>,减少遍历次数.</li>
+<li><code>putAll</code>要注意,有时会造成2次resize.</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/categories/">分类</a></li>
+         
+          <li><a href="/tags/">标签</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://wikimore.github.io/2014/03/24/intro-java-hashmap/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://wikimore.github.io/2014/03/24/intro-java-hashmap/&text=说一说Java的HashMap"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://wikimore.github.io/2014/03/24/intro-java-hashmap/&title=说一说Java的HashMap"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://wikimore.github.io/2014/03/24/intro-java-hashmap/&is_video=false&description=说一说Java的HashMap"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=说一说Java的HashMap&body=Check out this article: https://wikimore.github.io/2014/03/24/intro-java-hashmap/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://wikimore.github.io/2014/03/24/intro-java-hashmap/&title=说一说Java的HashMap"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://wikimore.github.io/2014/03/24/intro-java-hashmap/&title=说一说Java的HashMap"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://wikimore.github.io/2014/03/24/intro-java-hashmap/&title=说一说Java的HashMap"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://wikimore.github.io/2014/03/24/intro-java-hashmap/&title=说一说Java的HashMap"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://wikimore.github.io/2014/03/24/intro-java-hashmap/&name=说一说Java的HashMap&description=&lt;p&gt;这篇文章将介绍Java7的HashMap实现.&lt;/p&gt;
+&lt;p&gt;Hash这个数据结构的实现有2种方式来解决hash冲突:&lt;code&gt;开放地址Hash法&lt;/code&gt;和&lt;code&gt;链表法&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;本文不介绍&lt;code&gt;开放地址Hash法&lt;/code&gt;,因为Java的HashMap是用&lt;code&gt;链表法&lt;/code&gt;实现的.&lt;/p&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://wikimore.github.io/2014/03/24/intro-java-hashmap/&t=说一说Java的HashMap"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2022-2025
+    黎渊
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

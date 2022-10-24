@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="最近升级到Spring4.x，DAO层也同步升级到最新版本的mybatis，写了一些代码生成插件，同时也学习下mybatis，不过代码注释确实不多，不过主流程还算能够看懂。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mybatis初探">
+<meta property="og:url" content="https://wikimore.github.io/2017/02/25/mybatis-1/index.html">
+<meta property="og:site_name" content="千流而下">
+<meta property="og:description" content="最近升级到Spring4.x，DAO层也同步升级到最新版本的mybatis，写了一些代码生成插件，同时也学习下mybatis，不过代码注释确实不多，不过主流程还算能够看懂。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wikimore.github.io/assets/img/mybatis001.png">
+<meta property="article:published_time" content="2017-02-25T15:04:47.000Z">
+<meta property="article:modified_time" content="2022-10-24T11:17:53.864Z">
+<meta property="article:author" content="黎渊">
+<meta property="article:tag" content="mybatis">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wikimore.github.io/assets/img/mybatis001.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>mybatis初探</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2017/04/29/flv-and-flvjs/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2016/09/22/zig-zag-intro/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://wikimore.github.io/2017/02/25/mybatis-1/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://wikimore.github.io/2017/02/25/mybatis-1/&text=mybatis初探"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://wikimore.github.io/2017/02/25/mybatis-1/&title=mybatis初探"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://wikimore.github.io/2017/02/25/mybatis-1/&is_video=false&description=mybatis初探"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=mybatis初探&body=Check out this article: https://wikimore.github.io/2017/02/25/mybatis-1/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://wikimore.github.io/2017/02/25/mybatis-1/&title=mybatis初探"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://wikimore.github.io/2017/02/25/mybatis-1/&title=mybatis初探"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://wikimore.github.io/2017/02/25/mybatis-1/&title=mybatis初探"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://wikimore.github.io/2017/02/25/mybatis-1/&title=mybatis初探"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://wikimore.github.io/2017/02/25/mybatis-1/&name=mybatis初探&description=&lt;p&gt;最近升级到Spring4.x，DAO层也同步升级到最新版本的mybatis，写了一些代码生成插件，同时也学习下mybatis，不过代码注释确实不多，不过主流程还算能够看懂。&lt;/p&gt;"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://wikimore.github.io/2017/02/25/mybatis-1/&t=mybatis初探"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#Configuration"><span class="toc-number">1.</span> <span class="toc-text">Configuration</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#MapperProxy"><span class="toc-number">2.</span> <span class="toc-text">MapperProxy</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#SqlSession"><span class="toc-number">3.</span> <span class="toc-text">SqlSession</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Executor"><span class="toc-number">4.</span> <span class="toc-text">Executor</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#CachingExecutor"><span class="toc-number">4.1.</span> <span class="toc-text">CachingExecutor</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#BatchExecutor"><span class="toc-number">4.2.</span> <span class="toc-text">BatchExecutor</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#ReuseExecutor"><span class="toc-number">4.3.</span> <span class="toc-text">ReuseExecutor</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#SimpleExecutor"><span class="toc-number">4.4.</span> <span class="toc-text">SimpleExecutor</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#StatementHandler"><span class="toc-number">5.</span> <span class="toc-text">StatementHandler</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">6.</span> <span class="toc-text">总结</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        mybatis初探
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">黎渊</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2017-02-25T15:04:47.000Z" itemprop="datePublished">2017-02-25</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/mybatis/" rel="tag">mybatis</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>最近升级到Spring4.x，DAO层也同步升级到最新版本的mybatis，写了一些代码生成插件，同时也学习下mybatis，不过代码注释确实不多，不过主流程还算能够看懂。</p>
+<span id="more"></span>
+<p>理解mybatis的调用流程，先确定核心的几个类：</p>
+<ul>
+<li>Configuration</li>
+<li>MapperProxy</li>
+<li>SqlSession</li>
+<li>Executor</li>
+<li>StatementHandler</li>
+</ul>
+<p>通过这些类，组成了mybatis核心调用流程。</p>
+<h4 id="Configuration"><a href="#Configuration" class="headerlink" title="Configuration"></a>Configuration</h4><p>mybatis启动会做加载全局配置文件、关联Mapper对应的sql、关联数据源等操作，结果会全部汇聚到Configuration中。</p>
+<p>Configuration中的属性有很多，我比较关注的是：</p>
+<ul>
+<li>MapperRegistry管理所有的Mapper</li>
+<li>Envrionment管理数据源和事务</li>
+<li>TypeHandlerRegistry管理所有JDBC类型与Java类型之间的转换</li>
+<li>InterceptorChain管理拦截器</li>
+<li>MappedStatement执行sql映射关系缓存</li>
+</ul>
+<p>还有很多其他属性，如缓存，但是说实话，这个我真的用不到。</p>
+<p>Configuration实例会贯穿mybatis整个调用链中，可以理解为整个DAO层的Context上下文。</p>
+<h4 id="MapperProxy"><a href="#MapperProxy" class="headerlink" title="MapperProxy"></a>MapperProxy</h4><p>mybatis和ibatis从表面上看最大的不同就是它只有接口(Mapper)，那么我们调用接口的实现在哪？</p>
+<p>mybatis是对象SQL映射，调用一个SQL的过程可以抽象为3个主要部分：</p>
+<ul>
+<li>解析参数</li>
+<li>执行映射SQL</li>
+<li>解析结果</li>
+</ul>
+<p>既然每个实现的操作步骤是类似的，mybatis就用动态代理来生成代理实现类，而不用每个都生成一个实现，这个动态代理类就是MapperProxy。</p>
+<p>MapperProxy看名字就很明显，是代理Mapper的，其本身实现了InvocationHandler接口，内部主要有3个属性：</p>
+<ul>
+<li>mapperInterface代理的mapper接口类，如<code>GiftMapper</code></li>
+<li>methodCache是一个Map结构，key是Method，value中缓存的是MapperMethod对象</li>
+<li>sqlSession</li>
+</ul>
+<p>MapperMethod内部依赖：</p>
+<ul>
+<li>MethodSignature管理包括参数类型、参数转换、返回值类型、返回值类型转换等属性;</li>
+<li>SqlCommand管理SQL的id和类型</li>
+</ul>
+<h4 id="SqlSession"><a href="#SqlSession" class="headerlink" title="SqlSession"></a>SqlSession</h4><p>一次事务可以有一个或者多个操作，通常在一个线程中依次执行，整个过程可以称之为一个会话，SqlSession我理解就是会话的抽象，会话结束后，也需要销毁。</p>
+<p>SqlSession提供了多种对数据库操作的接口，如：</p>
+<ul>
+<li>selectOne</li>
+<li>selectMap</li>
+<li>selectList</li>
+<li>update</li>
+<li>insert</li>
+<li>delete</li>
+<li>commit</li>
+<li>rollback</li>
+</ul>
+<p>基本涵盖了绝大多数数据库操作。</p>
+<p>SqlSession的实现主要分2类：</p>
+<ul>
+<li>DefaultSqlSession</li>
+<li>SqlSessionManager和SqlSessionTemplate</li>
+</ul>
+<p>DefaultSqlSession内部依赖Executor来执行具体的SQL，需要自己做事务操作，连接释放，异常处理等，但是这样对用户不是特别友好，所以就有了SqlSessionManager和SqlSessionTemplate。</p>
+<p>SqlSessionManager用于独立使用mybatis，SqlSessionTemplate用于mybatis与spring集成。他们内部都依赖于一个DefaultSqlSession，并用的动态代理的方式，依赖SqlSessionInterceptor来做连接释放、异常处理、事务操作等。唯一的不同是SqlSessionManager对线程缓存了DefaultSqlSession的代理实例，而SqlSessionTemplate并没有缓存，而是根据事务声明情况分别采取不同的策略。</p>
+<h4 id="Executor"><a href="#Executor" class="headerlink" title="Executor"></a>Executor</h4><p>Executor并非最终执行SQL的抽象，其内部会构造StatementHandler实例，并最终由StatementHandler来执行SQL,抽象出Executor层mybatis做了缓存、批处理、Statement重用以及最基本的实现。</p>
+<ul>
+<li>CachingExecutor</li>
+<li>BatchExecutor</li>
+<li>ReuseExecutor</li>
+<li>SimpleExecutor</li>
+</ul>
+<h5 id="CachingExecutor"><a href="#CachingExecutor" class="headerlink" title="CachingExecutor"></a>CachingExecutor</h5><p>结合一些分布式缓存来提高查询效率，降低数据库压力。不过一般互联网会使用到mybatis缓存的并不多见，单体的系统可能会用到，个人认为作为一个可选模块可能更好，这里不多介绍。</p>
+<h5 id="BatchExecutor"><a href="#BatchExecutor" class="headerlink" title="BatchExecutor"></a>BatchExecutor</h5><p>继承自抽象类BaseExecutor，一些数据迁移、数据交换的场景可能会用到，能够极大的提升效率。</p>
+<h5 id="ReuseExecutor"><a href="#ReuseExecutor" class="headerlink" title="ReuseExecutor"></a>ReuseExecutor</h5><p>继承自抽象类BaseExecutor，内部使用一个Map来缓存Statement，在一个事务中尽量重用Statement</p>
+<h5 id="SimpleExecutor"><a href="#SimpleExecutor" class="headerlink" title="SimpleExecutor"></a>SimpleExecutor</h5><p>最基本的Executor实现，继承自抽象类BaseExecutor，默认使用此Executor。</p>
+<h4 id="StatementHandler"><a href="#StatementHandler" class="headerlink" title="StatementHandler"></a>StatementHandler</h4><p>最终依赖JDBC执行SQL的抽象，分为：</p>
+<ul>
+<li>CallableStatementHandler</li>
+<li>PreparedStatementHandler</li>
+<li>SimpleStatementHandler</li>
+<li>RoutingStatementHandler</li>
+</ul>
+<p>前3个对应JDBC的CallableStatement、PreparedStatement和Statement。</p>
+<p>RoutingStatementHandler采用委托模式，根据实际请求，委托对应的StatementHandler来执行Statement。</p>
+<p>StatementHandler依赖ParameterHandler来处理参数，依赖ResultSetHandler来处理SQL执行结果，依赖TypeHandler来处理JDBC Type与Java Type之间的转换。</p>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>调用流程的关系如下图:</p>
+<p><img src="/assets/img/mybatis001.png" alt="image"></p>
+<p>理解这几个抽象，应该就能大概的了解mybatis的整个调用流程了。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/categories/">分类</a></li>
+         
+          <li><a href="/tags/">标签</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#Configuration"><span class="toc-number">1.</span> <span class="toc-text">Configuration</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#MapperProxy"><span class="toc-number">2.</span> <span class="toc-text">MapperProxy</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#SqlSession"><span class="toc-number">3.</span> <span class="toc-text">SqlSession</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Executor"><span class="toc-number">4.</span> <span class="toc-text">Executor</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#CachingExecutor"><span class="toc-number">4.1.</span> <span class="toc-text">CachingExecutor</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#BatchExecutor"><span class="toc-number">4.2.</span> <span class="toc-text">BatchExecutor</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#ReuseExecutor"><span class="toc-number">4.3.</span> <span class="toc-text">ReuseExecutor</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#SimpleExecutor"><span class="toc-number">4.4.</span> <span class="toc-text">SimpleExecutor</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#StatementHandler"><span class="toc-number">5.</span> <span class="toc-text">StatementHandler</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">6.</span> <span class="toc-text">总结</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://wikimore.github.io/2017/02/25/mybatis-1/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://wikimore.github.io/2017/02/25/mybatis-1/&text=mybatis初探"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://wikimore.github.io/2017/02/25/mybatis-1/&title=mybatis初探"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://wikimore.github.io/2017/02/25/mybatis-1/&is_video=false&description=mybatis初探"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=mybatis初探&body=Check out this article: https://wikimore.github.io/2017/02/25/mybatis-1/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://wikimore.github.io/2017/02/25/mybatis-1/&title=mybatis初探"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://wikimore.github.io/2017/02/25/mybatis-1/&title=mybatis初探"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://wikimore.github.io/2017/02/25/mybatis-1/&title=mybatis初探"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://wikimore.github.io/2017/02/25/mybatis-1/&title=mybatis初探"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://wikimore.github.io/2017/02/25/mybatis-1/&name=mybatis初探&description=&lt;p&gt;最近升级到Spring4.x，DAO层也同步升级到最新版本的mybatis，写了一些代码生成插件，同时也学习下mybatis，不过代码注释确实不多，不过主流程还算能够看懂。&lt;/p&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://wikimore.github.io/2017/02/25/mybatis-1/&t=mybatis初探"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2022-2025
+    黎渊
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

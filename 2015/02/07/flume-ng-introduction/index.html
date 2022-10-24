@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="00 概述最近参与了公司数据收集平台的开发，对Flume做了一点简单的了解。 Flume从宏观上主要分为3个模块：  Source：数据来源，如日志，消息中间件等 Channel：管道，传输、缓冲数据，如文件系统、内存等，我们可以将Channel理解为管道或者队列 Sink：数据目的地，如HDFS等">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Flume-ng工作原理简介">
+<meta property="og:url" content="https://wikimore.github.io/2015/02/07/flume-ng-introduction/index.html">
+<meta property="og:site_name" content="千流而下">
+<meta property="og:description" content="00 概述最近参与了公司数据收集平台的开发，对Flume做了一点简单的了解。 Flume从宏观上主要分为3个模块：  Source：数据来源，如日志，消息中间件等 Channel：管道，传输、缓冲数据，如文件系统、内存等，我们可以将Channel理解为管道或者队列 Sink：数据目的地，如HDFS等">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wikimore.github.io/assets/img/flume00.png">
+<meta property="og:image" content="https://wikimore.github.io/assets/img/flume01.png">
+<meta property="article:published_time" content="2015-02-06T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-10-24T11:17:53.865Z">
+<meta property="article:author" content="黎渊">
+<meta property="article:tag" content="flume">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wikimore.github.io/assets/img/flume00.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Flume-ng工作原理简介</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2015/07/12/flume-ng-memory-channel/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2014/12/27/write-a-maven-plugin/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://wikimore.github.io/2015/02/07/flume-ng-introduction/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://wikimore.github.io/2015/02/07/flume-ng-introduction/&text=Flume-ng工作原理简介"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://wikimore.github.io/2015/02/07/flume-ng-introduction/&title=Flume-ng工作原理简介"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://wikimore.github.io/2015/02/07/flume-ng-introduction/&is_video=false&description=Flume-ng工作原理简介"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Flume-ng工作原理简介&body=Check out this article: https://wikimore.github.io/2015/02/07/flume-ng-introduction/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://wikimore.github.io/2015/02/07/flume-ng-introduction/&title=Flume-ng工作原理简介"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://wikimore.github.io/2015/02/07/flume-ng-introduction/&title=Flume-ng工作原理简介"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://wikimore.github.io/2015/02/07/flume-ng-introduction/&title=Flume-ng工作原理简介"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://wikimore.github.io/2015/02/07/flume-ng-introduction/&title=Flume-ng工作原理简介"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://wikimore.github.io/2015/02/07/flume-ng-introduction/&name=Flume-ng工作原理简介&description=&lt;h3 id=&#34;00-概述&#34;&gt;&lt;a href=&#34;#00-概述&#34; class=&#34;headerlink&#34; title=&#34;00 概述&#34;&gt;&lt;/a&gt;00 概述&lt;/h3&gt;&lt;p&gt;最近参与了公司数据收集平台的开发，对Flume做了一点简单的了解。&lt;/p&gt;
+&lt;p&gt;Flume从宏观上主要分为3个模块：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Source：数据来源，如日志，消息中间件等&lt;/li&gt;
+&lt;li&gt;Channel：管道，传输、缓冲数据，如文件系统、内存等，我们可以将Channel理解为管道或者队列&lt;/li&gt;
+&lt;li&gt;Sink：数据目的地，如HDFS等"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://wikimore.github.io/2015/02/07/flume-ng-introduction/&t=Flume-ng工作原理简介"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#00-%E6%A6%82%E8%BF%B0"><span class="toc-number">1.</span> <span class="toc-text">00 概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#01-%E6%95%B0%E6%8D%AE%E6%8A%BD%E8%B1%A1Event"><span class="toc-number">2.</span> <span class="toc-text">01 数据抽象Event</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#02-%E6%90%AC%E8%BF%90%E5%B7%A5Agent"><span class="toc-number">3.</span> <span class="toc-text">02 搬运工Agent</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#021-Source"><span class="toc-number">3.1.</span> <span class="toc-text">021 Source</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#022-Channel"><span class="toc-number">3.2.</span> <span class="toc-text">022 Channel</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#023-Sink"><span class="toc-number">3.3.</span> <span class="toc-text">023 Sink</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#03-%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">4.</span> <span class="toc-text">03 使用场景</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#031-%E6%94%B6%E9%9B%86%E6%97%A5%E5%BF%97"><span class="toc-number">4.1.</span> <span class="toc-text">031 收集日志</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#04-%E6%80%BB%E7%BB%93"><span class="toc-number">5.</span> <span class="toc-text">04 总结</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Flume-ng工作原理简介
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">黎渊</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2015-02-06T16:00:00.000Z" itemprop="datePublished">2015-02-07</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/flume/" rel="tag">flume</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h3 id="00-概述"><a href="#00-概述" class="headerlink" title="00 概述"></a>00 概述</h3><p>最近参与了公司数据收集平台的开发，对Flume做了一点简单的了解。</p>
+<p>Flume从宏观上主要分为3个模块：</p>
+<ul>
+<li>Source：数据来源，如日志，消息中间件等</li>
+<li>Channel：管道，传输、缓冲数据，如文件系统、内存等，我们可以将Channel理解为管道或者队列</li>
+<li>Sink：数据目的地，如HDFS等<span id="more"></span>
+数据从Source —-&gt; Channel —-&gt; Sink可能再到其他的Source —-&gt; Channel —-&gt; Sink，最终到达目的地。</li>
+</ul>
+<p>Flume通过Agent将上面三个模块合理的组织起来，Agent可以想象成一个搬运工，数据从A收集到B，中间可能经历1-N个搬运工。</p>
+<p>我们可以用下面这个图来描述Flume的工作流程</p>
+<img src="/assets/img/flume00.png" width = "100%" height = "400" alt="flume00" align="center" />
+
+<h3 id="01-数据抽象Event"><a href="#01-数据抽象Event" class="headerlink" title="01 数据抽象Event"></a>01 数据抽象Event</h3><p>数据在Flume的Scope中有一个统一的抽象—Event，包括两部分</p>
+<ul>
+<li>Header，一个Map</li>
+<li>Body，byte数组</li>
+</ul>
+<p>Header的数据可以落地，也可以不落地，增强了灵活性和扩展性，Body就是真正的数据了。</p>
+<h3 id="02-搬运工Agent"><a href="#02-搬运工Agent" class="headerlink" title="02 搬运工Agent"></a>02 搬运工Agent</h3><p>Agent是如何工作的呢？</p>
+<img src="/assets/img/flume01.png" width = "800" height = "300" alt="flume01" align="center" />
+
+<h4 id="021-Source"><a href="#021-Source" class="headerlink" title="021 Source"></a>021 Source</h4><p>Source通过SourceRunner来启动。SourceRunner有两个实现类：</p>
+<ul>
+<li>PollableSourceRunner</li>
+<li>EventDrivenSourceRunner</li>
+</ul>
+<p>PollableSourceRunner为PollableSource设计，内部使用一个线程，轮询获取Event，而EventDrivenSourceRunner没有这个轮询线程，直接依赖外部的事件触发来获取Event。</p>
+<p>典型PollableSource有KafkaSource和JmsSource，这都是典型的轮询拉模式，其他的Source，如HttpSource依赖Http请求来触发元数据获取事件。</p>
+<p>SourceRunner内部依赖一个Source实例，所以上面两种SourceRunner都会调用实际的Source实例来获取Event，区别就是触发方式。</p>
+<p>Source获取Event之后，就要把Event传递给Channel，这一步会委托ChannelProcessor，ChannelProcessor提供单个&#x2F;批量的Event操作方法，但是并不是简单的放进去，ChannelProcessor内部还委托Interceptor和ChannelSelector做了一些其他工作。</p>
+<p>Interceptor拦截器，负责对Event做一些修饰和过滤，如</p>
+<ul>
+<li>对数据做一个替换</li>
+<li>给Event增加时间戳</li>
+<li>过滤不符合条件的Event</li>
+</ul>
+<p>总之实现并配置需要的Interceptor，就可以在Event从Source进入Channel的过程中，做一些定制化的操作。</p>
+<p>ChannelSelector用来选择合适的Channel，有两个实现：</p>
+<ul>
+<li>MultiplexingChannelSelector</li>
+<li>ReplicatingChannelSelector</li>
+</ul>
+<p>MultiplexingChannelSelector用来做分流，譬如Event的header有个属性，值可能A|B|C，不同值的Event我们希望进入到不同的Channel。</p>
+<p>ReplicatingChannelSelector用来做复制，譬如Event我们既想记录到HDFS持久化，也想到spark做一些实时的计算，Event需要同时进入到两个Channel，然后到不同的Sink去。</p>
+<p>通过Interceptor的处理后，Event会进入到ChannelSelector选择的Channel中。</p>
+<h4 id="022-Channel"><a href="#022-Channel" class="headerlink" title="022 Channel"></a>022 Channel</h4><p>不同的Channel实现有不同的处理Event的方式，但都支持Transaction。</p>
+<ul>
+<li>MemoryChannel：内存缓冲，速度快，容量受限于内存，较小，会丢数据</li>
+<li>FileChannel：使用磁盘缓冲，速度慢，容量大，不会丢数据</li>
+<li>SpillableMemoryChannel：内存和磁盘切换，当Event个数较少时，使用内存缓冲，大于阈值后切换成使用磁盘缓冲，会丢数据</li>
+<li>KafkaChannel：使用Kafka做缓冲</li>
+</ul>
+<p>Event进入Channel的具体步骤为：</p>
+<ul>
+<li>Channel.getTransaction</li>
+<li>Transaction.begin(实现是空方法，什么都不做)</li>
+<li>Channel.putEvent(一次 OR 多次)</li>
+<li>Transaction.commit OR Transaction.rollback</li>
+</ul>
+<p>Event出Channel的具体步骤为：</p>
+<ul>
+<li>Channel.getTransaction</li>
+<li>Transaction.begin(实现是空方法，什么都不做)</li>
+<li>Channel.takeEvent(一次 OR 多次)</li>
+<li>Transaction.commit OR Transaction.rollback</li>
+</ul>
+<h4 id="023-Sink"><a href="#023-Sink" class="headerlink" title="023 Sink"></a>023 Sink</h4><p>Sink通过SinkRunner来启动。SinkRunner内部有一个线程，轮询的方式调用SinkProcessor，SinkProcessor再调用Sink，Sink再去Channel获取Event，最后写入到目标介质中。</p>
+<p>SinkProcessor有三个实现类：</p>
+<ul>
+<li>FailoverSinkProcessor：内部配置多个Sink，当一个出错时，故障转移</li>
+<li>LoadBalancingSinkProcessor：依赖SinkSeletor，SinkSeletor内部可能有一个或者多个Sink，选择不同的Sink，负载均衡</li>
+<li>DefaultSinkProcessor：默认依赖一个指定的Sink</li>
+</ul>
+<p>通过很多这样的Agent，数据可以方便移动到不同的存储介质中。</p>
+<h3 id="03-使用场景"><a href="#03-使用场景" class="headerlink" title="03 使用场景"></a>03 使用场景</h3><h4 id="031-收集日志"><a href="#031-收集日志" class="headerlink" title="031 收集日志"></a>031 收集日志</h4><p>通常Flume会以Agent的方式部署到所有的机器上，使用ExecSource作为数据源，执行tail -F操作指定目录(约定好的)，按行解析日志(日志格式要统一)，然后发送到Kafka集群中，Kafka后面可以根据业务的需要，继续用Agent导入到HDFS、Hbase、ES中，或者使用Spark做实时分析。</p>
+<h3 id="04-总结"><a href="#04-总结" class="headerlink" title="04 总结"></a>04 总结</h3><p>Flume是一个优秀的数据收集，迁移框架，感觉配合Kafka一起工作，可能更加灵活。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/categories/">分类</a></li>
+         
+          <li><a href="/tags/">标签</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#00-%E6%A6%82%E8%BF%B0"><span class="toc-number">1.</span> <span class="toc-text">00 概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#01-%E6%95%B0%E6%8D%AE%E6%8A%BD%E8%B1%A1Event"><span class="toc-number">2.</span> <span class="toc-text">01 数据抽象Event</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#02-%E6%90%AC%E8%BF%90%E5%B7%A5Agent"><span class="toc-number">3.</span> <span class="toc-text">02 搬运工Agent</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#021-Source"><span class="toc-number">3.1.</span> <span class="toc-text">021 Source</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#022-Channel"><span class="toc-number">3.2.</span> <span class="toc-text">022 Channel</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#023-Sink"><span class="toc-number">3.3.</span> <span class="toc-text">023 Sink</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#03-%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">4.</span> <span class="toc-text">03 使用场景</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#031-%E6%94%B6%E9%9B%86%E6%97%A5%E5%BF%97"><span class="toc-number">4.1.</span> <span class="toc-text">031 收集日志</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#04-%E6%80%BB%E7%BB%93"><span class="toc-number">5.</span> <span class="toc-text">04 总结</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://wikimore.github.io/2015/02/07/flume-ng-introduction/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://wikimore.github.io/2015/02/07/flume-ng-introduction/&text=Flume-ng工作原理简介"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://wikimore.github.io/2015/02/07/flume-ng-introduction/&title=Flume-ng工作原理简介"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://wikimore.github.io/2015/02/07/flume-ng-introduction/&is_video=false&description=Flume-ng工作原理简介"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Flume-ng工作原理简介&body=Check out this article: https://wikimore.github.io/2015/02/07/flume-ng-introduction/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://wikimore.github.io/2015/02/07/flume-ng-introduction/&title=Flume-ng工作原理简介"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://wikimore.github.io/2015/02/07/flume-ng-introduction/&title=Flume-ng工作原理简介"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://wikimore.github.io/2015/02/07/flume-ng-introduction/&title=Flume-ng工作原理简介"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://wikimore.github.io/2015/02/07/flume-ng-introduction/&title=Flume-ng工作原理简介"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://wikimore.github.io/2015/02/07/flume-ng-introduction/&name=Flume-ng工作原理简介&description=&lt;h3 id=&#34;00-概述&#34;&gt;&lt;a href=&#34;#00-概述&#34; class=&#34;headerlink&#34; title=&#34;00 概述&#34;&gt;&lt;/a&gt;00 概述&lt;/h3&gt;&lt;p&gt;最近参与了公司数据收集平台的开发，对Flume做了一点简单的了解。&lt;/p&gt;
+&lt;p&gt;Flume从宏观上主要分为3个模块：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Source：数据来源，如日志，消息中间件等&lt;/li&gt;
+&lt;li&gt;Channel：管道，传输、缓冲数据，如文件系统、内存等，我们可以将Channel理解为管道或者队列&lt;/li&gt;
+&lt;li&gt;Sink：数据目的地，如HDFS等"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://wikimore.github.io/2015/02/07/flume-ng-introduction/&t=Flume-ng工作原理简介"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2022-2025
+    黎渊
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

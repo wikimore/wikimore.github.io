@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="堆排序是一种基于比较的排序算法，可以简单的认为是一种改进的选择排序，虽然在实际中比快速排序要慢，但是其优势是最坏情况基本也是O(n log n)的时间复杂度，空间复杂度是O(1)，也就是不需要额外的内存空间。堆排序是稳定的排序算法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="排序算法之HeapSort">
+<meta property="og:url" content="https://wikimore.github.io/2016/03/03/heap-sort/index.html">
+<meta property="og:site_name" content="千流而下">
+<meta property="og:description" content="堆排序是一种基于比较的排序算法，可以简单的认为是一种改进的选择排序，虽然在实际中比快速排序要慢，但是其优势是最坏情况基本也是O(n log n)的时间复杂度，空间复杂度是O(1)，也就是不需要额外的内存空间。堆排序是稳定的排序算法。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wikimore.github.io/assets/img/heapsort001.png">
+<meta property="og:image" content="https://wikimore.github.io/assets/img/heapsort002.png">
+<meta property="og:image" content="https://wikimore.github.io/assets/img/heapsort003.png">
+<meta property="og:image" content="https://wikimore.github.io/assets/img/heapsort004.png">
+<meta property="og:image" content="https://wikimore.github.io/assets/img/heapsort005.png">
+<meta property="og:image" content="https://wikimore.github.io/assets/img/heapsort006.png">
+<meta property="og:image" content="https://wikimore.github.io/assets/img/heapsort007.png">
+<meta property="og:image" content="https://wikimore.github.io/assets/img/heapsort008.png">
+<meta property="og:image" content="https://wikimore.github.io/assets/img/heapsort009.png">
+<meta property="og:image" content="https://wikimore.github.io/assets/img/heapsort010.png">
+<meta property="og:image" content="https://wikimore.github.io/assets/img/heapsort011.png">
+<meta property="og:image" content="https://wikimore.github.io/assets/img/heapsort012.png">
+<meta property="og:image" content="https://wikimore.github.io/assets/img/heapsort013.png">
+<meta property="og:image" content="https://wikimore.github.io/assets/img/heapsort014.png">
+<meta property="og:image" content="https://wikimore.github.io/assets/img/heapsort015.png">
+<meta property="og:image" content="https://wikimore.github.io/assets/img/heapsort016.png">
+<meta property="article:published_time" content="2016-03-02T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-10-24T11:17:53.871Z">
+<meta property="article:author" content="黎渊">
+<meta property="article:tag" content="排序算法">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wikimore.github.io/assets/img/heapsort001.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>排序算法之HeapSort</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2016/03/10/java-concurrency-countdownlatch/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2016/01/10/aspectj-intro/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://wikimore.github.io/2016/03/03/heap-sort/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://wikimore.github.io/2016/03/03/heap-sort/&text=排序算法之HeapSort"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://wikimore.github.io/2016/03/03/heap-sort/&title=排序算法之HeapSort"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://wikimore.github.io/2016/03/03/heap-sort/&is_video=false&description=排序算法之HeapSort"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=排序算法之HeapSort&body=Check out this article: https://wikimore.github.io/2016/03/03/heap-sort/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://wikimore.github.io/2016/03/03/heap-sort/&title=排序算法之HeapSort"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://wikimore.github.io/2016/03/03/heap-sort/&title=排序算法之HeapSort"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://wikimore.github.io/2016/03/03/heap-sort/&title=排序算法之HeapSort"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://wikimore.github.io/2016/03/03/heap-sort/&title=排序算法之HeapSort"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://wikimore.github.io/2016/03/03/heap-sort/&name=排序算法之HeapSort&description=&lt;p&gt;堆排序是一种基于比较的排序算法，可以简单的认为是一种改进的选择排序，虽然在实际中比快速排序要慢，但是其优势是最坏情况基本也是O(n log n)的时间复杂度，空间复杂度是O(1)，也就是不需要额外的内存空间。堆排序是稳定的排序算法。&lt;/p&gt;"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://wikimore.github.io/2016/03/03/heap-sort/&t=排序算法之HeapSort"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        排序算法之HeapSort
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">黎渊</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2016-03-02T16:00:00.000Z" itemprop="datePublished">2016-03-03</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" rel="tag">排序算法</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>堆排序是一种基于比较的排序算法，可以简单的认为是一种改进的选择排序，虽然在实际中比快速排序要慢，但是其优势是最坏情况基本也是O(n log n)的时间复杂度，空间复杂度是O(1)，也就是不需要额外的内存空间。堆排序是稳定的排序算法。</p>
+<span id="more"></span>
+<p>理解堆排序首先要了解什么是堆，堆分为大根堆和小根堆，如果根节点是最小的数，为小根堆，根节点是最大的数，为大根堆，堆一般使用一维的数组来表示，可以看做是一个完全的二叉树：</p>
+<ul>
+<li>树的根节点是array[0]</li>
+<li>每个节点的左子节点为array[2i + 1]</li>
+<li>每个节点的右子节点为array[2i + 2]</li>
+<li>每个节点的父节点为array[floor((i - 1) &#x2F; 2)]</li>
+</ul>
+<p>堆排序算法可以被分成两个部分：</p>
+<ul>
+<li>建立大(小)根堆</li>
+<li>堆排序</li>
+</ul>
+<p>以上两部操作都涉及到<code>堆调整</code>，调整的目的是建立完全最大(小)根堆。</p>
+<p>建堆就是建立一个大根堆或者小根堆，以大根堆为例，假设有下列数组</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[1,4,7,6,11,5,8,2,10,9,3]</span><br></pre></td></tr></table></figure>
+<p>初始堆如下图：</p>
+<p><img src="/assets/img/heapsort001.png" alt="image"></p>
+<p>首先我们要建立<code>完全最大堆</code>，起始选取最后一个叶子节点的父节点，假设该节点为<code>array[i]</code>，本例<code>i = 4</code>，比较该节点与其子节点，如果子节点比其大，选取最大的子节点与其进行交换，该例子中<code>11 &gt; 9 &gt; 3</code>，所以不需要交换，然后比较<code>array[i--]</code>，同样的逻辑，这时<code>6 &gt; 2 &lt; 10</code>，所以交换6和10，变换后如下图(蓝色表示交换过位置)</p>
+<p><img src="/assets/img/heapsort002.png" alt="image"></p>
+<p>之后继续比较<code>array[i--]</code>，那么7和8要交换位置，变化结果如下</p>
+<p><img src="/assets/img/heapsort003.png" alt="image"></p>
+<p>之后继续比较<code>array[i--]</code>，4和11要交换位置，变化结果如下</p>
+<p><img src="/assets/img/heapsort004.png" alt="image"></p>
+<p>因为4和11交换后，4作为父节点，不一定满足完全大根堆，所以要比较4和其子节点，如果子节点大的话，需要交换，那么这一步的变换如下<br><img src="/assets/img/heapsort005.png" alt="image"></p>
+<p>之后继续比较<code>array[i--]</code>，1和11要交换位置，变化结果如下<br><img src="/assets/img/heapsort006.png" alt="image"></p>
+<p>因为1和11交换后，1作为父节点，不一定满足完全大根堆，所以要比较1和其子节点，如果子节点大的话，需要交换，那么这一步的变换如下<br><img src="/assets/img/heapsort007.png" alt="image"><br>之后同理，1沉到最下面<br><img src="/assets/img/heapsort008.png" alt="image"></p>
+<p>到此为止，建堆的过程就结束了。</p>
+<p>接下来要做<code>堆排序</code>，过程简单描述就是堆顶元素和数组最后一个元素交换位置，交换后，对二叉树进行剪枝，排除最后一个元素，然后从堆顶开始调整堆，重复上面的过程。</p>
+<p>变换图如下(绿色表示剪枝)<br><img src="/assets/img/heapsort009.png" alt="image"><br><img src="/assets/img/heapsort010.png" alt="image"><br><img src="/assets/img/heapsort011.png" alt="image"><br><img src="/assets/img/heapsort012.png" alt="image"><br><img src="/assets/img/heapsort013.png" alt="image"><br><img src="/assets/img/heapsort014.png" alt="image"><br><img src="/assets/img/heapsort015.png" alt="image"><br><img src="/assets/img/heapsort016.png" alt="image"></p>
+<p>到目前位置最后两位的数据排序是正确的，后面继续该流程就完成了整个堆排序的过程，这里就不继续贴图了。</p>
+<blockquote>
+<p>参考<br><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E5%A0%86%E6%8E%92%E5%BA%8F">堆排序-Wikipedia</a><br><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Heapsort">heapsort-Wikipedia</a><br><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Sorting_algorithm#Stability">Sorting_algorithm#Stability</a></p>
+</blockquote>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/categories/">分类</a></li>
+         
+          <li><a href="/tags/">标签</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://wikimore.github.io/2016/03/03/heap-sort/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://wikimore.github.io/2016/03/03/heap-sort/&text=排序算法之HeapSort"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://wikimore.github.io/2016/03/03/heap-sort/&title=排序算法之HeapSort"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://wikimore.github.io/2016/03/03/heap-sort/&is_video=false&description=排序算法之HeapSort"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=排序算法之HeapSort&body=Check out this article: https://wikimore.github.io/2016/03/03/heap-sort/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://wikimore.github.io/2016/03/03/heap-sort/&title=排序算法之HeapSort"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://wikimore.github.io/2016/03/03/heap-sort/&title=排序算法之HeapSort"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://wikimore.github.io/2016/03/03/heap-sort/&title=排序算法之HeapSort"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://wikimore.github.io/2016/03/03/heap-sort/&title=排序算法之HeapSort"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://wikimore.github.io/2016/03/03/heap-sort/&name=排序算法之HeapSort&description=&lt;p&gt;堆排序是一种基于比较的排序算法，可以简单的认为是一种改进的选择排序，虽然在实际中比快速排序要慢，但是其优势是最坏情况基本也是O(n log n)的时间复杂度，空间复杂度是O(1)，也就是不需要额外的内存空间。堆排序是稳定的排序算法。&lt;/p&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://wikimore.github.io/2016/03/03/heap-sort/&t=排序算法之HeapSort"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2022-2025
+    黎渊
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

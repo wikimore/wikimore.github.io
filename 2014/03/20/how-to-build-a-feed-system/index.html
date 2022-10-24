@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="feed系统就是类似于weibo和twitter的通过用户关注行为来帮助用户聚合的获取内容的系统. feed系统有两种模式,push和pull.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于构建feed系统的思考">
+<meta property="og:url" content="https://wikimore.github.io/2014/03/20/how-to-build-a-feed-system/index.html">
+<meta property="og:site_name" content="千流而下">
+<meta property="og:description" content="feed系统就是类似于weibo和twitter的通过用户关注行为来帮助用户聚合的获取内容的系统. feed系统有两种模式,push和pull.">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2014-03-20T13:10:40.000Z">
+<meta property="article:modified_time" content="2022-10-24T11:17:53.878Z">
+<meta property="article:author" content="黎渊">
+<meta property="article:tag" content="架构">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>关于构建feed系统的思考</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2014/03/24/intro-java-hashmap/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2014/03/18/ruby-mutex-and-monitormixin/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://wikimore.github.io/2014/03/20/how-to-build-a-feed-system/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://wikimore.github.io/2014/03/20/how-to-build-a-feed-system/&text=关于构建feed系统的思考"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://wikimore.github.io/2014/03/20/how-to-build-a-feed-system/&title=关于构建feed系统的思考"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://wikimore.github.io/2014/03/20/how-to-build-a-feed-system/&is_video=false&description=关于构建feed系统的思考"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=关于构建feed系统的思考&body=Check out this article: https://wikimore.github.io/2014/03/20/how-to-build-a-feed-system/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://wikimore.github.io/2014/03/20/how-to-build-a-feed-system/&title=关于构建feed系统的思考"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://wikimore.github.io/2014/03/20/how-to-build-a-feed-system/&title=关于构建feed系统的思考"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://wikimore.github.io/2014/03/20/how-to-build-a-feed-system/&title=关于构建feed系统的思考"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://wikimore.github.io/2014/03/20/how-to-build-a-feed-system/&title=关于构建feed系统的思考"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://wikimore.github.io/2014/03/20/how-to-build-a-feed-system/&name=关于构建feed系统的思考&description=&lt;p&gt;feed系统就是类似于weibo和twitter的通过用户关注行为来帮助用户聚合的获取内容的系统.&lt;/p&gt;
+&lt;p&gt;feed系统有两种模式,&lt;code&gt;push&lt;/code&gt;和&lt;code&gt;pull&lt;/code&gt;.&lt;/p&gt;"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://wikimore.github.io/2014/03/20/how-to-build-a-feed-system/&t=关于构建feed系统的思考"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        关于构建feed系统的思考
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">黎渊</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2014-03-20T13:10:40.000Z" itemprop="datePublished">2014-03-20</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/%E6%9E%B6%E6%9E%84/" rel="tag">架构</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>feed系统就是类似于weibo和twitter的通过用户关注行为来帮助用户聚合的获取内容的系统.</p>
+<p>feed系统有两种模式,<code>push</code>和<code>pull</code>.</p>
+<span id="more"></span>
+
+<ul>
+<li><p><code>push</code>模式就是当一个用户产生内容后,系统将内容推送到该用户所有粉丝的<code>收件箱</code>中,当粉丝数很小的时候这也许是一个不错的选择,但是如果有几百万甚至千万的粉丝的时候,假设推送到一个用户收件箱要1ms,那么全部推送完要多久?某些用户收到该内容可能要延迟几十分钟到几小时.而且<code>push</code>模式会用尽系统所有的资源,即使某些粉丝永远不会再使用该系统.</p>
+</li>
+<li><p><code>pull</code>模式就是当用户请求feed流时,系统到该用户的所有关注用户的<code>发件箱</code>中查询内容,聚合排序后返回给用户,省去了<code>push</code>模式的延迟,可以说是按需使用系统资源.但如果用户关注了2000人,这样查询的性能会成为首要面对的问题,可能需要做好shard,并行的查询再统一排序.</p>
+</li>
+</ul>
+<p>两种模式各有各的优势,但劣势也非常明显.</p>
+<p>如果想构建一个实时的,高性能的feed系统,我们要做什么呢?</p>
+<ul>
+<li>用户活跃度统计子系统</li>
+<li><code>push</code>和<code>pull</code>混合使用<ul>
+<li>活跃用户采用<code>push</code>模式</li>
+<li>按照用户活跃度采用不同的<code>push</code>优先级</li>
+<li>僵尸用户采用<code>pull</code>模式</li>
+</ul>
+</li>
+<li>优化<code>收件箱</code>和<code>发件箱</code>的数据结构</li>
+<li>缓存,活跃用户的数据一定要在内存中</li>
+<li>并行化</li>
+</ul>
+<p>这样就通过分级,减少实时<code>push</code>的用户数量,达到准实时的效果,并且降低单次<code>push</code>和<code>pull</code>的时间,提高了系统整体的速度和吞吐量.</p>
+<p>需要一些什么样的中间件呢?</p>
+<ul>
+<li>消息中间件,主要要完成推送任务的缓冲,异步化推送,譬如kafka,rabbitMQ.</li>
+<li>高查询性能的可扩展的能够支持列表设计的数据库,<code>pull</code>极其的快,存储用户的<code>发件箱</code>,譬如mysql.</li>
+<li>极其快速的可扩展的能够支持列表设计的数据库,存储活跃用户的<code>收件箱</code>,譬如redis,ssdb.</li>
+<li>极其快速的可扩展的支持linkedhash数据结构的数据库,存储用户的<code>粉丝</code>列表,譬如redis的zset.</li>
+<li>极其快速的内存数据库,存储活跃用户列表,譬如redis.</li>
+<li>有一个支持multi process的RPC框架那就更好了.</li>
+</ul>
+<p>大概想了这么多,不知道这样的系统能支撑一个什么样的数量级,至于去年听的weibo分享时说的streaming api我也不清楚具体是什么东西,不过应该很吊的样子,可能到他们的量级才会遇到那样的问题,我这个阶段也就只能思考到这个程度了,前几天还看到highscalability上有用elastic search做的feed流,感觉他们也算另辟蹊径吧.</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/categories/">分类</a></li>
+         
+          <li><a href="/tags/">标签</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://wikimore.github.io/2014/03/20/how-to-build-a-feed-system/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://wikimore.github.io/2014/03/20/how-to-build-a-feed-system/&text=关于构建feed系统的思考"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://wikimore.github.io/2014/03/20/how-to-build-a-feed-system/&title=关于构建feed系统的思考"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://wikimore.github.io/2014/03/20/how-to-build-a-feed-system/&is_video=false&description=关于构建feed系统的思考"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=关于构建feed系统的思考&body=Check out this article: https://wikimore.github.io/2014/03/20/how-to-build-a-feed-system/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://wikimore.github.io/2014/03/20/how-to-build-a-feed-system/&title=关于构建feed系统的思考"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://wikimore.github.io/2014/03/20/how-to-build-a-feed-system/&title=关于构建feed系统的思考"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://wikimore.github.io/2014/03/20/how-to-build-a-feed-system/&title=关于构建feed系统的思考"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://wikimore.github.io/2014/03/20/how-to-build-a-feed-system/&title=关于构建feed系统的思考"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://wikimore.github.io/2014/03/20/how-to-build-a-feed-system/&name=关于构建feed系统的思考&description=&lt;p&gt;feed系统就是类似于weibo和twitter的通过用户关注行为来帮助用户聚合的获取内容的系统.&lt;/p&gt;
+&lt;p&gt;feed系统有两种模式,&lt;code&gt;push&lt;/code&gt;和&lt;code&gt;pull&lt;/code&gt;.&lt;/p&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://wikimore.github.io/2014/03/20/how-to-build-a-feed-system/&t=关于构建feed系统的思考"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2022-2025
+    黎渊
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="本文主要说明Thrift如何序列化和反序列化数据。主要分析为什么在客户端调用method，服务端会执行对应的method，同时客户端能够获取到返回值，中间都发生了什么。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Thrift协议介绍">
+<meta property="og:url" content="https://wikimore.github.io/2016/04/04/thrift-protocol/index.html">
+<meta property="og:site_name" content="千流而下">
+<meta property="og:description" content="本文主要说明Thrift如何序列化和反序列化数据。主要分析为什么在客户端调用method，服务端会执行对应的method，同时客户端能够获取到返回值，中间都发生了什么。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-04-04T07:10:40.000Z">
+<meta property="article:modified_time" content="2022-10-24T11:17:53.862Z">
+<meta property="article:author" content="黎渊">
+<meta property="article:tag" content="rpc">
+<meta property="article:tag" content="thrift">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Thrift协议介绍</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2016/06/06/mustache-syntax/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2016/03/25/thrift-introduction/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://wikimore.github.io/2016/04/04/thrift-protocol/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://wikimore.github.io/2016/04/04/thrift-protocol/&text=Thrift协议介绍"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://wikimore.github.io/2016/04/04/thrift-protocol/&title=Thrift协议介绍"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://wikimore.github.io/2016/04/04/thrift-protocol/&is_video=false&description=Thrift协议介绍"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Thrift协议介绍&body=Check out this article: https://wikimore.github.io/2016/04/04/thrift-protocol/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://wikimore.github.io/2016/04/04/thrift-protocol/&title=Thrift协议介绍"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://wikimore.github.io/2016/04/04/thrift-protocol/&title=Thrift协议介绍"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://wikimore.github.io/2016/04/04/thrift-protocol/&title=Thrift协议介绍"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://wikimore.github.io/2016/04/04/thrift-protocol/&title=Thrift协议介绍"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://wikimore.github.io/2016/04/04/thrift-protocol/&name=Thrift协议介绍&description=&lt;p&gt;本文主要说明Thrift如何序列化和反序列化数据。主要分析为什么在客户端调用method，服务端会执行对应的method，同时客户端能够获取到返回值，中间都发生了什么。&lt;/p&gt;"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://wikimore.github.io/2016/04/04/thrift-protocol/&t=Thrift协议介绍"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Thrift协议介绍
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">黎渊</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2016-04-04T07:10:40.000Z" itemprop="datePublished">2016-04-04</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/rpc/" rel="tag">rpc</a>, <a class="tag-link-link" href="/tags/thrift/" rel="tag">thrift</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>本文主要说明Thrift如何序列化和反序列化数据。主要分析为什么在客户端调用method，服务端会执行对应的method，同时客户端能够获取到返回值，中间都发生了什么。</p>
+<span id="more"></span>
+<p>Thrift序列化的核心类是<code>TProtocol</code>，这是一个抽象类，主要实现有：</p>
+<ul>
+<li><code>TBinaryProtocol</code>：二进制协议</li>
+<li><code>TCompactProtocl</code>：带压缩的二进制(其实只对i16、i32、i64这3种类型以及field的编号进行压缩，详细可以搜索zigzag编码)</li>
+</ul>
+<p>本文以<code>TBinaryProtocol</code>为例说明，协议如下所示</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">----------------------------------------------------------------------------------------</span><br><span class="line">|                              header                            |        body         |</span><br><span class="line">|  magic  | method name length |  method name  | sequence number |       result        |</span><br><span class="line">|    4    |         4          | N length size |        4        |          X          |   </span><br><span class="line">----------------------------------------------------------------------------------------</span><br></pre></td></tr></table></figure>
+<p>总体我们可以分为<code>header</code>和<code>body</code>。</p>
+<p><code>header</code>首先是4个字节的magic，Thrift协议的magic是一个32位的数字，高16位是<code>8001</code>(个人理解代表版本号，目前是第一个版本)，低16位根据TMessageType得到，目前TMessageType分为4种：</p>
+<ul>
+<li>CALL &#x3D; 1 调用消息，如<code>0x80010001</code></li>
+<li>REPLY &#x3D; 2 应答消息，如<code>0x80010002</code></li>
+<li>EXCEPTION &#x3D; 3 异常消息，如<code>0x80010003</code></li>
+<li>ONEWAY &#x3D; 4 单向消息，属于调用消息，但是不需要应答，如<code>0x80010004</code></li>
+</ul>
+<p>之后4个字节表示方法名称的长度N，之后是N方法名称的字节，最后是4个字节的序列号。</p>
+<p><code>body</code>首先是一个<code>struct</code>类型，内部会根据类型的不同各不相同，同时支持不同类型的嵌套，目前支持的类型包括：</p>
+<ul>
+<li>byte</li>
+<li>bool</li>
+<li>short</li>
+<li>int</li>
+<li>long</li>
+<li>double</li>
+<li>string</li>
+<li>bytearray</li>
+<li>map</li>
+<li>list</li>
+<li>set</li>
+<li>field</li>
+<li>struct</li>
+</ul>
+<blockquote>
+<p>注意：<code>exception</code>可以理解为struct的一种，按照struct来序列化和反序列化。</p>
+</blockquote>
+<p><code>byte</code>占1个字节，<code>bool</code>也是占用1个字节，true&#x3D;1，false&#x3D;0。</p>
+<p><code>short</code>占2个字节，<code>int</code>占4个字节，<code>long</code>和<code>double</code>都是占用8个字节。</p>
+<p><code>string</code>和<code>bytearray</code>类似，占4+N字节，描述如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">--------------------</span><br><span class="line">| size |  content  |</span><br><span class="line">|   4  |     N     |</span><br><span class="line">--------------------</span><br></pre></td></tr></table></figure>
+<p>string使用UTF-8编码成byte数组。</p>
+<p><code>map</code>占<code>1+1+4+N*X+N*Y</code>个字节，描述如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">----------------------------------------------------------------------------------------</span><br><span class="line">|  key-type  | value-type |  size  | key1 | value1 | key2 | value2 |...| keyN | valueN |</span><br><span class="line">|      1     |      1     |    4   |   X  |   Y    |   X  |   Y    |...|   X  |   Y    |</span><br><span class="line">----------------------------------------------------------------------------------------</span><br></pre></td></tr></table></figure>
+<p>其中key-type和value-type可以是任何以上的类型。</p>
+<p><code>list</code>和<code>set</code>类似，占<code>1+4+N*X</code>个字节，描述如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">----------------------------------------------------------------</span><br><span class="line">|  element-type  |  size  | element1 | element2 |...| elementN |</span><br><span class="line">|        1       |    4   |    X     |    X     |...|    X     |</span><br><span class="line">----------------------------------------------------------------</span><br></pre></td></tr></table></figure>
+<p>其中element-type可以是任何以上的类型。</p>
+<p><code>field</code>占<code>1+2+X</code>个字节，描述如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">---------------------------------------</span><br><span class="line">| field-type | field-id | field-value |</span><br><span class="line">|      1     |     2    |      X      |</span><br><span class="line">---------------------------------------</span><br></pre></td></tr></table></figure>
+<p><code>field</code>不是独立出现，而是出现在<code>struct</code>内部，其中field-type可以是任何以上的类型，field-id就是定义IDL时该<code>field</code>在<code>struct</code>的编号，field-value是对应类型的序列化结果。</p>
+<p><code>struct</code>占<code>X</code>个字节，这个不太好估计，需要具体定义具体计算，可以按照入下描述：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">--------------------------------</span><br><span class="line">| field1 | field2 |...| fieldN |</span><br><span class="line">|    M   |    M   |...|    M   |</span><br><span class="line">--------------------------------</span><br></pre></td></tr></table></figure>
+
+<p>在使用上有些需要注意的点：</p>
+<ul>
+<li>对于方法定义了返回值为<code>struct</code>、<code>map</code>、<code>set</code>、<code>list</code>，如果服务端返回null，thrift是不能够很好的支持的(会报错)，大家可以根据具体情况返回empty的对象或者抛出定义的异常</li>
+<li>如果参数或者返回值是<code>map</code>、<code>set</code>、<code>list</code>实例，该实例不能被其他线程修改，否则会报协议错误或者超时(大家可以想下是为什么)</li>
+</ul>
+<p>以上基本解释了Thrift的协议格式以及不同类型的序列化格式，还有我使用过程中遇到的一些坑，希望对大家理解Thrift有所帮助。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/categories/">分类</a></li>
+         
+          <li><a href="/tags/">标签</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://wikimore.github.io/2016/04/04/thrift-protocol/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://wikimore.github.io/2016/04/04/thrift-protocol/&text=Thrift协议介绍"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://wikimore.github.io/2016/04/04/thrift-protocol/&title=Thrift协议介绍"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://wikimore.github.io/2016/04/04/thrift-protocol/&is_video=false&description=Thrift协议介绍"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Thrift协议介绍&body=Check out this article: https://wikimore.github.io/2016/04/04/thrift-protocol/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://wikimore.github.io/2016/04/04/thrift-protocol/&title=Thrift协议介绍"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://wikimore.github.io/2016/04/04/thrift-protocol/&title=Thrift协议介绍"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://wikimore.github.io/2016/04/04/thrift-protocol/&title=Thrift协议介绍"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://wikimore.github.io/2016/04/04/thrift-protocol/&title=Thrift协议介绍"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://wikimore.github.io/2016/04/04/thrift-protocol/&name=Thrift协议介绍&description=&lt;p&gt;本文主要说明Thrift如何序列化和反序列化数据。主要分析为什么在客户端调用method，服务端会执行对应的method，同时客户端能够获取到返回值，中间都发生了什么。&lt;/p&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://wikimore.github.io/2016/04/04/thrift-protocol/&t=Thrift协议介绍"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2022-2025
+    黎渊
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

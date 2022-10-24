@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="对于二进制编码，经常需要对数据进行压缩以节省空间，varint可以压缩较小的正数，但是对于负数varint反而更浪费空间，zigzag编码可以处理负数，使负数也可以使用varint编码压缩，protobuf和thrift都使用二者结合的方式来压缩数字类型。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="varint和zigzag编码">
+<meta property="og:url" content="https://wikimore.github.io/2016/09/22/zig-zag-intro/index.html">
+<meta property="og:site_name" content="千流而下">
+<meta property="og:description" content="对于二进制编码，经常需要对数据进行压缩以节省空间，varint可以压缩较小的正数，但是对于负数varint反而更浪费空间，zigzag编码可以处理负数，使负数也可以使用varint编码压缩，protobuf和thrift都使用二者结合的方式来压缩数字类型。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-09-22T08:58:14.000Z">
+<meta property="article:modified_time" content="2022-10-24T11:17:53.877Z">
+<meta property="article:author" content="黎渊">
+<meta property="article:tag" content="zigzag">
+<meta property="article:tag" content="varint">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>varint和zigzag编码</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2017/02/25/mybatis-1/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2016/06/10/scala-parsers/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://wikimore.github.io/2016/09/22/zig-zag-intro/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://wikimore.github.io/2016/09/22/zig-zag-intro/&text=varint和zigzag编码"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://wikimore.github.io/2016/09/22/zig-zag-intro/&title=varint和zigzag编码"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://wikimore.github.io/2016/09/22/zig-zag-intro/&is_video=false&description=varint和zigzag编码"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=varint和zigzag编码&body=Check out this article: https://wikimore.github.io/2016/09/22/zig-zag-intro/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://wikimore.github.io/2016/09/22/zig-zag-intro/&title=varint和zigzag编码"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://wikimore.github.io/2016/09/22/zig-zag-intro/&title=varint和zigzag编码"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://wikimore.github.io/2016/09/22/zig-zag-intro/&title=varint和zigzag编码"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://wikimore.github.io/2016/09/22/zig-zag-intro/&title=varint和zigzag编码"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://wikimore.github.io/2016/09/22/zig-zag-intro/&name=varint和zigzag编码&description=&lt;p&gt;对于二进制编码，经常需要对数据进行压缩以节省空间，varint可以压缩较小的正数，但是对于负数varint反而更浪费空间，zigzag编码可以处理负数，使负数也可以使用varint编码压缩，protobuf和thrift都使用二者结合的方式来压缩数字类型。&lt;/p&gt;"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://wikimore.github.io/2016/09/22/zig-zag-intro/&t=varint和zigzag编码"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E7%A0%81%E3%80%81%E5%8F%8D%E7%A0%81%E3%80%81%E8%A1%A5%E7%A0%81"><span class="toc-number">1.</span> <span class="toc-text">原码、反码、补码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%A6%E8%A7%A3"><span class="toc-number">2.</span> <span class="toc-text">详解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%96%E7%A0%81"><span class="toc-number">2.1.</span> <span class="toc-text">编码</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#varint"><span class="toc-number">2.1.1.</span> <span class="toc-text">varint</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#zigzag"><span class="toc-number">2.1.2.</span> <span class="toc-text">zigzag</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E7%A0%81"><span class="toc-number">2.2.</span> <span class="toc-text">解码</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#varint-1"><span class="toc-number">2.2.1.</span> <span class="toc-text">varint</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#zigzag-1"><span class="toc-number">2.2.2.</span> <span class="toc-text">zigzag</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">3.</span> <span class="toc-text">总结</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        varint和zigzag编码
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">黎渊</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2016-09-22T08:58:14.000Z" itemprop="datePublished">2016-09-22</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/varint/" rel="tag">varint</a>, <a class="tag-link-link" href="/tags/zigzag/" rel="tag">zigzag</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>对于二进制编码，经常需要对数据进行压缩以节省空间，varint可以压缩较小的正数，但是对于负数varint反而更浪费空间，zigzag编码可以处理负数，使负数也可以使用varint编码压缩，protobuf和thrift都使用二者结合的方式来压缩数字类型。</p>
+<span id="more"></span>
+
+<h2 id="原码、反码、补码"><a href="#原码、反码、补码" class="headerlink" title="原码、反码、补码"></a>原码、反码、补码</h2><p>首先，计算机为了方便位运算，使用<code>补码</code>来存储数字。</p>
+<p>然后回顾下：</p>
+<ul>
+<li>原码：最高位为符号位，剩余位表示绝对值；</li>
+<li>反码：除符号位外，对原码剩余位依次取反；</li>
+<li>补码：对于正数，补码为其自身；对于负数，除符号位外对原码剩余位依次取反然后+1。</li>
+</ul>
+<h2 id="详解"><a href="#详解" class="headerlink" title="详解"></a>详解</h2><h3 id="编码"><a href="#编码" class="headerlink" title="编码"></a>编码</h3><p>本文以int类型为例，详细介绍如果通过varint+zigzag编码技术压缩数字。</p>
+<p>首先，我们常用的数字其实多数都不是很大，比如：商品的价值、动态计数等，对于这些不是很大的数字，二进制的高位多数是0。</p>
+<p>varint编码每个字节前1位表示下一个字节是否也是该数字的一部分，后7位表示实际的值，最后，先低位后高位，对于int类型来说，varint编码最少占用1个字节，最多占用5个字节。</p>
+<p>varint编码java代码表示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">byte[] bytes = new byte[5];</span><br><span class="line">int idx = 0;</span><br><span class="line">while (true) &#123;</span><br><span class="line">  if ((n &amp; ~0x7F) == 0) &#123; // 除低7位，全部为0</span><br><span class="line">    bytes[idx++] = (byte) n;</span><br><span class="line">    break;</span><br><span class="line">  &#125; else &#123; // 除低7位，不全部为0</span><br><span class="line">    bytes[idx++] = ((byte) ((n &amp; 0x7F) | 0x80)); // 高1位置1，低7位按位与得到实际值</span><br><span class="line">    n &gt;&gt;&gt;= 7;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="varint"><a href="#varint" class="headerlink" title="varint"></a>varint</h4><p>例如，对于int类型1来说，二进制表示为<code>00000000 00000000 00000000 00000001</code>，总共占用4个字节，然而，前3个字节都是0，varint就是通过压缩高位的0来达到节省空间的目的，使用varint压缩后，二进制表示为<code>00000010</code>，只占用1个字节。</p>
+<p>对于int类型2^30来说二进制表示为<code>01000000 00000000 00000000 00000000</code>，使用varint压缩后，二进制表示为<code>00000001 00000001 00000001 00000001 00001000</code>，占用5个字节。</p>
+<h4 id="zigzag"><a href="#zigzag" class="headerlink" title="zigzag"></a>zigzag</h4><p>对于负数来说，因为最高位符号位始终为1，使用varint编码就很浪费空间，zigzag编码就是解决负数的问题的，同时其对正数也没有很大的影响。</p>
+<p>int类型zigzag变换的代码表示为<code>(n &lt;&lt; 1) ^ (n &gt;&gt; 31)</code></p>
+<ul>
+<li>左移1位可以消去符号位，低位补0</li>
+<li>有符号右移31位将符号位移动到最低位，负数高位补1，正数高位补0</li>
+<li>按位异或<ul>
+<li>对于正数来说，最低位符号位为0，其他位不变</li>
+<li>对于负数，最低位符号位为1，其他位按位取反</li>
+</ul>
+</li>
+</ul>
+<p>-1的二进制表示为<code>11111111 11111111 11111111 11111111</code>，zigzag变换后<code>00000000 00000000 00000000 00000001</code>，再用varint编码，是不是很小了。</p>
+<p>1的二进制表示为<code>00000000 00000000 00000000 00000001</code>，zigzag变换后<code>00000000 00000000 00000000 00000010</code>，再用varint编码，依然很小。</p>
+<p>编码步骤：</p>
+<ul>
+<li>zigzag</li>
+<li>varint</li>
+</ul>
+<h3 id="解码"><a href="#解码" class="headerlink" title="解码"></a>解码</h3><p>解码步骤和编码步骤相反，先读取varint，再执行zigzag解码</p>
+<h4 id="varint-1"><a href="#varint-1" class="headerlink" title="varint"></a>varint</h4><p>一个一个字节读入，判断高位是否为1，如果是1，继续读下一个字节，否则跳出循环。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">int result = 0;</span><br><span class="line">int shift = 0;</span><br><span class="line">while (true) &#123;</span><br><span class="line">  byte b = readByte();</span><br><span class="line">  result |= (int) (b &amp; 0x7f) &lt;&lt; shift;</span><br><span class="line">  if ((b &amp; 0x80) != 0x80)</span><br><span class="line">    break;</span><br><span class="line">  shift += 7;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="zigzag-1"><a href="#zigzag-1" class="headerlink" title="zigzag"></a>zigzag</h4><p>zigzag操作为<code>(n &gt;&gt;&gt; 1) ^ -(n &amp; 1)</code></p>
+<ul>
+<li>无符号右移1位</li>
+<li>按位与1，然后取负值，这一步非常巧妙，对于正数就是0，负数就是-1</li>
+<li>按位异或得到结果<ul>
+<li>正数是与0按位异或</li>
+<li>负数是与-1按位异或</li>
+</ul>
+</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>varint+zigzag编码对于越接近0的数，压缩越好，所以可以在一些常用的情况下压缩数字类型。</p>
+<p>对于short、long、double也是类似的处理方式。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/categories/">分类</a></li>
+         
+          <li><a href="/tags/">标签</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E7%A0%81%E3%80%81%E5%8F%8D%E7%A0%81%E3%80%81%E8%A1%A5%E7%A0%81"><span class="toc-number">1.</span> <span class="toc-text">原码、反码、补码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%A6%E8%A7%A3"><span class="toc-number">2.</span> <span class="toc-text">详解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%96%E7%A0%81"><span class="toc-number">2.1.</span> <span class="toc-text">编码</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#varint"><span class="toc-number">2.1.1.</span> <span class="toc-text">varint</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#zigzag"><span class="toc-number">2.1.2.</span> <span class="toc-text">zigzag</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E7%A0%81"><span class="toc-number">2.2.</span> <span class="toc-text">解码</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#varint-1"><span class="toc-number">2.2.1.</span> <span class="toc-text">varint</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#zigzag-1"><span class="toc-number">2.2.2.</span> <span class="toc-text">zigzag</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">3.</span> <span class="toc-text">总结</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://wikimore.github.io/2016/09/22/zig-zag-intro/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://wikimore.github.io/2016/09/22/zig-zag-intro/&text=varint和zigzag编码"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://wikimore.github.io/2016/09/22/zig-zag-intro/&title=varint和zigzag编码"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://wikimore.github.io/2016/09/22/zig-zag-intro/&is_video=false&description=varint和zigzag编码"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=varint和zigzag编码&body=Check out this article: https://wikimore.github.io/2016/09/22/zig-zag-intro/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://wikimore.github.io/2016/09/22/zig-zag-intro/&title=varint和zigzag编码"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://wikimore.github.io/2016/09/22/zig-zag-intro/&title=varint和zigzag编码"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://wikimore.github.io/2016/09/22/zig-zag-intro/&title=varint和zigzag编码"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://wikimore.github.io/2016/09/22/zig-zag-intro/&title=varint和zigzag编码"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://wikimore.github.io/2016/09/22/zig-zag-intro/&name=varint和zigzag编码&description=&lt;p&gt;对于二进制编码，经常需要对数据进行压缩以节省空间，varint可以压缩较小的正数，但是对于负数varint反而更浪费空间，zigzag编码可以处理负数，使负数也可以使用varint编码压缩，protobuf和thrift都使用二者结合的方式来压缩数字类型。&lt;/p&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://wikimore.github.io/2016/09/22/zig-zag-intro/&t=varint和zigzag编码"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2022-2025
+    黎渊
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

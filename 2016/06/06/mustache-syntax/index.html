@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Mustache是一个无逻辑(logic-less)的模板系统，可以生成HTML、源代码、配置文件等等，目前我们在代码生成上就使用它。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mustache语法说明">
+<meta property="og:url" content="https://wikimore.github.io/2016/06/06/mustache-syntax/index.html">
+<meta property="og:site_name" content="千流而下">
+<meta property="og:description" content="Mustache是一个无逻辑(logic-less)的模板系统，可以生成HTML、源代码、配置文件等等，目前我们在代码生成上就使用它。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-06-06T07:10:40.000Z">
+<meta property="article:modified_time" content="2022-10-24T11:17:53.878Z">
+<meta property="article:author" content="黎渊">
+<meta property="article:tag" content="mustache">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Mustache语法说明</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2016/06/10/scala-parsers/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2016/04/04/thrift-protocol/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://wikimore.github.io/2016/06/06/mustache-syntax/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://wikimore.github.io/2016/06/06/mustache-syntax/&text=Mustache语法说明"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://wikimore.github.io/2016/06/06/mustache-syntax/&title=Mustache语法说明"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://wikimore.github.io/2016/06/06/mustache-syntax/&is_video=false&description=Mustache语法说明"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Mustache语法说明&body=Check out this article: https://wikimore.github.io/2016/06/06/mustache-syntax/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://wikimore.github.io/2016/06/06/mustache-syntax/&title=Mustache语法说明"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://wikimore.github.io/2016/06/06/mustache-syntax/&title=Mustache语法说明"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://wikimore.github.io/2016/06/06/mustache-syntax/&title=Mustache语法说明"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://wikimore.github.io/2016/06/06/mustache-syntax/&title=Mustache语法说明"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://wikimore.github.io/2016/06/06/mustache-syntax/&name=Mustache语法说明&description=&lt;p&gt;Mustache是一个无逻辑(logic-less)的模板系统，可以生成HTML、源代码、配置文件等等，目前我们在代码生成上就使用它。&lt;/p&gt;"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://wikimore.github.io/2016/06/06/mustache-syntax/&t=Mustache语法说明"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AF%AD%E6%B3%95"><span class="toc-number">1.</span> <span class="toc-text">语法</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Variable"><span class="toc-number">1.1.</span> <span class="toc-text">Variable</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Section"><span class="toc-number">1.2.</span> <span class="toc-text">Section</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#true-or-false%E5%9C%BA%E6%99%AF"><span class="toc-number">1.2.1.</span> <span class="toc-text">true or false场景</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E5%88%97%E8%A1%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">1.2.2.</span> <span class="toc-text">列表场景</span></a></li></ol></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Comment"><span class="toc-number">1.3.</span> <span class="toc-text">Comment</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Partial"><span class="toc-number">1.4.</span> <span class="toc-text">Partial</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Delimiter"><span class="toc-number">1.5.</span> <span class="toc-text">Delimiter</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Mustache语法说明
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">黎渊</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2016-06-06T07:10:40.000Z" itemprop="datePublished">2016-06-06</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/mustache/" rel="tag">mustache</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>Mustache是一个无逻辑(logic-less)的模板系统，可以生成HTML、源代码、配置文件等等，目前我们在代码生成上就使用它。</p>
+<span id="more"></span>
+<h4 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h4><p>Mustache的语法中主要是一个一个的标签(tag)，不同的标签有不同的含义，基本以多个<code>&#123;&#125;</code>形式展现。</p>
+<ul>
+<li><code>{{}}</code></li>
+<li><code>{{{}}}</code></li>
+<li><code>{{&}}</code></li>
+<li><code>{{#}}{{/}}</code></li>
+<li><code>{{^}}{{/}}</code></li>
+<li><code>{{!}}</code></li>
+<li><code>{{>}}</code></li>
+<li><code>{{= =}}</code></li>
+</ul>
+<h5 id="Variable"><a href="#Variable" class="headerlink" title="Variable"></a>Variable</h5><p><code>{{}}</code>表示一个值，如<code>hello, {{name}}!</code>，如果给定一个Hash<code>&#123;&quot;name&quot;:&quot;world&quot;&#125;</code>，生成的目标为<code>hello, world!</code>。</p>
+<p><code>{{{}}}</code>和<code>{{&}}</code>同样可以表示一个值，不过内部的数据是为转码(unescape)的，如<code>hello, {{name}}!</code>，如果给定一个Hash<code>&#123;&quot;name&quot;:&quot;&lt;b&gt;world&lt;/b&gt;&quot;&#125;</code>，生成的目标为<code>hello, &lt;b&gt;world&lt;/b&gt;!</code>，而用<code>{{}}</code>则生成<code>hello, &amp;lt;b&amp;gt;world&amp;lt;/b&amp;gt!</code></p>
+<h5 id="Section"><a href="#Section" class="headerlink" title="Section"></a>Section</h5><h6 id="true-or-false场景"><a href="#true-or-false场景" class="headerlink" title="true or false场景"></a>true or false场景</h6><p>如果模板如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">begin</span><br><span class="line">&#123;% raw %&#125;&#123;&#123;#display&#125;&#125;&#123;% endraw %&#125;</span><br><span class="line">this line is display</span><br><span class="line">&#123;% raw %&#125;&#123;&#123;/display&#125;&#125;&#123;% endraw %&#125;</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+
+<p>给定json</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;display&quot;:true&#125;</span><br></pre></td></tr></table></figure>
+
+<p>显示如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">begin</span><br><span class="line">this line is display</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+
+<p>如果给定json</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;display&quot;:false&#125;</span><br></pre></td></tr></table></figure>
+
+<p>显示如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">begin</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+
+<h6 id="列表场景"><a href="#列表场景" class="headerlink" title="列表场景"></a>列表场景</h6><p>模板如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;% raw %&#125;&#123;&#123;#persons&#125;&#125;</span><br><span class="line">hello &#123;&#123;name&#125;&#125;</span><br><span class="line">&#123;&#123;/persons&#125;&#125;&#123;% endraw %&#125;</span><br></pre></td></tr></table></figure>
+
+<p>给定json</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;persons&quot;: [</span><br><span class="line">    &#123; &quot;name&quot;: &quot;peter&quot; &#125;,</span><br><span class="line">    &#123; &quot;name&quot;: &quot;leo&quot; &#125;,</span><br><span class="line">    &#123; &quot;name&quot;: &quot;tom&quot; &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>显示如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hello peter</span><br><span class="line">hello leo</span><br><span class="line">hello tom</span><br></pre></td></tr></table></figure>
+
+<p>如果当列表为空时显示其他内容呢？我们可以编写如下模板：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;% raw %&#125;</span><br><span class="line">&#123;&#123;#persons&#125;&#125;</span><br><span class="line">  &lt;b&gt;&#123;&#123;name&#125;&#125;&lt;/b&gt;</span><br><span class="line">&#123;&#123;/persons&#125;&#125;</span><br><span class="line">&#123;&#123;^persons&#125;&#125;</span><br><span class="line">  No person.</span><br><span class="line">&#123;&#123;/persons&#125;&#125;</span><br><span class="line">&#123;% endraw %&#125;</span><br></pre></td></tr></table></figure>
+
+<p>给定json</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;persons&quot;: []</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>显示如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">No person.</span><br></pre></td></tr></table></figure>
+
+<h5 id="Comment"><a href="#Comment" class="headerlink" title="Comment"></a>Comment</h5>{{! comment}}，用!表示注释
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;% raw %&#125;&lt;h1&gt;Hello&#123;&#123;! comment &#125;&#125;.&lt;/h1&gt;&#123;% endraw %&#125;</span><br></pre></td></tr></table></figure>
+
+<p>渲染如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;h1&gt;Hello.&lt;/h1&gt;</span><br></pre></td></tr></table></figure>
+
+<h5 id="Partial"><a href="#Partial" class="headerlink" title="Partial"></a>Partial</h5><p>如果模板比较复杂，Mustache支持多个模板文件嵌套，使用语法 {{> sub}}</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#123;% raw %&#125;</span><br><span class="line">interface.mustache:</span><br><span class="line">public interface &#123;&#123;name&#125;&#125; &#123;</span><br><span class="line">&#123;&#123;#methods&#125;&#125;</span><br><span class="line">  &#123;&#123;&gt; method&#125;&#125;</span><br><span class="line">&#123;&#123;/methods&#125;&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#123;% endraw %&#125;</span><br><span class="line">method.mustache:</span><br><span class="line">public void &#123;&#123;name&#125;&#125;();</span><br></pre></td></tr></table></figure>
+
+<p>给定JSON</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;name&quot;: Iface</span><br><span class="line">    &quot;methods&quot;:[</span><br><span class="line">        &quot;name&quot;: &quot;m1&quot;,</span><br><span class="line">        &quot;name&quot;: &quot;m2&quot;,</span><br><span class="line">        &quot;name&quot;: &quot;m3&quot;,</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>生成如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public interface Iface &#123;</span><br><span class="line">    public void m1();</span><br><span class="line">    public void m2();</span><br><span class="line">    public void m3();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="Delimiter"><a href="#Delimiter" class="headerlink" title="Delimiter"></a>Delimiter</h5><p>Mustache使用<code>{{}}</code>作为定界符，如果我们需要显示{}呢？貌似不可以。</p>
+<p>其实Mustache支持设置定界符，使用等号，如<code>{{=<% %>=}}</code>，这时候定界符就被替换成<code>&lt;% %&gt;</code>了，如果想重新设置回去，使用<code><%={{ }}= %></code>。</p>
+<p>目前几乎所有的主流语言都有对应的库，详见<a target="_blank" rel="noopener" href="http://mustache.github.io/">Mustache</a>。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/categories/">分类</a></li>
+         
+          <li><a href="/tags/">标签</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AF%AD%E6%B3%95"><span class="toc-number">1.</span> <span class="toc-text">语法</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Variable"><span class="toc-number">1.1.</span> <span class="toc-text">Variable</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Section"><span class="toc-number">1.2.</span> <span class="toc-text">Section</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#true-or-false%E5%9C%BA%E6%99%AF"><span class="toc-number">1.2.1.</span> <span class="toc-text">true or false场景</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E5%88%97%E8%A1%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">1.2.2.</span> <span class="toc-text">列表场景</span></a></li></ol></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Comment"><span class="toc-number">1.3.</span> <span class="toc-text">Comment</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Partial"><span class="toc-number">1.4.</span> <span class="toc-text">Partial</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Delimiter"><span class="toc-number">1.5.</span> <span class="toc-text">Delimiter</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://wikimore.github.io/2016/06/06/mustache-syntax/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://wikimore.github.io/2016/06/06/mustache-syntax/&text=Mustache语法说明"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://wikimore.github.io/2016/06/06/mustache-syntax/&title=Mustache语法说明"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://wikimore.github.io/2016/06/06/mustache-syntax/&is_video=false&description=Mustache语法说明"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Mustache语法说明&body=Check out this article: https://wikimore.github.io/2016/06/06/mustache-syntax/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://wikimore.github.io/2016/06/06/mustache-syntax/&title=Mustache语法说明"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://wikimore.github.io/2016/06/06/mustache-syntax/&title=Mustache语法说明"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://wikimore.github.io/2016/06/06/mustache-syntax/&title=Mustache语法说明"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://wikimore.github.io/2016/06/06/mustache-syntax/&title=Mustache语法说明"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://wikimore.github.io/2016/06/06/mustache-syntax/&name=Mustache语法说明&description=&lt;p&gt;Mustache是一个无逻辑(logic-less)的模板系统，可以生成HTML、源代码、配置文件等等，目前我们在代码生成上就使用它。&lt;/p&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://wikimore.github.io/2016/06/06/mustache-syntax/&t=Mustache语法说明"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2022-2025
+    黎渊
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
